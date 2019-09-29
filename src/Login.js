@@ -1,8 +1,13 @@
 import React from 'react';
+import {HomeContainer} from "./common/style";
+import HomeHeader from "./HomeHeader";
 
 function Login() {
     return (
-        <h2>Login</h2>
+        <HomeContainer>
+            <HomeHeader/>
+            <h2>Login</h2>
+        </HomeContainer>
     )
 }
 

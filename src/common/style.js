@@ -10,3 +10,14 @@ export const FlexCenterRow = styled.div`
   align-items: center;
   justify-content: center;
 `;
+
+export const TButton = styled.div`
+  color: #fff;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+export const HomeContainer = styled.div`
+
+`;
