@@ -1,10 +1,11 @@
 import {createBrowserHistory} from 'history';
+import {getCookie, setCookie} from './helper';
 
 window.browserHistory = createBrowserHistory();
 
 const SERVER_URL = {
-    development: 'http://beta.api.ttnote.cn',
-    production: 'https://prod-kellis-server.dev.saybot.net:443',
+    development: 'https://beta.api.ttnote.cn',
+    production: 'https://beta.api.ttnote.cn',
 };
 
 const _ttnote = {
@@ -13,6 +14,7 @@ const _ttnote = {
     },
 
     baseUrl: SERVER_URL[process.env.NODE_ENV],
+    user: JSON.parse(localStorage.getItem('ttnoteUser')),
 
     searchObject() {
         const query = decodeURIComponent(window.location.search)
@@ -27,13 +29,24 @@ const _ttnote = {
         return queryObject;
     } ,
 
-    fetch(input, params) {
+    fetch(input, params = {method: 'get'}) {
+        let headers = {'Content-Type': 'application/json'};
+        if (getCookie('token')) headers['Authorization'] = getCookie('token');
+
       return new Promise(function(resolve, reject) {
-          window.fetch(input, params)
+          window.fetch(input, {headers, ...params})
               .then(res => {
-                  res.clone()
-                      .json()
+                  if (res.status >= 200 && res.status <= 202) {
+                    res.json()
                       .then(res => resolve(res))
+                  }
+                  if (res.status === 204) {
+                    resolve(res)
+                  }
+                  if (res.status === 401) {
+                   setCookie('token', '', '-10');
+                    window.ttnote.goto('/login?needLogin');
+                  }
               }).catch(err => reject(err))
       })
     },

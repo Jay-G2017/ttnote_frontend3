@@ -48,11 +48,10 @@ function Login() {
             .then(res => {
                 if (res.status >= 200 && res.status < 300 ) {
                   const responseToken = res.headers.get('authorization');
-                  window.ttnote.token = responseToken;
-                  setCookie('token', responseToken, 1);
+                  setCookie('token', responseToken, 700);
                     res.json().then(res => {
+                      localStorage.setItem('ttnoteUser', JSON.stringify(res));
                       window.ttnote.user = res;
-                      localStorage.setItem('ttnote', JSON.stringify(res));
                       window.ttnote.goto('/note');
                   })
                 }
