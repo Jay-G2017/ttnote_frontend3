@@ -1,43 +1,66 @@
 import React, {useEffect, useState} from 'react';
-import {getCookie, setCookie} from './utils/helper';
-import {Button} from "react-bootstrap";
+import styled from 'styled-components';
+import Left from "./components/Left";
+import Middle from "./components/Middle";
+import Right from "./components/Right";
+
+const NoteContainer = styled.div`
+  display: flex;
+  height: 100vh;
+  background-color: #ededed;
+`;
 
 function Note() {
-
-  const [login, setLogin] = useState(false);
-
-  // 前端判断登录失效
-  useEffect(() => {
-    if (!getCookie('token')) {
-      window.ttnote.goto('/login?needLogin');
-    }
-  }, []);
+  const isMobile = window.innerWidth < 768;
+  const [isMobileView, setIsMobileView] = useState(isMobile);
+  const [mobileShowingArea, setMobileShowingArea] = useState('right');
+  const [pcHideMode, setPcHideMode] = useState(false);
 
   useEffect(() => {
-    const url = window.ttnote.baseUrl + '/try_authenticate';
-    window.ttnote.fetch(url).then(res => {
-      setLogin(res.login)
-    })
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleLogout = () => {
-    const url = window.ttnote.baseUrl + '/users/logout';
-    window.ttnote.fetch(url, {
-      method: 'delete',
-    }).then(() => {
-      setCookie('token', '', '-10');
-      localStorage.removeItem('ttnoteUser');
-      window.ttnote.user = null;
-      window.ttnote.goto('/login');
-    })
+  const handleResize = () => {
+    setIsMobileView(window.innerWidth < 768);
+    if (window.innerWidth < 768) setMobileShowingArea('right');
   };
 
+  // const handleLogout = () => {
+  //   const url = window.ttnote.baseUrl + '/users/logout';
+  //   window.ttnote.fetch(url, {
+  //     method: 'delete',
+  //   }).then(() => {
+  //     setCookie('token', '', '-10');
+  //     localStorage.removeItem('ttnoteUser');
+  //     window.ttnote.user = null;
+  //     window.ttnote.goto('/login');
+  //   })
+  // };
+
   return (
-    <>
-    <h2>{`welcome, ${window.ttnote.user.email.split('@')[0]}`}</h2>
-    <p>{`login: ${login}`}</p>
-      <Button onClick={handleLogout}>log out</Button>
-    </>
+    <NoteContainer>
+      <Left
+        isMobileView={isMobileView}
+        pcHideMode={pcHideMode}
+        mobileShowingArea={mobileShowingArea}
+        setMobileShowingArea={setMobileShowingArea}
+      />
+      <Middle
+        isMobileView={isMobileView}
+        pcHideMode={pcHideMode}
+        setPcHideMode={setPcHideMode}
+        mobileShowingArea={mobileShowingArea}
+        setMobileShowingArea={setMobileShowingArea}
+      />
+      <Right
+        isMobileView={isMobileView}
+        pcHideMode={pcHideMode}
+        setPcHideMode={setPcHideMode}
+        mobileShowingArea={mobileShowingArea}
+        setMobileShowingArea={setMobileShowingArea}
+      />
+    </NoteContainer>
   )
 }
 

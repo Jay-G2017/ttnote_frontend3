@@ -7,9 +7,11 @@ export function setCookie(name, value, exSeconds) {
 
 export function getCookie(name) {
   let cookieObject = {};
-  document.cookie.split(";").forEach(item => {
-    const pair = item.split("=");
-    cookieObject[pair[0].trim()] = pair[1].trim();
-  });
+  if (document.cookie) {
+    document.cookie.split(";").forEach(item => {
+      const pair = item.split("=");
+      cookieObject[pair[0].trim()] = pair[1].trim();
+    });
+  }
   return cookieObject[name];
 }
