@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Left from "./components/Left";
 import Middle from "./components/Middle";
 import Right from "./components/Right";
+import {TransitionGroup} from "react-transition-group";
 
 const NoteContainer = styled.div`
   display: flex;
@@ -40,6 +41,7 @@ function Note() {
 
   return (
     <NoteContainer>
+      <TransitionGroup component={null}>
       <Left
         isMobileView={isMobileView}
         pcHideMode={pcHideMode}
@@ -60,6 +62,7 @@ function Note() {
         mobileShowingArea={mobileShowingArea}
         setMobileShowingArea={setMobileShowingArea}
       />
+      </TransitionGroup>
     </NoteContainer>
   )
 }

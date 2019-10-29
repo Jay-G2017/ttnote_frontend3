@@ -1,14 +1,31 @@
 import React from "react";
 import styled from "styled-components";
 import {IoIosMenu, IoIosArrowDropleftCircle} from 'react-icons/io';
+import {CSSTransition} from "react-transition-group";
 
 const MiddleContainer = styled.div`
+  padding: 1em;
   flex: 1;
   border-right: 1px solid #fff;
+  //align-items: center;
+  //justify-content: center;
+  display: ${props => props.visible ? 'block' : 'none'};
+`;
+
+const HeaderRow = styled.div`
+  display: flex;
   align-items: center;
+`;
+
+const ListRow = styled.div`
+  display: flex;
   justify-content: center;
-  display: ${props => props.visible ? 'flex' : 'none'};
-  transition: width 1s;
+  align-items: center;
+  padding: 1em;
+  &:hover {
+   cursor: pointer;
+  }
+
 `;
 
 function Middle(props) {
@@ -16,18 +33,37 @@ function Middle(props) {
   const iconStyle = {fontSize: '24px', marginBottom: '20px'};
   const visible = (isMobileView && mobileShowingArea === 'middle') || (!isMobileView && !pcHideMode);
 
+  let list = [];
+  for(let i = 0; i < 10; i++) {
+    list.push('Project' + i);
+  }
+
+  const renderList = (list) => {
+    return(
+      <ListRow key={list} onClick={() => setMobileShowingArea('right')}>{list}</ListRow>
+    )
+  };
+
   return (
+    <CSSTransition
+      in={visible}
+      timeout={900}
+      classNames={'middle-view'}
+    >
     <MiddleContainer visible={visible}>
-      <div>
+      <HeaderRow>
         {isMobileView &&
         <IoIosMenu onClick={() => setMobileShowingArea('left')} style={iconStyle}/>
         }
-        <div>M</div>
         {!isMobileView &&
         <IoIosArrowDropleftCircle onClick={() => setPcHideMode(true)} style={iconStyle}/>
         }
+      </HeaderRow>
+      <div>
+        {list.map(row => renderList(row))}
       </div>
     </MiddleContainer>
+    </CSSTransition>
   )
 }
 
