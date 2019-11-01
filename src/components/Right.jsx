@@ -6,6 +6,7 @@ import {CSSTransition} from 'react-transition-group';
 const RightContainer = styled.div`
   padding: 1em;
   flex: 4;
+  border-left: 1px solid #fff;
   //align-items: center;
   //justify-content: center;
 `;
@@ -16,7 +17,7 @@ const HeaderRow = styled.div`
 `;
 
 function Right(props) {
-  const {isMobileView, pcHideMode, setPcHideMode, mobileShowingArea, setMobileShowingArea} = props;
+  const {isMobileView, pcHideMode, setPcHideMode, mobileShowingArea} = props;
   const iconStyle = {fontSize: '24px', marginBottom: '20px'};
   const visible = (isMobileView && mobileShowingArea === 'right') || !isMobileView;
 
@@ -24,15 +25,21 @@ function Right(props) {
     <CSSTransition
       component={null}
       in={visible}
-      timeout={900}
-      appear={true}
+      timeout={300}
+      exit={false}
       unmountOnExit
-      classNames='mobile-view'
+      classNames='enter-from-right'
     >
     <RightContainer>
       <HeaderRow>
         {isMobileView &&
-        <IoIosArrowBack onClick={() => setMobileShowingArea('middle')} style={iconStyle}/>
+          <IoIosArrowBack
+            onClick={() => {
+              // setMobileShowingArea('middle');
+              window.ttnote.goto('/note?mobileShowingArea=middle&enterFrom=left');
+            }}
+            style={iconStyle}
+          />
         }
         {!isMobileView && pcHideMode &&
         <IoIosArrowDroprightCircle onClick={() => setPcHideMode(false)}/>

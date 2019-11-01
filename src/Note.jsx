@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import Left from "./components/Left";
 import Middle from "./components/Middle";
 import Right from "./components/Right";
-import {TransitionGroup} from "react-transition-group";
 
 const NoteContainer = styled.div`
   display: flex;
@@ -14,18 +13,22 @@ const NoteContainer = styled.div`
 function Note() {
   const isMobile = window.innerWidth < 768;
   const [isMobileView, setIsMobileView] = useState(isMobile);
-  const [mobileShowingArea, setMobileShowingArea] = useState('right');
+
   const [pcHideMode, setPcHideMode] = useState(false);
 
+  const mobileShowingArea = window.ttnote.searchObject().mobileShowingArea;
+
   useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768 && !isMobileView) {
+        window.ttnote.goto('/note?mobileShowingArea=right')
+      }
+      setIsMobileView(window.innerWidth < 768);
+    };
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const handleResize = () => {
-    setIsMobileView(window.innerWidth < 768);
-    if (window.innerWidth < 768) setMobileShowingArea('right');
-  };
+  }, [isMobileView]);
 
   // const handleLogout = () => {
   //   const url = window.ttnote.baseUrl + '/users/logout';
@@ -41,28 +44,23 @@ function Note() {
 
   return (
     <NoteContainer>
-      <TransitionGroup component={null}>
       <Left
         isMobileView={isMobileView}
         pcHideMode={pcHideMode}
         mobileShowingArea={mobileShowingArea}
-        setMobileShowingArea={setMobileShowingArea}
       />
       <Middle
         isMobileView={isMobileView}
         pcHideMode={pcHideMode}
         setPcHideMode={setPcHideMode}
         mobileShowingArea={mobileShowingArea}
-        setMobileShowingArea={setMobileShowingArea}
       />
       <Right
         isMobileView={isMobileView}
         pcHideMode={pcHideMode}
         setPcHideMode={setPcHideMode}
         mobileShowingArea={mobileShowingArea}
-        setMobileShowingArea={setMobileShowingArea}
       />
-      </TransitionGroup>
     </NoteContainer>
   )
 }

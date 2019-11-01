@@ -6,10 +6,10 @@ import {CSSTransition} from "react-transition-group";
 const MiddleContainer = styled.div`
   padding: 1em;
   flex: 1;
-  border-right: 1px solid #fff;
+  border-left: 1px solid #fff;
   //align-items: center;
   //justify-content: center;
-  display: ${props => props.visible ? 'block' : 'none'};
+  overflow: auto;
 `;
 
 const HeaderRow = styled.div`
@@ -29,40 +29,64 @@ const ListRow = styled.div`
 `;
 
 function Middle(props) {
-  const {isMobileView, pcHideMode, setPcHideMode, mobileShowingArea, setMobileShowingArea} = props;
+  const {isMobileView, pcHideMode, setPcHideMode, mobileShowingArea} = props;
   const iconStyle = {fontSize: '24px', marginBottom: '20px'};
   const visible = (isMobileView && mobileShowingArea === 'middle') || (!isMobileView && !pcHideMode);
 
+  const enterFrom = window.ttnote.searchObject().enterFrom || 'left';
+
+
   let list = [];
-  for(let i = 0; i < 10; i++) {
+  for(let i = 0; i < 16; i++) {
     list.push('Project' + i);
   }
 
   const renderList = (list) => {
     return(
-      <ListRow key={list} onClick={() => setMobileShowingArea('right')}>{list}</ListRow>
+      <ListRow
+        key={list}
+        onClick={() => {
+          // setMobileShowingArea('right');
+          window.ttnote.goto('/note?mobileShowingArea=right');
+        }}
+      >
+        {list}
+      </ListRow>
     )
   };
 
   return (
     <CSSTransition
       in={visible}
-      timeout={900}
-      classNames={'middle-view'}
+      timeout={300}
+      classNames={enterFrom === 'left' ? 'enter-from-left' : 'enter-from-right'}
+      unmountOnExit
+      exit={false}
     >
-    <MiddleContainer visible={visible}>
-      <HeaderRow>
-        {isMobileView &&
-        <IoIosMenu onClick={() => setMobileShowingArea('left')} style={iconStyle}/>
-        }
-        {!isMobileView &&
-        <IoIosArrowDropleftCircle onClick={() => setPcHideMode(true)} style={iconStyle}/>
-        }
-      </HeaderRow>
-      <div>
-        {list.map(row => renderList(row))}
-      </div>
-    </MiddleContainer>
+      <MiddleContainer visible={visible}>
+        <HeaderRow>
+          {isMobileView &&
+            <IoIosMenu
+              onClick={() => {
+                // setMobileShowingArea('left');
+                window.ttnote.goto('/note?mobileShowingArea=left');
+              }}
+              style={iconStyle}
+            />
+          }
+          {!isMobileView &&
+            <IoIosArrowDropleftCircle
+              onClick={() => {
+                setPcHideMode(true);
+              }}
+              style={iconStyle}
+            />
+          }
+        </HeaderRow>
+        <div>
+          {list.map(row => renderList(row))}
+        </div>
+      </MiddleContainer>
     </CSSTransition>
   )
 }

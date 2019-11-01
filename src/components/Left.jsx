@@ -1,14 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 import {IoIosArrowForward} from 'react-icons/io';
+import {CSSTransition} from 'react-transition-group';
 
 const LeftContainer = styled.div`
   padding: 1em;
   flex: 1;
-  border-right: 1px solid #fff;
   //align-items: center;
   //justify-content: center;
-  display: ${props => props.visible ? 'block' : 'none'};
 `;
 
 const HeaderRow = styled.div`
@@ -24,7 +23,7 @@ const ListRow = styled.div`
 `;
 
 function Left(props) {
-  const {isMobileView, pcHideMode, mobileShowingArea, setMobileShowingArea} = props;
+  const {isMobileView, pcHideMode, mobileShowingArea} = props;
   const iconStyle = {fontSize: '24px', marginBottom: '20px'};
   const visible = (isMobileView && mobileShowingArea === 'left') || (!isMobileView && !pcHideMode);
 
@@ -34,22 +33,39 @@ function Left(props) {
     return (
      <ListRow
        key={list}
-       onClick={() => setMobileShowingArea('middle')}
+       onClick={() => {
+         // setMobileShowingArea('middle');
+         window.ttnote.goto('/note?mobileShowingArea=middle&enterFrom=right')
+       }}
      >{list}</ListRow>
     )
   };
 
   return (
-    <LeftContainer visible={visible} >
-      {isMobileView &&
-        <HeaderRow>
-          <IoIosArrowForward onClick={() => setMobileShowingArea('middle')} style={iconStyle}/>
-        </HeaderRow>
-      }
-      <div>
-        {list.map(list => renderList(list))}
-      </div>
-    </LeftContainer>
+    <CSSTransition
+      in={visible}
+      timeout={300}
+      classNames={'enter-from-left'}
+      exit={false}
+      unmountOnExit
+    >
+      <LeftContainer>
+        {isMobileView &&
+          <HeaderRow>
+            <IoIosArrowForward
+              onClick={() => {
+                // setMobileShowingArea('middle');
+                window.ttnote.goto('/note?mobileShowingArea=middle&enterFrom=right');
+              }}
+              style={iconStyle}
+            />
+          </HeaderRow>
+        }
+        <div>
+          {list.map(list => renderList(list))}
+        </div>
+      </LeftContainer>
+    </CSSTransition>
   )
 }
 
