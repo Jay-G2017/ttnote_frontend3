@@ -16,7 +16,7 @@ function Note() {
 
   const [pcHideMode, setPcHideMode] = useState(false);
 
-  const mobileShowingArea = window.ttnote.searchObject().mobileShowingArea;
+  const mobileShowingArea = window.ttnote.searchObject().mobileShowingArea || 'right';
 
   useEffect(() => {
     const handleResize = () => {
