@@ -21,7 +21,15 @@ function Note() {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768 && !isMobileView) {
-        window.ttnote.goto('/note?mobileShowingArea=right')
+        const params = window.ttnote.searchObject();
+        params.mobileShowingArea = 'right';
+        window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
+      }
+      if (window.innerWidth >= 768 && isMobileView) {
+        const params = window.ttnote.searchObject();
+        delete params.mobileShowingArea;
+        delete params.enterFrom;
+        window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
       }
       setIsMobileView(window.innerWidth < 768);
     };
@@ -41,6 +49,7 @@ function Note() {
   //     window.ttnote.goto('/login');
   //   })
   // };
+  console.log('note in');
 
   return (
     <NoteContainer>

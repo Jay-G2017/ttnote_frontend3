@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import styled from "styled-components";
 import {IoIosArrowForward} from 'react-icons/io';
 import {CSSTransition} from 'react-transition-group';
@@ -17,9 +17,12 @@ const HeaderRow = styled.div`
 
 const ListRow = styled.div`
   padding: 1em;
- &:hover {
- cursor: pointer;
- }
+  &:hover {
+    cursor: pointer;
+  }
+  background: ${props => props.active ? window.ttnoteThemeLight.primaryActiveBackground : '' };
+  color: ${window.ttnoteThemeLight.primaryFont};
+  border-radius: ${window.ttnoteThemeLight.primaryBorderRadius};
 `;
 
 function Left(props) {
@@ -27,17 +30,53 @@ function Left(props) {
   const iconStyle = {fontSize: '24px', marginBottom: '20px'};
   const visible = (isMobileView && mobileShowingArea === 'left') || (!isMobileView && !pcHideMode);
 
-  const list = ['Inbox', 'Home', 'Work', 'Photo'];
+  const [categories, setCategories] = useState([]);
+
+  const searchParams = window.ttnote.searchObject();
+  const categoryId = parseInt(searchParams.categoryId);
+
+  useEffect(() => {
+    const categoryId = parseInt(window.ttnote.searchObject().categoryId);
+    const fetchCategories = () => {
+      const url = window.ttnote.baseUrl + '/categories';
+      window.ttnote.fetch(url)
+        .then(res => {
+          setCategories(res);
+          if (!categoryId) {
+            const params = window.ttnote.searchObject();
+            params.categoryId = -1;
+            window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
+          }
+        })
+    };
+
+    fetchCategories()
+  }, []);
 
   const renderList = (list) => {
+    const active = list.id === categoryId;
     return (
      <ListRow
-       key={list}
+       active={active}
+       key={list.id}
        onClick={() => {
-         // setMobileShowingArea('middle');
-         window.ttnote.goto('/note?mobileShowingArea=middle&enterFrom=right')
+         if (active && !isMobileView) {
+           return;
+         }
+
+         const params = window.ttnote.searchObject();
+         if (!active) {
+           params.categoryId = list.id;
+           delete params.projectId;
+         }
+
+         if (isMobileView) {
+           params.mobileShowingArea = 'middle';
+           params.enterFrom = 'right';
+         }
+         window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
        }}
-     >{list}</ListRow>
+     >{list.name}</ListRow>
     )
   };
 
@@ -54,15 +93,20 @@ function Left(props) {
           <HeaderRow>
             <IoIosArrowForward
               onClick={() => {
-                // setMobileShowingArea('middle');
-                window.ttnote.goto('/note?mobileShowingArea=middle&enterFrom=right');
+                if (isMobileView) {
+                  const params = window.ttnote.searchObject();
+                  params.mobileShowingArea = 'middle';
+                  params.enterFrom = 'right';
+                  window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
+                }
               }}
               style={iconStyle}
             />
           </HeaderRow>
         }
         <div>
-          {list.map(list => renderList(list))}
+          {renderList({id: -1, name: 'Inbox'})}
+          {categories.map(list => renderList(list))}
         </div>
       </LeftContainer>
     </CSSTransition>

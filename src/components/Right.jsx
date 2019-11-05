@@ -1,7 +1,9 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import styled from "styled-components";
 import {IoIosArrowBack, IoIosArrowDroprightCircle} from 'react-icons/io';
 import {CSSTransition} from 'react-transition-group';
+import {FormControl} from 'react-bootstrap';
+import Title from "./Title";
 
 const RightContainer = styled.div`
   padding: 1em;
@@ -20,6 +22,27 @@ function Right(props) {
   const {isMobileView, pcHideMode, setPcHideMode, mobileShowingArea} = props;
   const iconStyle = {fontSize: '24px', marginBottom: '20px'};
   const visible = (isMobileView && mobileShowingArea === 'right') || !isMobileView;
+  const [project, setProject] = useState({});
+  const [noProject, setNoProject] = useState(false);
+  const projectId = window.ttnote.searchObject().projectId;
+
+  const fetchProject = (projectId) => {
+   const url = window.ttnote.baseUrl + '/projects/' + projectId;
+   window.ttnote.fetch(url)
+     .then(res => {
+        setProject(res);
+     })
+  };
+
+  useEffect(()=> {
+    if (projectId) {
+      setNoProject(false);
+      fetchProject(projectId);
+    } else {
+      setNoProject(true);
+      setProject({})
+    }
+  }, [projectId]);
 
   return (
     <CSSTransition
@@ -36,7 +59,10 @@ function Right(props) {
           <IoIosArrowBack
             onClick={() => {
               // setMobileShowingArea('middle');
-              window.ttnote.goto('/note?mobileShowingArea=middle&enterFrom=left');
+              const params = window.ttnote.searchObject();
+              params.mobileShowingArea = 'middle';
+              params.enterFrom = 'left';
+              window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
             }}
             style={iconStyle}
           />
@@ -45,17 +71,13 @@ function Right(props) {
         <IoIosArrowDroprightCircle onClick={() => setPcHideMode(false)}/>
         }
       </HeaderRow>
-      <div>
-        <div>Project Title</div>
-        <div>The mocka placeholder is a very simple content placeholder
-          that you can use for your website or web application,
-          while loading your page's content. It weighs very
-          little (about 500 bytes minified and gzipped), is fully customizable
-          and you can easily include it in your project's CSS file, by
-          using the Sass mixin provided. Alternatively, you can copy its
-          code and inline it in your HTML for even faster loading.
+      {noProject ? <div>no project</div> :
+        <div>
+          <div>{project.name}</div>
+          <FormControl as="textarea" aria-label="With textarea" value={project.desc} />
+          {project.titles && project.titles.map(title => <Title key={title.id} title={title}/>)}
         </div>
-      </div>
+      }
     </RightContainer>
     </CSSTransition>
   )
