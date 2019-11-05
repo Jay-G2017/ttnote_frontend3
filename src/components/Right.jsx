@@ -23,6 +23,7 @@ function Right(props) {
   const iconStyle = {fontSize: '24px', marginBottom: '20px'};
   const visible = (isMobileView && mobileShowingArea === 'right') || !isMobileView;
   const [project, setProject] = useState({});
+  const [noProject, setNoProject] = useState(false);
   const projectId = window.ttnote.searchObject().projectId;
 
   const fetchProject = (projectId) => {
@@ -34,7 +35,13 @@ function Right(props) {
   };
 
   useEffect(()=> {
-    fetchProject(projectId);
+    if (projectId) {
+      setNoProject(false);
+      fetchProject(projectId);
+    } else {
+      setNoProject(true);
+      setProject({})
+    }
   }, [projectId]);
 
   return (
@@ -64,11 +71,13 @@ function Right(props) {
         <IoIosArrowDroprightCircle onClick={() => setPcHideMode(false)}/>
         }
       </HeaderRow>
-      <div>
-        <div>{project.name}</div>
-        <FormControl as="textarea" aria-label="With textarea" value={project.desc} />
-        {project.titles && project.titles.map(title => <Title key={title.id} title={title}/>)}
-      </div>
+      {noProject ? <div>no project</div> :
+        <div>
+          <div>{project.name}</div>
+          <FormControl as="textarea" aria-label="With textarea" value={project.desc} />
+          {project.titles && project.titles.map(title => <Title key={title.id} title={title}/>)}
+        </div>
+      }
     </RightContainer>
     </CSSTransition>
   )

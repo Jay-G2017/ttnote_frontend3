@@ -17,9 +17,12 @@ const HeaderRow = styled.div`
 
 const ListRow = styled.div`
   padding: 1em;
- &:hover {
- cursor: pointer;
- }
+  &:hover {
+    cursor: pointer;
+  }
+  background: ${props => props.active ? window.ttnoteThemeLight.primaryActiveBackground : '' };
+  color: ${window.ttnoteThemeLight.primaryFont};
+  border-radius: ${window.ttnoteThemeLight.primaryBorderRadius};
 `;
 
 function Left(props) {
@@ -29,27 +32,44 @@ function Left(props) {
 
   const [categories, setCategories] = useState([]);
 
-  const fetchCategories = () => {
-    const url = window.ttnote.baseUrl + '/categories';
-    window.ttnote.fetch(url)
-      .then(res => {
-        console.log(res);
-        setCategories(res);
-      })
-  };
+  const searchParams = window.ttnote.searchObject();
+  const categoryId = parseInt(searchParams.categoryId);
 
   useEffect(() => {
+    const categoryId = parseInt(window.ttnote.searchObject().categoryId);
+    const fetchCategories = () => {
+      const url = window.ttnote.baseUrl + '/categories';
+      window.ttnote.fetch(url)
+        .then(res => {
+          setCategories(res);
+          if (!categoryId) {
+            const params = window.ttnote.searchObject();
+            params.categoryId = -1;
+            window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
+          }
+        })
+    };
+
     fetchCategories()
   }, []);
 
   const renderList = (list) => {
+    const active = list.id === categoryId;
     return (
      <ListRow
+       active={active}
        key={list.id}
        onClick={() => {
-         // setMobileShowingArea('middle');
+         if (active && !isMobileView) {
+           return;
+         }
+
          const params = window.ttnote.searchObject();
-         params.categoryId = list.id;
+         if (!active) {
+           params.categoryId = list.id;
+           delete params.projectId;
+         }
+
          if (isMobileView) {
            params.mobileShowingArea = 'middle';
            params.enterFrom = 'right';

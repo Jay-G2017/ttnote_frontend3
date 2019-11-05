@@ -25,7 +25,8 @@ const ListRow = styled.div`
   &:hover {
    cursor: pointer;
   }
-
+  background: ${props => props.active ? window.ttnoteThemeLight.primaryActiveBackground : '' };
+  border-radius: ${window.ttnoteThemeLight.primaryBorderRadius};
 `;
 
 function Middle(props) {
@@ -36,31 +37,42 @@ function Middle(props) {
   const searchObject = window.ttnote.searchObject();
   const enterFrom = searchObject.enterFrom || 'left';
   const categoryId = parseInt(searchObject.categoryId) || -1;
+  const projectId = parseInt(searchObject.projectId);
 
   const [projects, setProjects] = useState([]);
 
-  const fetchProjects = (categoryId) => {
-    let url;
-    if (categoryId === -1) {
-      url = window.ttnote.baseUrl + `/projects`;
-    } else {
-      url = window.ttnote.baseUrl + `/categories/${categoryId}/projects`;
-    }
-    window.ttnote.fetch(url)
-      .then(res => {
-        setProjects(res)
-      })
-  };
-
   useEffect(() => {
+    const projectId = parseInt(window.ttnote.searchObject().projectId);
+    const fetchProjects = (categoryId) => {
+      let url;
+      if (categoryId === -1) {
+        url = window.ttnote.baseUrl + `/projects`;
+      } else {
+        url = window.ttnote.baseUrl + `/categories/${categoryId}/projects`;
+      }
+      window.ttnote.fetch(url)
+        .then(res => {
+          setProjects(res);
+          if (!projectId && res.length > 0) {
+            const params = window.ttnote.searchObject();
+            params.projectId = res[0].id;
+            window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
+          }
+        })
+    };
     fetchProjects(categoryId);
   }, [categoryId]);
 
+
+
   const renderList = (project) => {
+    const active = project.id === projectId;
     return(
       <ListRow
+        active={active}
         key={project.id}
         onClick={() => {
+          if (active && !isMobileView) return;
           const params = window.ttnote.searchObject();
           params.projectId = project.id;
           if (isMobileView) {

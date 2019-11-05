@@ -1,0 +1,6 @@
+template: {
+  exericse: {}
+  blocks: [{
+
+  }]
+}
