@@ -29,6 +29,19 @@ const _ttnote = {
         return queryObject;
     } ,
 
+    objectToUrl(params){
+      return Object.keys(params)
+        .filter(v => params[v] !== undefined)
+        .reduce((result, next, index) => {
+          if (index === 0) {
+            result += '?';
+          }
+          result += `${next}=${params[next]}&`;
+          return result;
+        }, '')
+        .replace(/&$/, '');
+    },
+
     fetch(input, params = {method: 'get'}) {
         let headers = {'Content-Type': 'application/json'};
         if (getCookie('token')) headers['Authorization'] = getCookie('token');

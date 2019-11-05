@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import styled from "styled-components";
 import {IoIosMenu, IoIosArrowDropleftCircle} from 'react-icons/io';
 import {CSSTransition} from "react-transition-group";
@@ -33,24 +33,44 @@ function Middle(props) {
   const iconStyle = {fontSize: '24px', marginBottom: '20px'};
   const visible = (isMobileView && mobileShowingArea === 'middle') || (!isMobileView && !pcHideMode);
 
-  const enterFrom = window.ttnote.searchObject().enterFrom || 'left';
+  const searchObject = window.ttnote.searchObject();
+  const enterFrom = searchObject.enterFrom || 'left';
+  const categoryId = parseInt(searchObject.categoryId) || -1;
 
+  const [projects, setProjects] = useState([]);
 
-  let list = [];
-  for(let i = 0; i < 16; i++) {
-    list.push('Project' + i);
-  }
+  const fetchProjects = (categoryId) => {
+    let url;
+    if (categoryId === -1) {
+      url = window.ttnote.baseUrl + `/projects`;
+    } else {
+      url = window.ttnote.baseUrl + `/categories/${categoryId}/projects`;
+    }
+    window.ttnote.fetch(url)
+      .then(res => {
+        setProjects(res)
+      })
+  };
 
-  const renderList = (list) => {
+  useEffect(() => {
+    fetchProjects(categoryId);
+  }, [categoryId]);
+
+  const renderList = (project) => {
     return(
       <ListRow
-        key={list}
+        key={project.id}
         onClick={() => {
-          // setMobileShowingArea('right');
-          window.ttnote.goto('/note?mobileShowingArea=right');
+          const params = window.ttnote.searchObject();
+          params.projectId = project.id;
+          if (isMobileView) {
+            params.mobileShowingArea = 'right';
+            delete params.enterFrom;
+          }
+          window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
         }}
       >
-        {list}
+        {project.name}
       </ListRow>
     )
   };
@@ -69,7 +89,10 @@ function Middle(props) {
             <IoIosMenu
               onClick={() => {
                 // setMobileShowingArea('left');
-                window.ttnote.goto('/note?mobileShowingArea=left');
+                const params = window.ttnote.searchObject();
+                params.mobileShowingArea = 'left';
+                delete params.enterFrom;
+                window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
               }}
               style={iconStyle}
             />
@@ -84,7 +107,7 @@ function Middle(props) {
           }
         </HeaderRow>
         <div>
-          {list.map(row => renderList(row))}
+          {projects.map(row => renderList(row))}
         </div>
       </MiddleContainer>
     </CSSTransition>
