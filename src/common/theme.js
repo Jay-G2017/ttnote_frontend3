@@ -5,6 +5,7 @@ const ttnoteThemeLight = {
   primaryFont: '#212529',
   primaryFontContrast: '#f8f9fa',
   primaryBorderRadius: '2px',
+  btnDisabledBg: 'rgba(0,0,0,.03)',
 };
 
 window.ttnoteThemeLight = ttnoteThemeLight;

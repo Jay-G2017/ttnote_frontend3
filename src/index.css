@@ -6,6 +6,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #fdf8f2;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
 code {
