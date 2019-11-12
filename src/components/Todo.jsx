@@ -1,7 +1,8 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import styled from 'styled-components';
 import {IoIosRadioButtonOff, IoIosCheckmarkCircle, IoIosPlayCircle, IoIosMore, IoIosStopwatch} from 'react-icons/io';
 import {TInput} from '../common/style';
+import {TomatoContext} from '../reducers/tomatoReducer';
 
 const TodoRow = styled.div`
   position: relative;
@@ -55,11 +56,12 @@ const MoreCell = styled.div`
 
 
 function Todo(props) {
- const  {todo, playStatus, setPlayStatus} = props;
+ const  {todo} = props;
  const [done, setDone] = useState(todo.done);
+ const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
   return (
     <TodoRow>
-     {playStatus.id === todo.id &&
+     {tomatoState.id === todo.id &&
      <IsPlayingCell>
       <IoIosStopwatch/>
      </IsPlayingCell>
@@ -77,10 +79,10 @@ function Todo(props) {
       </NameCell>
       <ActionsBar>
         <PlayCell
-          disabled={playStatus.isPlaying}
+          disabled={tomatoState.isPlaying}
           onClick={() => {
-            if (playStatus.isPlaying) return;
-            setPlayStatus({id: todo.id, isPlaying: true, minutes: window.ttnote.tomatoTime});
+            if (tomatoState.isPlaying) return;
+            tomatoDispatch({type: 'init', payload: {id: todo.id, isPlaying: true, seconds: window.ttnote.tomatoTime}});
             window.ttnote.currentTomatoUrl = window.ttnote.searchObject();
           }}
         >

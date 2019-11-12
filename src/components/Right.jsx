@@ -1,10 +1,12 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect, useContext} from "react";
 import styled from "styled-components";
 import {IoIosArrowBack, IoIosArrowDroprightCircle, IoIosClose, IoIosAlarm, IoIosCafe} from 'react-icons/io';
 import {CSSTransition} from 'react-transition-group';
 import {FormControl} from 'react-bootstrap';
 import Title from "./Title";
 import Todo from "./Todo";
+import useProject from "../hooks/useProject";
+import {TomatoContext} from '../reducers/tomatoReducer';
 
 const RightContainer = styled.div`
   padding: 1em;
@@ -56,63 +58,30 @@ const LongBreakCell = styled.div`
 function Right(props) {
   const {isMobileView, pcHideMode, setPcHideMode, mobileShowingArea} = props;
   const visible = (isMobileView && mobileShowingArea === 'right') || !isMobileView;
-  const [project, setProject] = useState({});
-  const [noProject, setNoProject] = useState(false);
+
   const projectId = window.ttnote.searchObject().projectId;
-
-  const fetchProject = (projectId) => {
-   const url = window.ttnote.baseUrl + '/projects/' + projectId;
-   window.ttnote.fetch(url)
-     .then(res => {
-        setProject(res);
-     })
-  };
-
-  useEffect(()=> {
-    if (projectId) {
-      setNoProject(false);
-      fetchProject(projectId);
-    } else {
-      setNoProject(true);
-      setProject({})
-    }
-  }, [projectId]);
+  const {project, noProject, postToCreateTomato} = useProject(projectId);
 
 
-  window.ttnote.tomatoTime = 2 * 60;
-  const [playStatus, setPlayStatus] = useState({
-    id: null,
-    isPlaying: false,
-    minutes: window.ttnote.tomatoTime
-  });
+  window.ttnote.tomatoTime = 10;
 
+  const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
+
+  // for tomato
   useEffect(() => {
-    if (playStatus.isPlaying) {
+    if (!tomatoState.isPlaying) return;
+
+    if (tomatoState.id) {
       window.timeId = setInterval(() => {
-        setPlayStatus(prevStatus => {
-          return {...prevStatus, minutes: prevStatus.minutes - 1}
-        });
+        tomatoDispatch({type: 'play', afterFinishCallback: postToCreateTomato});
       }, 1000);
-      return () => window.timeId = clearInterval(window.timeId)
+    } else {
+      window.timeId = setInterval(() => {
+        tomatoDispatch({type: 'break'});
+      }, 1000);
     }
-  }, [playStatus.isPlaying]);
-
-  useEffect(() => {
-    if (playStatus.minutes <=0 && window.timeId) {
-      window.timeId = clearInterval(window.timeId);
-      setPlayStatus({id: null, isPlaying: false, minutes: window.ttnote.tomatoTime});
-    }
-  }, [playStatus.minutes]);
-
-  const getCountTime = () => {
-    const minutes = Math.floor(playStatus.minutes / 60);
-    const seconds = playStatus.minutes - minutes * 60;
-
-    function formatTimeStr(num) {
-      return num < 10 ? `0${num}` : num;
-    }
-    return `${formatTimeStr(minutes)} : ${formatTimeStr(seconds)}`;
-  };
+    return () => window.timeId = clearInterval(window.timeId)
+  }, [tomatoState.isPlaying, tomatoState.id, tomatoDispatch, postToCreateTomato]);
 
   return (
     <CSSTransition
@@ -140,16 +109,17 @@ function Right(props) {
           {!isMobileView && pcHideMode &&
           <IoIosArrowDroprightCircle onClick={() => setPcHideMode(false)}/>
           }
-          {playStatus.isPlaying ?
+          {tomatoState.isPlaying ?
             <TimerRow>
               <div onClick={()=> {
                 window.ttnote.goto('/note' +  window.ttnote.objectToUrl(window.ttnote.currentTomatoUrl))
               }}>
-                {getCountTime()}
+                {getCountTime(tomatoState.seconds)}
               </div>
               <CancelCell
                 onClick={() => {
-                  setPlayStatus({...playStatus, ...{id: null, isPlaying: false}});
+                  // setPlayStatus({...playStatus, ...{id: null, isPlaying: false}});
+                  tomatoDispatch({type: 'cancel'});
                   window.timeId = clearInterval(window.timeId);
                 }}
               >
@@ -158,13 +128,16 @@ function Right(props) {
             </TimerRow> :
             <TimerActionRow>
               <ShortBreakCell
-                onClick={() => setPlayStatus({isPlaying: true, id: null, minutes: 5 * 60})}
+                onClick={() => (
+                  tomatoDispatch({type: 'init', payload: {isPlaying: true, id: null, seconds: window.ttnote.shortBreakTime}}
+                  )
+                  )}
               >
                 <IoIosAlarm/>
                 <div>短休息</div>
               </ShortBreakCell>
               <LongBreakCell
-                onClick={() => setPlayStatus({isPlaying: true, id: null, minutes: 15 * 60})}
+                onClick={() => tomatoDispatch({type: 'init', payload: {isPlaying: true, id: null, seconds: window.ttnote.longBreakTime}})}
               >
                 <IoIosCafe/>
                 <div>长休息</div>
@@ -181,16 +154,12 @@ function Right(props) {
               <Todo
                 key={todo.id}
                 todo={todo}
-                playStatus={playStatus}
-                setPlayStatus={setPlayStatus}
               />
             )}
             {project.titles && project.titles.map(title =>
               <Title
                 key={title.id}
                 title={title}
-                playStatus={playStatus}
-                setPlayStatus={setPlayStatus}
               />
             )}
           </div>
@@ -201,3 +170,13 @@ function Right(props) {
 }
 
 export default Right;
+
+const getCountTime = (secs) => {
+  const minutes = Math.floor(secs / 60);
+  const seconds = secs - minutes * 60;
+
+  function formatTimeStr(num) {
+    return num < 10 ? `0${num}` : num;
+  }
+  return `${formatTimeStr(minutes)} : ${formatTimeStr(seconds)}`;
+};

@@ -1,8 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useReducer, useState} from 'react';
 import styled from 'styled-components';
 import Left from "./components/Left";
 import Middle from "./components/Middle";
 import Right from "./components/Right";
+import {TomatoContext, tomatoReducer, tomatoInitial} from './reducers/tomatoReducer';
+import {getCookie} from "./utils/helper";
 
 const NoteContainer = styled.div`
   display: flex;
@@ -17,6 +19,8 @@ function Note() {
   const [pcHideMode, setPcHideMode] = useState(false);
 
   const mobileShowingArea = window.ttnote.searchObject().mobileShowingArea || 'right';
+
+  const [tomatoState, tomatoDispatch] = useReducer(tomatoReducer, tomatoInitial);
 
   useEffect(() => {
     const handleResize = () => {
@@ -38,6 +42,13 @@ function Note() {
     return () => window.removeEventListener('resize', handleResize);
   }, [isMobileView]);
 
+  useEffect(() => {
+    window.ttnote.tomatoTime = 10;
+    window.ttnote.shortBreakTime = 15;
+    window.ttnote.longBreakTime = 20;
+    window.ttnote.continueBreak = true;
+  }, []);
+
   // const handleLogout = () => {
   //   const url = window.ttnote.baseUrl + '/users/logout';
   //   window.ttnote.fetch(url, {
@@ -50,6 +61,12 @@ function Note() {
   //   })
   // };
   console.log('note in');
+  // need login without token
+  const needLogin = !getCookie('token');
+  if (needLogin) {
+    window.ttnote.goto('/login?needLogin');
+    return <></>;
+  }
 
   return (
     <NoteContainer>
@@ -64,12 +81,14 @@ function Note() {
         setPcHideMode={setPcHideMode}
         mobileShowingArea={mobileShowingArea}
       />
-      <Right
-        isMobileView={isMobileView}
-        pcHideMode={pcHideMode}
-        setPcHideMode={setPcHideMode}
-        mobileShowingArea={mobileShowingArea}
-      />
+      <TomatoContext.Provider value={{tomatoState, tomatoDispatch}}>
+        <Right
+          isMobileView={isMobileView}
+          pcHideMode={pcHideMode}
+          setPcHideMode={setPcHideMode}
+          mobileShowingArea={mobileShowingArea}
+        />
+      </TomatoContext.Provider>
     </NoteContainer>
   )
 }

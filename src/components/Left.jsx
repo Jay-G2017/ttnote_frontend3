@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import styled from "styled-components";
 import {IoIosArrowForward} from 'react-icons/io';
 import {CSSTransition} from 'react-transition-group';
+import useCategory from "../hooks/useCategory";
 
 const LeftContainer = styled.div`
   padding: 1em;
@@ -30,28 +31,10 @@ function Left(props) {
   const iconStyle = {fontSize: '24px', marginBottom: '20px'};
   const visible = (isMobileView && mobileShowingArea === 'left') || (!isMobileView && !pcHideMode);
 
-  const [categories, setCategories] = useState([]);
-
   const searchParams = window.ttnote.searchObject();
-  const categoryId = parseInt(searchParams.categoryId);
+  const categoryId = parseInt(searchParams.categoryId) || -1;
 
-  useEffect(() => {
-    const categoryId = parseInt(window.ttnote.searchObject().categoryId);
-    const fetchCategories = () => {
-      const url = window.ttnote.baseUrl + '/categories';
-      window.ttnote.fetch(url)
-        .then(res => {
-          setCategories(res);
-          if (!categoryId) {
-            const params = window.ttnote.searchObject();
-            params.categoryId = -1;
-            window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
-          }
-        })
-    };
-
-    fetchCategories()
-  }, []);
+  const {categories} = useCategory(categoryId);
 
   const renderList = (list) => {
     const active = list.id === categoryId;
