@@ -62,9 +62,6 @@ function Right(props) {
   const projectId = window.ttnote.searchObject().projectId;
   const {project, noProject, postToCreateTomato} = useProject(projectId);
 
-
-  window.ttnote.tomatoTime = 10;
-
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
 
   // for tomato
@@ -118,9 +115,7 @@ function Right(props) {
               </div>
               <CancelCell
                 onClick={() => {
-                  // setPlayStatus({...playStatus, ...{id: null, isPlaying: false}});
                   tomatoDispatch({type: 'cancel'});
-                  window.timeId = clearInterval(window.timeId);
                 }}
               >
                 <IoIosClose/>
@@ -129,7 +124,7 @@ function Right(props) {
             <TimerActionRow>
               <ShortBreakCell
                 onClick={() => (
-                  tomatoDispatch({type: 'init', payload: {isPlaying: true, id: null, seconds: window.ttnote.shortBreakTime}}
+                  tomatoDispatch({type: 'init', payload: {isPlaying: true, id: null, seconds: window.ttnote.shortBreakTime * 60}}
                   )
                   )}
               >
@@ -137,7 +132,9 @@ function Right(props) {
                 <div>短休息</div>
               </ShortBreakCell>
               <LongBreakCell
-                onClick={() => tomatoDispatch({type: 'init', payload: {isPlaying: true, id: null, seconds: window.ttnote.longBreakTime}})}
+                onClick={() => (
+                  tomatoDispatch({type: 'init', payload: {isPlaying: true, id: null, seconds: window.ttnote.longBreakTime * 60}})
+                )}
               >
                 <IoIosCafe/>
                 <div>长休息</div>

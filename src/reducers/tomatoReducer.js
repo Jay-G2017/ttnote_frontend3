@@ -16,7 +16,7 @@ export const tomatoReducer = (state, action) => {
           ...state,
           id: null,
           isPlaying: true,
-          seconds: window.ttnote.shortBreakTime,
+          seconds: window.ttnote.shortBreakTime * 60,
         }
         } else {
           return {
@@ -46,6 +46,7 @@ export const tomatoReducer = (state, action) => {
         };
       }
     case 'cancel':
+      window.timeId = clearInterval(window.timeId);
       return {
         ...state,
         id: null,

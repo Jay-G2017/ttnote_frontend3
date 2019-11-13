@@ -14,8 +14,8 @@ function useProjects(categoryId) {
       window.ttnote.fetch(url)
         .then(res => {
           setProjects(res);
-          if (res.length > 0) {
-            const params = window.ttnote.searchObject();
+          const params = window.ttnote.searchObject();
+          if (!params.projectId && res.length > 0) {
             params.projectId = res[0].id;
             window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
           }

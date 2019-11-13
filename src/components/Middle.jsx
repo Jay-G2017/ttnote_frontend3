@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import styled from "styled-components";
 import {IoIosMenu, IoIosArrowDropleftCircle} from 'react-icons/io';
 import {CSSTransition} from "react-transition-group";
