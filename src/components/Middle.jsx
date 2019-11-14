@@ -1,7 +1,8 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import styled from "styled-components";
 import {IoIosMenu, IoIosArrowDropleftCircle} from 'react-icons/io';
 import {CSSTransition} from "react-transition-group";
+import useProjects from "../hooks/useProjects";
 
 const MiddleContainer = styled.div`
   padding: 1em;
@@ -38,32 +39,7 @@ function Middle(props) {
   const enterFrom = searchObject.enterFrom || 'left';
   const categoryId = parseInt(searchObject.categoryId) || -1;
   const projectId = parseInt(searchObject.projectId);
-
-  const [projects, setProjects] = useState([]);
-
-  useEffect(() => {
-    const projectId = parseInt(window.ttnote.searchObject().projectId);
-    const fetchProjects = (categoryId) => {
-      let url;
-      if (categoryId === -1) {
-        url = window.ttnote.baseUrl + `/projects`;
-      } else {
-        url = window.ttnote.baseUrl + `/categories/${categoryId}/projects`;
-      }
-      window.ttnote.fetch(url)
-        .then(res => {
-          setProjects(res);
-          if (!projectId && res.length > 0) {
-            const params = window.ttnote.searchObject();
-            params.projectId = res[0].id;
-            window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
-          }
-        })
-    };
-    fetchProjects(categoryId);
-  }, [categoryId]);
-
-
+  const {projects} = useProjects(categoryId);
 
   const renderList = (project) => {
     const active = project.id === projectId;

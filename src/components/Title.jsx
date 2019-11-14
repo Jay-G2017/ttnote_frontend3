@@ -17,13 +17,19 @@ const TodoBoard = styled.div`
 `;
 
 function Title(props) {
-  const {title} = props;
+  const {title, playStatus, setPlayStatus} = props;
 
   return (
     <TitleContainer>
       <TitleRow>{title.name}</TitleRow>
       <TodoBoard>
-        {title.todos.map(todo => <Todo key={todo.id} todo={todo}/>)}
+        {title.todos.map(todo =>
+          <Todo
+            key={todo.id}
+            todo={todo}
+            playStatus={playStatus}
+            setPlayStatus={setPlayStatus}
+          />)}
       </TodoBoard>
     </TitleContainer>
   )
