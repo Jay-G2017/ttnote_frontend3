@@ -7,6 +7,68 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: #fdf8f2;
   -webkit-tap-highlight-color: rgba(0,0,0,0);
+  box-sizing: border-box;
+}
+
+/*extra small default*/
+html {
+  font-size: 18px;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.6rem;
+}
+
+h3 {
+  font-size: 1.3rem;
+  margin: 0.8rem 0;
+}
+
+h4 {
+  font-size: 1rem;
+}
+
+textarea{
+    font-size: 1rem;
+}
+
+.t-container {
+  padding: 0 4vw;
+}
+
+/*small*/
+@media (min-width: 576px) {
+  html {
+    font-size: 18px;
+  }
+  .t-container {
+    padding: 0 6vw;
+  }
+}
+
+/*Medium*/
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+/*Large*/
+@media (min-width: 992px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+/*Extra Large  Mac retina */
+@media (min-width: 1200px) {
+  html {
+    font-size: 16px;
+  }
 }
 
 code {
@@ -22,7 +84,7 @@ code {
 .enter-from-right-enter-active {
   transform: translate(0%);
   opacity: 1;
-  transition: transform 300ms ease, opacity 300ms ease;
+  transition: transform 200ms ease, opacity 200ms ease;
 }
 
 .enter-from-left-enter {
@@ -31,5 +93,5 @@ code {
 
 .enter-from-left-enter-active {
   transform: translate(0%);
-  transition: transform 300ms ease;
+  transition: transform 200ms ease;
 }

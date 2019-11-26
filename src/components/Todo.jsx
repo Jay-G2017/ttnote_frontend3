@@ -1,57 +1,67 @@
 import React, {useContext, useState} from "react";
 import styled from 'styled-components';
-import {IoIosRadioButtonOff, IoIosCheckmarkCircle, IoIosPlayCircle, IoIosMore, IoIosStopwatch} from 'react-icons/io';
-import {TInput} from '../common/style';
+import {IoIosRadioButtonOff, IoIosCheckmarkCircle, IoIosPlayCircle, IoIosMore} from 'react-icons/io';
+import {TTextArea} from '../common/style';
 import {TomatoContext} from '../reducers/tomatoReducer';
 import Tomato from "./Tomato";
+import Circle from 'react-circle';
 
-const TodoRow = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  font-size: 17px;
-  font-weight: 400;
- &:active {
-   background-color: #ECECEC;
- }
+const TodoRowGroup = styled.div`
+  
 `;
 
-const IsPlayingCell = styled.div`
-  font-size: 20px;
-  position: absolute;
-  top: 0.7em;
-  left: -0.1em;
-  color: ${window.ttnoteThemeLight.primary};
+const TodoRow = styled.div`
+  display: flex;
+  align-items: center;
+  
+  &:active {
+    background-color: #ECECEC;
+  }
+  padding: 0.4rem 4vw;
+  @media (min-width: 576px) {
+    padding: 0.3rem 6vw;
+    &:active {
+      background-color: transparent;
+    }
+  }
+  border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorLight};
+  border-top: 0.5px solid ${window.ttnoteThemeLight.lineColorLight};
+  margin-bottom: 0.5rem;
 `;
 
 const CheckCell = styled.div`
-  font-size: 20px;
+  font-size: 1.5rem;
+  color: ${props => props.done ?
+  window.ttnoteThemeLight.colorPrimary :
+  window.ttnoteThemeLight.textColorDesc};
+
+  flex: 0 0 2rem;
   display: flex;
   align-items: center;
-  color: ${props => props.done ?
-  window.ttnoteThemeLight.primary :
-  window.ttnoteThemeLight.primaryActiveBackground
-};
-  margin-right: 1em;
 `;
 
 const NameCell = styled.div`
-`;
-
-const ActionsBar = styled.div`
   display: flex;
   align-items: center;
+  flex: auto;
 `;
 
-const PlayCell = styled.div`
-  font-size: 20px;
+const PlayCell = styled(IoIosPlayCircle)`
+  font-size: 1.4rem;
   color: ${props => props.disabled ? window.ttnoteThemeLight.btnDisabledBg : window.ttnoteThemeLight.primary};
-  margin-right: 1em;
+  
+  flex: 0 0 2rem;
 `;
 
-const MoreCell = styled.div`
-  font-size: 20px;
+const CircleStyled = styled.div`
+  font-size: 1.4rem;
+`;
+
+const MoreCell = styled(IoIosMore)`
+  font-size: 1.4rem;
   color: ${window.ttnoteThemeLight.primaryFont};
+  
+  flex: 0 0 2rem;
 `;
 
 
@@ -61,13 +71,8 @@ function Todo(props) {
  const [collapse] = useState(false);
  const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
   return (
-    <div style={{padding: '16px 32px'}}>
+    <TodoRowGroup>
       <TodoRow>
-       {tomatoState.id === todo.id &&
-       <IsPlayingCell>
-        <IoIosStopwatch/>
-       </IsPlayingCell>
-       }
         <CheckCell
           done={done}
           onClick={() => {
@@ -77,23 +82,28 @@ function Todo(props) {
           {done ? <IoIosCheckmarkCircle/> : <IoIosRadioButtonOff />}
         </CheckCell>
         <NameCell>
-         <TInput defaultValue={todo.name}/>
+          <TTextArea defaultValue={todo.name}/>
         </NameCell>
-        <ActionsBar>
+        {tomatoState.id === todo.id ?
+          <Circle
+            size={20}
+            lineWidth={40}
+            progress={tomatoState.progress}
+            roundedStroke={true}
+            progressColor={window.ttnoteThemeLight.colorPrimary}
+            showPercentage={false}
+          /> :
           <PlayCell
             disabled={tomatoState.isPlaying}
             onClick={() => {
               if (tomatoState.isPlaying) return;
-              tomatoDispatch({type: 'init', payload: {id: todo.id, isPlaying: true, seconds: window.ttnote.tomatoTime * 60}});
+              tomatoDispatch({type: 'init', payload: {id: todo.id, isPlaying: true, seconds: window.ttnote.tomatoTime * 60, progress: 1}});
               window.ttnote.currentTomatoUrl = window.ttnote.searchObject();
             }}
-          >
-            <IoIosPlayCircle/>
-          </PlayCell>
-          <MoreCell>
-            <IoIosMore/>
-          </MoreCell>
-        </ActionsBar>
+          />
+        }
+
+        <MoreCell />
       </TodoRow>
       {!collapse &&
         <div>
@@ -105,7 +115,7 @@ function Todo(props) {
             />)}
         </div>
       }
-      </div>
+      </TodoRowGroup>
   )
 }
 

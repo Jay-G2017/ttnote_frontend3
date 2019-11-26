@@ -2,6 +2,7 @@ import {useCallback, useEffect, useState} from 'react';
 
 function useProject(projectId) {
   const [project, setProject] = useState({});
+  const [projectInitial, setProjectInitial] = useState({});
   const [noProject, setNoProject] = useState(false);
 
   const fetchProject = useCallback(() => {
@@ -9,6 +10,7 @@ function useProject(projectId) {
     window.ttnote.fetch(url)
       .then(res => {
         setProject(res);
+        setProjectInitial(res);
       })
   }, [projectId]);
 
@@ -32,11 +34,26 @@ function useProject(projectId) {
     })
   };
 
+  const updateProject = (params) => {
+    const url = window.ttnote.baseUrl + '/projects/' + projectId;
+    window.ttnote.fetch(url, {
+      method: 'PATCH',
+      body: JSON.stringify(params)
+    })
+      .then(res => {
+        console.log(res)
+      })
+
+  };
+
   return {
     project,
+    setProject,
+    projectInitial,
     noProject,
     fetchProject,
     postToCreateTomato,
+    updateProject,
   }
 }
 
