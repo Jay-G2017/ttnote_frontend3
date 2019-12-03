@@ -4,10 +4,20 @@ import {IoIosArrowBack, IoIosClose, IoIosAlarm, IoIosCafe} from 'react-icons/io'
 import {TomatoContext} from "../reducers/tomatoReducer";
 
 const HeaderRow = styled.div`
-  display: flex;
-  align-items: center;
   height: 3.3rem;
   border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorLight};
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  @media (min-width: 768px) {
+    width: 66.6%;
+  }
+  background-color: ${window.ttnoteThemeLight.bgColorPrimary};
+  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const TimerRow = styled.div`

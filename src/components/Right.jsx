@@ -1,11 +1,12 @@
-import React, { useRef } from "react";
+import React, {useRef} from "react";
 import styled from "styled-components";
 import {CSSTransition} from 'react-transition-group';
 import Title from "./Title";
 import Todo from "./Todo";
 import useProject from "../hooks/useProject";
-import {TTextArea} from "../common/style";
+import {TTextArea, PaddingRow} from "../common/style";
 import RightHeader from "./RightHeader";
+import {IoIosAddCircle} from 'react-icons/io'
 
 const RightContainer = styled.div`
   flex: 4;
@@ -14,40 +15,92 @@ const RightContainer = styled.div`
   background-color: ${window.ttnoteThemeLight.bgColorPrimary};
   //align-items: center;
   //justify-content: center;
-`;
-
-const RightContent = styled.div`
-  height: calc(100vh - 3.3rem);
+  height: 100%;
+  position: relative;
   overflow: auto;
 `;
 
-const ProjectNameRow = styled.div`
+const RightContent = styled.div`
+  margin-top: 3.3rem;
+  //height: calc(100vh - 3.3rem);
+`;
+
+const ProjectNameRow = styled(PaddingRow)`
   font-size: 1.2rem;
   font-weight: 700;
+`;
+
+const ProjectNameCell = styled.div`
+ padding: 0.3rem 0;
+`;
+
+const ProjectDescGroup = styled.div`
   
-  padding: 0.3rem 4vw;
-  @media (min-width: 576px) {
-    padding: 0.3rem 6vw;
-  }
 `;
 
-const ProjectDescRow = styled.div`
-  padding: 0.3rem 4vw;
-  @media (min-width: 576px) {
-    padding: 0.3rem 6vw;
-  }
-`;
-
-const InfoCell = styled.div`
+const InfoCell = styled(PaddingRow)`
   font-size: 0.6rem;
   color: ${window.ttnoteThemeLight.textColorTips};
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
+`;
+
+const DescRow = styled(PaddingRow)`
+ 
 `;
 
 const DescCell = styled.div`
   background-color: #fff;
   padding: 0.3rem;
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
+`;
+
+const TodoGroupRow = styled.div`
+  margin-top: 1.5rem;
+`;
+
+const TitleGroupRow = styled.div`
+  margin-top: 1.5rem;
+`;
+
+const RightFooter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  
+  padding: 1rem 4vw;
+  @media (min-width: 768px) {
+    width: 66.67%;
+    padding: 1rem 6vw;
+  }
+`;
+
+const NewTodoCell = styled.div`
+  display: flex;
+  align-items: center;
+  color: ${window.ttnoteThemeLight.colorSecondary};
+`;
+
+const NewTitleCell = styled.div`
+  display: flex;
+  align-items: center;
+  color: ${window.ttnoteThemeLight.colorPrimary};
+`;
+
+const IconStyled = styled.div`
+  font-size: 1.6rem;
+  display: flex;
+`;
+
+const IconName = styled.div`
+  font-size: 1rem;
+  font-weight: 600;
+  margin-left: 0.4rem;
+  line-height: 1.2;
 `;
 
 function Right(props) {
@@ -126,6 +179,7 @@ function Right(props) {
           {noProject ? <div>no project</div> :
             <>
               <ProjectNameRow>
+                <ProjectNameCell>
                 <TTextArea
                   ref={projectNameInput}
                   value={project.name}
@@ -134,36 +188,65 @@ function Right(props) {
                   onBlur={handleProjectNameOnBlur}
                   onKeyPress={handleProjectNameKeyPress}
                 />
+                </ProjectNameCell>
               </ProjectNameRow>
-              <ProjectDescRow>
+              <ProjectDescGroup>
                 <InfoCell>项目描述</InfoCell>
-                <DescCell>
-                  <TTextArea
-                    ref={projectDescInput}
-                    rows={2}
-                    onChange={handleProjectDescOnChange}
-                    onBlur={handleProjectDescOnBlur}
-                    onKeyPress={handleProjectDescKeyPress}
-                    value={project.desc}
-                    placeholder={'输入项目描述'}
+                <DescRow>
+                  <DescCell>
+                    <TTextArea
+                      style={{minHeight: '3rem'}}
+                      ref={projectDescInput}
+                      onChange={handleProjectDescOnChange}
+                      onBlur={handleProjectDescOnBlur}
+                      onKeyPress={handleProjectDescKeyPress}
+                      value={project.desc}
+                      placeholder={'输入项目描述'}
+                    />
+                  </DescCell>
+                </DescRow>
+              </ProjectDescGroup>
+              {project.todos && project.todos.length > 0 &&
+              <TodoGroupRow>
+                <InfoCell>未分组任务</InfoCell>
+                {project.todos.map(todo => (
+                  <Todo
+                    key={todo.id}
+                    todo={todo}
                   />
-                </DescCell>
-              </ProjectDescRow>
-              {project.todos && project.todos.map(todo =>
-                <Todo
-                  key={todo.id}
-                  todo={todo}
-                />
-              )}
-              {project.titles && project.titles.map(title =>
-                <Title
-                  key={title.id}
-                  title={title}
-                />
-              )}
+                ))}
+              </TodoGroupRow>
+              }
+              {project.titles && project.titles.length > 0 &&
+              <TitleGroupRow>
+                <InfoCell>已分组任务</InfoCell>
+                {
+                  project.titles.map(title =>
+                    <Title
+                      key={title.id}
+                      title={title}
+                    />
+                  )
+                }
+              </TitleGroupRow>
+              }
             </>
           }
         </RightContent>
+        <RightFooter>
+          <NewTodoCell>
+            <IconStyled>
+              <IoIosAddCircle/>
+            </IconStyled>
+            <IconName>新任务</IconName>
+          </NewTodoCell>
+          <NewTitleCell>
+            <IconStyled>
+              <IoIosAddCircle/>
+            </IconStyled>
+            <IconName>新任务组</IconName>
+          </NewTitleCell>
+        </RightFooter>
       </RightContainer>
     </CSSTransition>
   )

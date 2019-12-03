@@ -5,6 +5,7 @@ const btnDisabledBg = 'rgba(0,0,0,.02)';
 const ttnoteThemeLight = {
   // color
   colorPrimary: '#07C160',
+  colorSecondary: '#586B93',
   colorWarn: colorWarn,
 
   // active mask
@@ -58,7 +59,7 @@ const ttnoteThemeLight = {
   
   btnDisabledBg: btnDisabledBg,
 
-  borderRadiusPrimary: '2px',
+  borderRadiusPrimary: '3px',
 };
 
 window.ttnoteThemeLight = ttnoteThemeLight;
