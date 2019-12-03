@@ -9,14 +9,12 @@ import {getCookie} from "./utils/helper";
 const NoteContainer = styled.div`
   display: flex;
   height: 100vh;
-  background-color: #ededed;
+  //background-color: #ededed;
 `;
 
 function Note() {
   const isMobile = window.innerWidth < 768;
   const [isMobileView, setIsMobileView] = useState(isMobile);
-
-  const [pcHideMode, setPcHideMode] = useState(false);
 
   const mobileShowingArea = window.ttnote.searchObject().mobileShowingArea || 'right';
 
@@ -43,9 +41,9 @@ function Note() {
   }, [isMobileView]);
 
   useEffect(() => {
-    window.ttnote.tomatoTime = 1;
+    window.ttnote.tomatoTime = 0.5;
     window.ttnote.shortBreakTime = 0.5;
-    window.ttnote.longBreakTime = 1;
+    window.ttnote.longBreakTime = 5;
     window.ttnote.continueBreak = true;
   }, []);
 
@@ -72,20 +70,15 @@ function Note() {
     <NoteContainer>
       <Left
         isMobileView={isMobileView}
-        pcHideMode={pcHideMode}
         mobileShowingArea={mobileShowingArea}
       />
       <Middle
         isMobileView={isMobileView}
-        pcHideMode={pcHideMode}
-        setPcHideMode={setPcHideMode}
         mobileShowingArea={mobileShowingArea}
       />
       <TomatoContext.Provider value={{tomatoState, tomatoDispatch}}>
         <Right
           isMobileView={isMobileView}
-          pcHideMode={pcHideMode}
-          setPcHideMode={setPcHideMode}
           mobileShowingArea={mobileShowingArea}
         />
       </TomatoContext.Provider>

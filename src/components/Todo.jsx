@@ -1,111 +1,139 @@
 import React, {useContext, useState} from "react";
 import styled from 'styled-components';
-import {IoIosRadioButtonOff, IoIosCheckmarkCircle, IoIosPlayCircle, IoIosMore, IoIosStopwatch} from 'react-icons/io';
-import {TInput} from '../common/style';
+import {IoIosRadioButtonOff, IoIosCheckmarkCircle, IoIosPlayCircle, IoIosMore} from 'react-icons/io';
+import {PaddingRow, TTextArea, TBadge} from '../common/style';
 import {TomatoContext} from '../reducers/tomatoReducer';
 import Tomato from "./Tomato";
+import Circle from 'react-circle';
 
-const TodoRow = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  font-size: 17px;
-  font-weight: 400;
- &:active {
-   background-color: #ECECEC;
- }
+const TodoRowGroup = styled.div`
+  margin-bottom: 0.5rem;
 `;
 
-const IsPlayingCell = styled.div`
-  font-size: 20px;
-  position: absolute;
-  top: 0.7em;
-  left: -0.1em;
-  color: ${window.ttnoteThemeLight.primary};
+const TodoRow = styled(PaddingRow)`
+  display: flex;
+  align-items: center;
+`;
+
+const TomatoGroup = styled.div`
+  margin-top: 0.5rem;
+  display: ${props => props.collapse ? 'none' : 'block'};
 `;
 
 const CheckCell = styled.div`
-  font-size: 20px;
+  font-size: 1.4rem;
+  color: ${props => props.done ?
+  window.ttnoteThemeLight.colorPrimary :
+  window.ttnoteThemeLight.textColorDesc};
+
+  flex: none;
   display: flex;
   align-items: center;
-  color: ${props => props.done ?
-  window.ttnoteThemeLight.primary :
-  window.ttnoteThemeLight.primaryActiveBackground
-};
-  margin-right: 1em;
+  
+  margin-right: 0.3rem;
 `;
 
 const NameCell = styled.div`
-`;
-
-const ActionsBar = styled.div`
   display: flex;
   align-items: center;
+  flex: auto;
+  background-color: #fff;
+  padding: 0.3rem;
+  border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
+  margin-right: 0.4rem;
 `;
 
-const PlayCell = styled.div`
-  font-size: 20px;
+const CountCell = styled.div`
+  margin-right: 0.3rem;
+  display: flex;
+  align-items: center;
+  visibility: ${props => props.visible ? 'visible' : 'hidden'};
+  cursor: pointer;
+`;
+
+const PlayAndStatus = styled.div`
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-right: 0.3rem;
+`;
+
+const PlayCell = styled(IoIosPlayCircle)`
   color: ${props => props.disabled ? window.ttnoteThemeLight.btnDisabledBg : window.ttnoteThemeLight.primary};
-  margin-right: 1em;
 `;
 
-const MoreCell = styled.div`
-  font-size: 20px;
+const MoreCell = styled(IoIosMore)`
+  font-size: 1.4rem;
   color: ${window.ttnoteThemeLight.primaryFont};
+  
+  flex: none;
 `;
 
 
 function Todo(props) {
- const  {todo} = props;
- const [done, setDone] = useState(todo.done);
- const [collapse] = useState(false);
- const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
+  const {todo} = props;
+  const [done, setDone] = useState(todo.done);
+  const [collapse, setCollapse] = useState(true);
+  const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
+
+  const tomatoSize = todo.tomatoes.length;
+  const tomatoSizeToMax = tomatoSize >= 9;
   return (
-    <div style={{padding: '16px 32px'}}>
+    <TodoRowGroup>
       <TodoRow>
-       {tomatoState.id === todo.id &&
-       <IsPlayingCell>
-        <IoIosStopwatch/>
-       </IsPlayingCell>
-       }
         <CheckCell
           done={done}
           onClick={() => {
             setDone(!done);
           }}
         >
-          {done ? <IoIosCheckmarkCircle/> : <IoIosRadioButtonOff />}
+          {done ? <IoIosCheckmarkCircle/> : <IoIosRadioButtonOff/>}
         </CheckCell>
         <NameCell>
-         <TInput defaultValue={todo.name}/>
+          <TTextArea defaultValue={todo.name}/>
         </NameCell>
-        <ActionsBar>
-          <PlayCell
-            disabled={tomatoState.isPlaying}
-            onClick={() => {
-              if (tomatoState.isPlaying) return;
-              tomatoDispatch({type: 'init', payload: {id: todo.id, isPlaying: true, seconds: window.ttnote.tomatoTime * 60}});
-              window.ttnote.currentTomatoUrl = window.ttnote.searchObject();
-            }}
-          >
-            <IoIosPlayCircle/>
-          </PlayCell>
-          <MoreCell>
-            <IoIosMore/>
-          </MoreCell>
-        </ActionsBar>
+        <CountCell
+          visible={tomatoSize > 0}
+          onClick={() => setCollapse(!collapse)}
+        >
+          <TBadge>{tomatoSize}</TBadge>
+        </CountCell>
+        <PlayAndStatus>
+          {tomatoState.id === todo.id ?
+            <Circle
+              size={21}
+              lineWidth={40}
+              progress={tomatoState.progress}
+              roundedStroke={true}
+              progressColor={window.ttnoteThemeLight.colorPrimary}
+              showPercentage={false}
+            /> :
+            <PlayCell
+              disabled={tomatoState.isPlaying || tomatoSizeToMax}
+              onClick={() => {
+                if (tomatoState.isPlaying) return;
+                tomatoDispatch({
+                  type: 'init',
+                  payload: {id: todo.id, isPlaying: true, seconds: window.ttnote.tomatoTime * 60, progress: 1}
+                });
+                window.ttnote.currentTomatoUrl = window.ttnote.searchObject();
+              }}
+            />
+          }
+        </PlayAndStatus>
+        <MoreCell/>
       </TodoRow>
-      {!collapse &&
-        <div>
-          {todo.tomatoes.map((tomato, index) =>
-            <Tomato
-              key={tomato.id}
-              sequence={index + 1}
-              tomato={tomato}
-            />)}
-        </div>
-      }
-      </div>
+      <TomatoGroup collapse={collapse}>
+        {todo.tomatoes.map((tomato, index) =>
+          <Tomato
+            key={tomato.id}
+            sequence={index + 1}
+            tomato={tomato}
+          />)}
+      </TomatoGroup>
+    </TodoRowGroup>
   )
 }
 

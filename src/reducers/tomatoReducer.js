@@ -2,15 +2,16 @@ import React from "react";
 
 export const TomatoContext = React.createContext(null);
 
-export const tomatoInitial = {isPlaying: false, id: null, seconds: 0};
+export const tomatoInitial = {isPlaying: false, id: null, seconds: 0, progress: 1};
 
 export const tomatoReducer = (state, action) => {
+  const tomatoTime = window.ttnote.tomatoTime;
   switch (action.type) {
     case "play":
       if (state.seconds <= 0) {
         window.timeId = clearInterval(window.timeId);
         if (action.afterFinishCallback)
-          action.afterFinishCallback(state.id, window.ttnote.tomatoTime);
+          action.afterFinishCallback(state.id, tomatoTime);
         if (window.ttnote.continueBreak) {
         return {
           ...state,
@@ -26,9 +27,14 @@ export const tomatoReducer = (state, action) => {
           }
         }
       } else {
+        const total = tomatoTime * 60;
+        const remain = state.seconds - 1;
+        const going = total - remain;
+        const progress = Math.round(going/total*100);
         return {
           ...state,
-          seconds: state.seconds - 1,
+          seconds: remain,
+          progress: progress || 1,
         };
       }
     case "break":

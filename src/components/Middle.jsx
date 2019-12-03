@@ -1,16 +1,17 @@
 import React from "react";
 import styled from "styled-components";
-import {IoIosMenu, IoIosArrowDropleftCircle} from 'react-icons/io';
+import {IoIosMenu} from 'react-icons/io';
 import {CSSTransition} from "react-transition-group";
 import useProjects from "../hooks/useProjects";
 
 const MiddleContainer = styled.div`
-  padding: 1em;
   flex: 1;
-  border-left: 1px solid #fff;
+  border-left: 1px solid ${window.ttnoteThemeLight.lineColorLight};
   //align-items: center;
   //justify-content: center;
   overflow: auto;
+  // background-color: ${window.ttnoteThemeLight.bgColorDefault};
+  background-color: #fff;
 `;
 
 const HeaderRow = styled.div`
@@ -19,6 +20,7 @@ const HeaderRow = styled.div`
 `;
 
 const ListRow = styled.div`
+  border-bottom: 1px solid ${window.ttnoteThemeLight.lineColorLight};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -26,14 +28,14 @@ const ListRow = styled.div`
   &:hover {
    cursor: pointer;
   }
-  background: ${props => props.active ? window.ttnoteThemeLight.primaryActiveBackground : '' };
-  border-radius: ${window.ttnoteThemeLight.primaryBorderRadius};
+  background: ${props => props.active ? window.ttnoteThemeLight.bgColorPrimary : '' };
+  border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
 `;
 
 function Middle(props) {
-  const {isMobileView, pcHideMode, setPcHideMode, mobileShowingArea} = props;
+  const {isMobileView, mobileShowingArea} = props;
   const iconStyle = {fontSize: '24px', marginBottom: '20px'};
-  const visible = (isMobileView && mobileShowingArea === 'middle') || (!isMobileView && !pcHideMode);
+  const visible = (isMobileView && mobileShowingArea === 'middle') || !isMobileView;
 
   const searchObject = window.ttnote.searchObject();
   const enterFrom = searchObject.enterFrom || 'left';
@@ -66,7 +68,7 @@ function Middle(props) {
   return (
     <CSSTransition
       in={visible}
-      timeout={300}
+      timeout={200}
       classNames={enterFrom === 'left' ? 'enter-from-left' : 'enter-from-right'}
       unmountOnExit
       exit={false}
@@ -85,14 +87,7 @@ function Middle(props) {
               style={iconStyle}
             />
           }
-          {!isMobileView &&
-            <IoIosArrowDropleftCircle
-              onClick={() => {
-                setPcHideMode(true);
-              }}
-              style={iconStyle}
-            />
-          }
+
         </HeaderRow>
         <div>
           {projects.map(row => renderList(row))}
