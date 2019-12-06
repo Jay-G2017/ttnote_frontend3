@@ -41,10 +41,11 @@ function Note() {
   }, [isMobileView]);
 
   useEffect(() => {
-    window.ttnote.tomatoTime = 0.5;
-    window.ttnote.shortBreakTime = 0.5;
-    window.ttnote.longBreakTime = 5;
+    window.ttnote.tomatoTime = 25;
+    window.ttnote.shortBreakTime = 5;
+    window.ttnote.longBreakTime = 15;
     window.ttnote.continueBreak = true;
+    window.ttnote.midAlert = false;
   }, []);
 
   // const handleLogout = () => {

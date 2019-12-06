@@ -48,7 +48,7 @@ function Login() {
             .then(res => {
                 if (res.status >= 200 && res.status < 300 ) {
                   const responseToken = res.headers.get('authorization');
-                  setCookie('token', responseToken, 3600);
+                  setCookie('token', responseToken, 3600 * 4);
                     res.json().then(res => {
                       localStorage.setItem('ttnoteUser', JSON.stringify(res));
                       window.ttnote.user = res;

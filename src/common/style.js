@@ -57,6 +57,7 @@ export const TTextArea = styled(TextareaAutosize)`
     -webkit-appearance: none;
     background-color: transparent;
     font-size: inherit;
+    font-weight: inherit;
     color: inherit;
     height: 1.4em;
     line-height: 1.4;

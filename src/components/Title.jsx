@@ -21,7 +21,7 @@ const VerticalLine = styled.div`
   height: 1rem;
   width: 0.2rem;
   border-radius: 0.05rem;
-  background-color: ${window.ttnoteThemeLight.colorPrimary};
+  background-color: ${window.ttnoteThemeLight.colorSecondary};
   position: absolute;
   left: 0;
   @media (min-width: 576px) {
@@ -34,7 +34,11 @@ const NameCell = styled.div`
   display: flex;
   align-items: center;
   padding: 0.3rem;
+  margin-left: -0.3rem;
   flex: auto;
+  color: ${window.ttnoteThemeLight.colorSecondary};
+  font-size: 1rem;
+  font-weight: 700;
 `;
 
 const CountCell = styled(TBadge)`
@@ -42,6 +46,7 @@ const CountCell = styled(TBadge)`
   margin-right: 0.3rem;
   background-color: ${window.ttnoteThemeLight.bgColorDefault};
   color: ${window.ttnoteThemeLight.textColorTitle};
+  visibility: ${props => props.visible ? 'visible' : 'hidden'};
 `;
 
 const MoreCell = styled(IoIosMore)`
@@ -56,25 +61,59 @@ const TodoBoard = styled.div`
 `;
 
 function Title(props) {
-  const {title, playStatus, setPlayStatus} = props;
+  const {
+    title,
+    playStatus,
+    setPlayStatus,
+    todos,
+    handleTitleNameChange,
+    handleTitleNameEnterPress,
+  } = props;
+
+  let tomatoCount = 0;
+  (title.todoIds || []).forEach(todoId => {
+   const tSize = todos[todoId].tomatoes ? todos[todoId].tomatoes.length : 0;
+    tomatoCount += tSize;
+  });
 
   return (
     <TitleContainer>
       <TitleRow>
         <VerticalLine/>
         <NameCell>
-          <TTextArea defaultValue={title.name}/>
+          <TTextArea
+            value={title.name}
+            autoFocus={title.id < 0}
+            placeholder={'输入内容'}
+            onChange={(e) => {
+              const value = e.currentTarget.value;
+              handleTitleNameChange(title.id, value);
+            }}
+            // onBlur={() => handleTodoNameOnBlur(todo.id, titleId)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleTitleNameEnterPress(e, title.id)
+              }
+            }}
+          />
         </NameCell>
-        <CountCell>13</CountCell>
+        <CountCell visible={tomatoCount > 0}>{tomatoCount}</CountCell>
         <MoreCell/>
       </TitleRow>
       <TodoBoard>
-        {title.todos.map(todo =>
+        {(title.todoIds || []).map(todoId =>
           <Todo
-            key={todo.id}
-            todo={todo}
+            key={todoId}
+            todo={todos[todoId]}
             playStatus={playStatus}
             setPlayStatus={setPlayStatus}
+            titleId={title.id}
+            handleTodoNameChange={props.handleTodoNameChange}
+            handleTodoNameEnterPress={props.handleTodoNameEnterPress}
+            handleTodoNameOnBlur={props.handleTodoNameOnBlur}
+            todoExpandedKeys={props.todoExpandedKeys}
+            setTodoExpandedKeys={props.setTodoExpandedKeys}
           />)}
       </TodoBoard>
     </TitleContainer>

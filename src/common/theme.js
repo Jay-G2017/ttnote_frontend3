@@ -35,7 +35,7 @@ const ttnoteThemeLight = {
   // btn default
   btnDefaultFontColor: '#06AE56',
   btnDefaultActiveFontColor: '#06AE56',
-  btnDefaultDisabledFontColor: 'rgba(0,0,0,.18)',
+  btnDefaultDisabledFontColor: btnDisabledFontColor,
 
   btnDefaultBg: '#F2F2F2',
   btnDefaultActiveBg: '#D9D9D9',

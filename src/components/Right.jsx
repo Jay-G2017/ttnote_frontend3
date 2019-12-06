@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React from "react";
 import styled from "styled-components";
 import {CSSTransition} from 'react-transition-group';
 import Title from "./Title";
@@ -18,6 +18,7 @@ const RightContainer = styled.div`
   height: 100%;
   position: relative;
   overflow: auto;
+  padding-bottom: 3rem;
 `;
 
 const RightContent = styled.div`
@@ -66,15 +67,17 @@ const RightFooter = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: ${window.ttnoteThemeLight.bgColorPrimary};
   
   position: fixed;
   bottom: 0;
   right: 0;
   width: 100%;
+  height: 3rem;
   
   padding: 1rem 4vw;
   @media (min-width: 768px) {
-    width: 66.67%;
+    width: 66.6%;
     padding: 1rem 6vw;
   }
 `;
@@ -82,13 +85,19 @@ const RightFooter = styled.div`
 const NewTodoCell = styled.div`
   display: flex;
   align-items: center;
-  color: ${window.ttnoteThemeLight.colorSecondary};
+  color: ${props => props.disabled ?
+  window.ttnoteThemeLight.btnDefaultDisabledFontColor :
+  window.ttnoteThemeLight.colorSecondary};
+  cursor: pointer;
 `;
 
 const NewTitleCell = styled.div`
   display: flex;
   align-items: center;
-  color: ${window.ttnoteThemeLight.colorPrimary};
+  color: ${props => props.disabled ?
+  window.ttnoteThemeLight.btnDefaultDisabledFontColor :
+  window.ttnoteThemeLight.colorPrimary};
+  cursor: pointer;
 `;
 
 const IconStyled = styled.div`
@@ -106,60 +115,31 @@ const IconName = styled.div`
 function Right(props) {
   const {isMobileView, mobileShowingArea} = props;
   const visible = (isMobileView && mobileShowingArea === 'right') || !isMobileView;
-
   const projectId = window.ttnote.searchObject().projectId;
-  const {project, setProject, projectInitial, noProject, postToCreateTomato, updateProject} = useProject(projectId);
 
-  const eventFlag = useRef(true);
-  const projectNameInput = useRef(null);
-  const projectDescInput = useRef(null);
+  const {
+    project,
+    postToCreateTomato,
+    handleNewTodo,
+    handleNewTitle,
+    handleTodoNameChange,
+    handleTitleNameChange,
+    handleProjectNameChange,
+    projectNameInput,
+    projectDescInput,
+    handleProjectNameEnterPress,
+    handleProjectNameOnBlur,
+    handleProjectDescOnChange,
+    handleProjectDescOnBlur,
+    handleTodoNameEnterPress,
+    handleTitleNameEnterPress,
+    handleTodoNameOnBlur,
+    todoExpandedKeys,
+    setTodoExpandedKeys,
+  } = useProject(projectId);
+  const {todoIds, todos, titleIds, titles} = project;
 
-  const handleProjectNameChange = (e) => {
-    const value = e.currentTarget.value;
-    setProject({...project, name: value});
-  };
-
-  const handleProjectDescOnChange = (e) => {
-    const value = e.currentTarget.value;
-    setProject({...project, desc: value});
-  };
-
-  const handleProjectNameOnBlur = () => {
-    if (project.name !== projectInitial.name && eventFlag.current)
-      updateProject({name: project.name})
-  };
-
-  const handleProjectDescOnBlur = () => {
-    if (project.desc !== projectInitial.desc && eventFlag.current)
-      updateProject({desc: project.desc})
-  };
-
-  const handleProjectNameKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      eventFlag.current = false;
-      e.currentTarget.blur();
-      const value = e.currentTarget.value;
-      if (value) {
-        updateProject({name: value});
-        projectDescInput.current.focus();
-      } else {
-        setProject({...project, name: projectInitial.name})
-      }
-      eventFlag.current = true;
-    }
-  };
-
-  const handleProjectDescKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      eventFlag.current = false;
-      e.currentTarget.blur();
-      const value = e.currentTarget.value;
-      updateProject({desc: value});
-      eventFlag.current = true;
-    }
-  };
+  const newMode = Object.keys(todos).some(id => id < 0) || titleIds.some(id => id < 0);
 
   return (
     <CSSTransition
@@ -176,18 +156,27 @@ function Right(props) {
           postToCreateTomato={postToCreateTomato}
         />
         <RightContent>
-          {noProject ? <div>no project</div> :
+          {!projectId ? <div>no project</div> :
             <>
               <ProjectNameRow>
                 <ProjectNameCell>
-                <TTextArea
-                  ref={projectNameInput}
-                  value={project.name}
-                  placeholder={'输入项目标题'}
-                  onChange={handleProjectNameChange}
-                  onBlur={handleProjectNameOnBlur}
-                  onKeyPress={handleProjectNameKeyPress}
-                />
+                  <TTextArea
+                    ref={projectNameInput}
+                    value={project.name}
+                    placeholder={'输入项目标题'}
+                    onChange={e => {
+                        const value = e.currentTarget.value;
+                        handleProjectNameChange(value);
+                      }
+                    }
+                    onBlur={handleProjectNameOnBlur}
+                    onKeyPress={e => {
+                      if (e.key === 'Enter') {
+                       e.preventDefault();
+                       handleProjectNameEnterPress(e);
+                      }
+                    }}
+                  />
                 </ProjectNameCell>
               </ProjectNameRow>
               <ProjectDescGroup>
@@ -199,32 +188,50 @@ function Right(props) {
                       ref={projectDescInput}
                       onChange={handleProjectDescOnChange}
                       onBlur={handleProjectDescOnBlur}
-                      onKeyPress={handleProjectDescKeyPress}
+                      // onKeyPress={e => {
+                      //   if (e.key === 'Enter') {
+                      //     e.preventDefault();
+                      //     handleProjectDescEnterPress(e)
+                      //   }
+                      // }}
                       value={project.desc}
                       placeholder={'输入项目描述'}
                     />
                   </DescCell>
                 </DescRow>
               </ProjectDescGroup>
-              {project.todos && project.todos.length > 0 &&
+              {todoIds && todoIds.length > 0 &&
               <TodoGroupRow>
                 <InfoCell>未分组任务</InfoCell>
-                {project.todos.map(todo => (
+                {todoIds.map(todoId => (
                   <Todo
-                    key={todo.id}
-                    todo={todo}
+                    key={todoId}
+                    todo={todos[todoId]}
+                    handleTodoNameChange={handleTodoNameChange}
+                    handleTodoNameEnterPress={handleTodoNameEnterPress}
+                    handleTodoNameOnBlur={handleTodoNameOnBlur}
+                    todoExpandedKeys={todoExpandedKeys}
+                    setTodoExpandedKeys={setTodoExpandedKeys}
                   />
                 ))}
               </TodoGroupRow>
               }
-              {project.titles && project.titles.length > 0 &&
+              {titleIds && titleIds.length > 0 &&
               <TitleGroupRow>
                 <InfoCell>已分组任务</InfoCell>
                 {
-                  project.titles.map(title =>
+                  titleIds.map(titleId =>
                     <Title
-                      key={title.id}
-                      title={title}
+                      key={titleId}
+                      todos={todos}
+                      title={titles[titleId]}
+                      handleTitleNameChange={handleTitleNameChange}
+                      handleTitleNameEnterPress={handleTitleNameEnterPress}
+                      handleTodoNameChange={handleTodoNameChange}
+                      handleTodoNameEnterPress={handleTodoNameEnterPress}
+                      handleTodoNameOnBlur={handleTodoNameOnBlur}
+                      todoExpandedKeys={todoExpandedKeys}
+                      setTodoExpandedKeys={setTodoExpandedKeys}
                     />
                   )
                 }
@@ -234,13 +241,25 @@ function Right(props) {
           }
         </RightContent>
         <RightFooter>
-          <NewTodoCell>
+          <NewTodoCell
+            onClick={() => {
+              if (!newMode)
+              handleNewTodo();
+            }}
+            disabled={newMode}
+          >
             <IconStyled>
               <IoIosAddCircle/>
             </IconStyled>
             <IconName>新任务</IconName>
           </NewTodoCell>
-          <NewTitleCell>
+          <NewTitleCell
+            disabled={newMode}
+            onClick={() => {
+              if (!newMode)
+                handleNewTitle();
+            }}
+          >
             <IconStyled>
               <IoIosAddCircle/>
             </IconStyled>

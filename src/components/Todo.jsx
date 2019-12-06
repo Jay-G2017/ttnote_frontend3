@@ -17,7 +17,7 @@ const TodoRow = styled(PaddingRow)`
 
 const TomatoGroup = styled.div`
   margin-top: 0.5rem;
-  display: ${props => props.collapse ? 'none' : 'block'};
+  display: ${props => props.open ? 'block' : 'none'};
 `;
 
 const CheckCell = styled.div`
@@ -26,6 +26,7 @@ const CheckCell = styled.div`
   window.ttnoteThemeLight.colorPrimary :
   window.ttnoteThemeLight.textColorDesc};
 
+  visibility: ${props => props.visible ? 'visible' : 'hidden'};
   flex: none;
   display: flex;
   align-items: center;
@@ -61,7 +62,7 @@ const PlayAndStatus = styled.div`
 `;
 
 const PlayCell = styled(IoIosPlayCircle)`
-  color: ${props => props.disabled ? window.ttnoteThemeLight.btnDisabledBg : window.ttnoteThemeLight.primary};
+  color: ${props => props.disabled ? window.ttnoteThemeLight.btnDefaultDisabledFontColor : window.ttnoteThemeLight.primary};
 `;
 
 const MoreCell = styled(IoIosMore)`
@@ -73,17 +74,44 @@ const MoreCell = styled(IoIosMore)`
 
 
 function Todo(props) {
-  const {todo} = props;
+  const {
+    todo,
+    titleId,
+    handleTodoNameChange,
+    handleTodoNameEnterPress,
+    handleTodoNameOnBlur,
+    todoExpandedKeys,
+    setTodoExpandedKeys,
+  } = props;
   const [done, setDone] = useState(todo.done);
-  const [collapse, setCollapse] = useState(true);
+  // const [collapse, setCollapse] = useState(true);
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
 
-  const tomatoSize = todo.tomatoes.length;
+  const tomatoes = todo.tomatoes || [];
+  const tomatoSize = tomatoes.length;
   const tomatoSizeToMax = tomatoSize >= 9;
+  const playButtonDisabled = tomatoState.isPlaying || tomatoSizeToMax || todo.id < 0;
+
+  // const handleTodoNameChange = (e) => {
+  //   // const value = e.currentTarget.value;
+  // };
+
+  const handleTodoExpand = () => {
+    const newTodoExpandedKeys = [...todoExpandedKeys];
+    if (todoExpandedKeys.includes(todo.id)) {
+      const index = newTodoExpandedKeys.indexOf(todo.id);
+      newTodoExpandedKeys.splice(index, 1);
+    } else {
+      newTodoExpandedKeys.push(todo.id);
+    }
+    setTodoExpandedKeys(newTodoExpandedKeys);
+  };
+
   return (
     <TodoRowGroup>
       <TodoRow>
         <CheckCell
+          visible={todo.id > 0}
           done={done}
           onClick={() => {
             setDone(!done);
@@ -92,11 +120,26 @@ function Todo(props) {
           {done ? <IoIosCheckmarkCircle/> : <IoIosRadioButtonOff/>}
         </CheckCell>
         <NameCell>
-          <TTextArea defaultValue={todo.name}/>
+          <TTextArea
+            value={todo.name}
+            autoFocus={todo.id < 0}
+            placeholder={'输入内容'}
+            onChange={(e) => {
+              const value = e.currentTarget.value;
+              handleTodoNameChange(todo.id, value);
+            }}
+            onBlur={() => handleTodoNameOnBlur(todo.id, titleId)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleTodoNameEnterPress(e, todo.id, titleId)
+              }
+            }}
+          />
         </NameCell>
         <CountCell
           visible={tomatoSize > 0}
-          onClick={() => setCollapse(!collapse)}
+          onClick={handleTodoExpand}
         >
           <TBadge>{tomatoSize}</TBadge>
         </CountCell>
@@ -111,9 +154,9 @@ function Todo(props) {
               showPercentage={false}
             /> :
             <PlayCell
-              disabled={tomatoState.isPlaying || tomatoSizeToMax}
+              disabled={playButtonDisabled}
               onClick={() => {
-                if (tomatoState.isPlaying) return;
+                if (playButtonDisabled) return;
                 tomatoDispatch({
                   type: 'init',
                   payload: {id: todo.id, isPlaying: true, seconds: window.ttnote.tomatoTime * 60, progress: 1}
@@ -125,8 +168,8 @@ function Todo(props) {
         </PlayAndStatus>
         <MoreCell/>
       </TodoRow>
-      <TomatoGroup collapse={collapse}>
-        {todo.tomatoes.map((tomato, index) =>
+      <TomatoGroup open={todoExpandedKeys.includes(todo.id)}>
+        {tomatoes.map((tomato, index) =>
           <Tomato
             key={tomato.id}
             sequence={index + 1}
