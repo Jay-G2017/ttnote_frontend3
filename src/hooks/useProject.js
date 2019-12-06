@@ -100,6 +100,21 @@ function useProject(projectId) {
     })
   };
 
+  const deleteTomato = (todoId, tomatoId) => {
+    const url = window.ttnote.baseUrl + '/tomatoes/' + tomatoId;
+    window.ttnote.fetch(url, {
+      method: 'DELETE'
+    })
+      .then(res => {
+        setProject(data => {
+          const index = data.todos[todoId].tomatoes.findIndex(tomato => tomato.id === tomatoId);
+          data.todos[todoId].tomatoes.splice(index, 1);
+          return {...data}
+        })
+      })
+
+  };
+
   const updateProject = (params) => {
     const url = window.ttnote.baseUrl + '/projects/' + projectId;
     window.ttnote.fetch(url, {
@@ -432,6 +447,7 @@ function useProject(projectId) {
     handleTodoNameOnBlur,
     todoExpandedKeys,
     setTodoExpandedKeys,
+    deleteTomato,
   }
 }
 

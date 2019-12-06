@@ -98,6 +98,11 @@ function Tomato(props) {
     })
   };
 
+  const handleTomatoDelete = (e) => {
+    e.stopPropagation();
+    props.deleteTomato(tomato.todoId, tomato.id)
+  };
+
   return (
     <TomatoRowGroup>
       <TomatoRow onClick={() => setTomatoDescShow(!tomatoDescShow)}>
@@ -106,7 +111,9 @@ function Tomato(props) {
         <TimeCell>{fromNow}</TimeCell>
         <CollapseCell
         >{tomatoDescShow ? '折叠' : '展开'}</CollapseCell>
-        <DeleteCell>删除</DeleteCell>
+        <DeleteCell
+          onClick={handleTomatoDelete}
+        >删除</DeleteCell>
       </TomatoRow>
       <DescCell visible={tomatoDescShow}>
        <TextareaDebounced

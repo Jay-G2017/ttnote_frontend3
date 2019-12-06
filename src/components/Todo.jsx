@@ -174,6 +174,7 @@ function Todo(props) {
             key={tomato.id}
             sequence={index + 1}
             tomato={tomato}
+            deleteTomato={props.deleteTomato}
           />)}
       </TomatoGroup>
     </TodoRowGroup>

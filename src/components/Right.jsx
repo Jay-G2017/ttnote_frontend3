@@ -136,6 +136,7 @@ function Right(props) {
     handleTodoNameOnBlur,
     todoExpandedKeys,
     setTodoExpandedKeys,
+    deleteTomato,
   } = useProject(projectId);
   const {todoIds, todos, titleIds, titles} = project;
 
@@ -212,6 +213,7 @@ function Right(props) {
                     handleTodoNameOnBlur={handleTodoNameOnBlur}
                     todoExpandedKeys={todoExpandedKeys}
                     setTodoExpandedKeys={setTodoExpandedKeys}
+                    deleteTomato={deleteTomato}
                   />
                 ))}
               </TodoGroupRow>
@@ -232,6 +234,7 @@ function Right(props) {
                       handleTodoNameOnBlur={handleTodoNameOnBlur}
                       todoExpandedKeys={todoExpandedKeys}
                       setTodoExpandedKeys={setTodoExpandedKeys}
+                      deleteTomato={deleteTomato}
                     />
                   )
                 }

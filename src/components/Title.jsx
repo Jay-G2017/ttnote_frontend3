@@ -114,6 +114,7 @@ function Title(props) {
             handleTodoNameOnBlur={props.handleTodoNameOnBlur}
             todoExpandedKeys={props.todoExpandedKeys}
             setTodoExpandedKeys={props.setTodoExpandedKeys}
+            deleteTomato={props.deleteTomato}
           />)}
       </TodoBoard>
     </TitleContainer>
