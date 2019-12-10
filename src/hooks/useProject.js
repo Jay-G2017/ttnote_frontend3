@@ -1,4 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
+import {cloneDeep} from 'lodash';
 
 function useProject(projectId) {
   const [project, setProject] = useState({todos: {}, titles: {}, todoIds: [], titleIds: []});
@@ -90,8 +91,8 @@ function useProject(projectId) {
     }).then(res => {
       // fetchProject();
       setProject(data => {
-       data.todos[todoId].tomatoes.push(res);
-       return {...data}
+        data.todos[todoId].tomatoes.push(res);
+        return {...data}
       });
       setTodoExpandedKeys(keys => {
         keys.push(todoId);
@@ -200,14 +201,14 @@ function useProject(projectId) {
     e.currentTarget.blur();
     const value = titles[titleId].name;
     if (value) {
-      handleNewTodo(titleId);
       if (titleId > 0) {
         const oldValue = projectInitial.current.titles[titleId].name;
         if (value !== oldValue) {
           updateTitle(titleId, {name: value});
         }
+        handleNewTodo(titleId);
       } else {
-        createTitle(titleId, {name: value})
+        createTitle(titleId, {name: value}, handleNewTodo)
       }
     } else {
       if (titleId > 0) {
@@ -285,8 +286,13 @@ function useProject(projectId) {
         handleTodoDelete(todoId, titleId)
       } else {
         setProject(data => {
-          const index = data.todoIds.indexOf(todoId);
-          data.todoIds.splice(index, 1);
+          if (titleId) {
+            const index = data.titles[titleId].todoIds.indexOf(todoId);
+            data.titles[titleId].todoIds.splice(index, 1);
+          } else {
+            const index = data.todoIds.indexOf(todoId);
+            data.todoIds.splice(index, 1);
+          }
           delete data.todos[todoId];
           return {...data}
         });
@@ -303,6 +309,7 @@ function useProject(projectId) {
       .then(res => {
         console.log(res);
         // fetchProject();
+        console.log('init -1: ', projectInitial.current);
         if (titleId) {
           localReplaceTodoAfterCreateWithTitle(todoId, titleId, res)
         } else {
@@ -310,41 +317,37 @@ function useProject(projectId) {
         }
 
       }).catch(res => {
-        // todo
+      // todo
     })
   };
 
   const localReplaceTodoAfterCreate = (oldTodoId, newTodoObj) => {
-    setProject(data => {
-      const index = data.todoIds.indexOf(oldTodoId);
-      data.todoIds.splice(index, 1);
-      data.todoIds.splice(index, 0, newTodoObj.id);
-      delete data.todos[oldTodoId];
-      data.todos[newTodoObj.id] = {...newTodoObj};
+    const data = cloneDeep(project);
+    const index = data.todoIds.indexOf(oldTodoId);
+    data.todoIds.splice(index, 1);
+    data.todoIds.splice(index, 0, newTodoObj.id);
+    delete data.todos[oldTodoId];
+    data.todos[newTodoObj.id] = {...newTodoObj};
+    setProject(data);
 
-      projectInitial.current.todoIds.splice(index, 0, newTodoObj.id);
-      projectInitial.current.todos[newTodoObj.id] = {...newTodoObj};
-
-      return {...data}
-    })
+    projectInitial.current.todoIds.splice(index, 0, newTodoObj.id);
+    projectInitial.current.todos[newTodoObj.id] = {...newTodoObj};
   };
 
   const localReplaceTodoAfterCreateWithTitle = (oldTodoId, titleId, newTodoObj) => {
-    setProject(data => {
-      const index = data.titles[titleId].todoIds.indexOf(oldTodoId);
-      data.titles[titleId].todoIds.splice(index, 1);
-      data.titles[titleId].todoIds.splice(index, 0, newTodoObj.id);
-      delete data.todos[oldTodoId];
-      data.todos[newTodoObj.id] = {...newTodoObj};
+    const data = cloneDeep(project);
+    const index = data.titles[titleId].todoIds.indexOf(oldTodoId);
+    data.titles[titleId].todoIds.splice(index, 1);
+    data.titles[titleId].todoIds.splice(index, 0, newTodoObj.id);
+    delete data.todos[oldTodoId];
+    data.todos[newTodoObj.id] = {...newTodoObj};
+    setProject(data);
 
-      projectInitial.current.titles[titleId].todoIds.splice(index, 0, newTodoObj.id);
-      projectInitial.current.todos[newTodoObj.id] = {...newTodoObj};
-
-      return {...data}
-    })
+    projectInitial.current.titles[titleId].todoIds.splice(index, 0, newTodoObj.id);
+    projectInitial.current.todos[newTodoObj.id] = {...newTodoObj};
   };
 
-  const createTitle = (titleId, params) => {
+  const createTitle = (titleId, params, callback) => {
     const url = window.ttnote.baseUrl + `/projects/${projectId}/titles/`;
     window.ttnote.fetch(url, {
       method: 'POST',
@@ -365,7 +368,8 @@ function useProject(projectId) {
           projectInitial.current.titles[res.id] = {...res};
 
           return {...data}
-        })
+        });
+        if (callback) callback(res.id);
       }).catch(res => {
       // todo
     })

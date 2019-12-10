@@ -2,6 +2,7 @@ import React from "react";
 import DingSound from '../audio/DingSound.mp3';
 import DingDingSound from '../audio/DingDingSound.mp3';
 import BreakSound from '../audio/BreakSound.mp3'
+import {Howl} from 'howler';
 
 export const TomatoContext = React.createContext(null);
 
@@ -12,7 +13,7 @@ export const tomatoReducer = (state, action) => {
   switch (action.type) {
     case "play":
       if (state.seconds <= 0) {
-        new Audio(DingSound).play();
+        new Howl({src: DingSound}).play();
         window.ttnote.midAlert = false;
         window.timeId = clearInterval(window.timeId);
         if (action.afterFinishCallback)
@@ -37,7 +38,7 @@ export const tomatoReducer = (state, action) => {
         const going = total - remain;
         const progress = Math.round(going/total*100);
         if (progress > 50 && !window.ttnote.midAlert) {
-          new Audio(DingDingSound).play();
+          new Howl({src: DingDingSound}).play();
           window.ttnote.midAlert = true
         }
         return {
@@ -48,7 +49,7 @@ export const tomatoReducer = (state, action) => {
       }
     case "break":
       if (state.seconds <= 0) {
-        new Audio(BreakSound).play();
+        new Howl({src: BreakSound}).play();
         window.timeId = clearInterval(window.timeId);
         return {
           ...state,

@@ -246,8 +246,9 @@ function Right(props) {
         <RightFooter>
           <NewTodoCell
             onClick={() => {
-              if (!newMode)
-              handleNewTodo();
+              if (!newMode) {
+                handleNewTodo();
+              }
             }}
             disabled={newMode}
           >
