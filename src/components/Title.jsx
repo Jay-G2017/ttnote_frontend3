@@ -66,8 +66,8 @@ function Title(props) {
     playStatus,
     setPlayStatus,
     todos,
-    handleTitleNameChange,
-    handleTitleNameEnterPress,
+    todoMethods,
+    titleMethods,
   } = props;
 
   let tomatoCount = 0;
@@ -87,13 +87,13 @@ function Title(props) {
             placeholder={'输入内容'}
             onChange={(e) => {
               const value = e.currentTarget.value;
-              handleTitleNameChange(title.id, value);
+              titleMethods.handleTitleNameChange(title.id, value);
             }}
             // onBlur={() => handleTodoNameOnBlur(todo.id, titleId)}
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
-                handleTitleNameEnterPress(e, title.id)
+                titleMethods.handleTitleNameEnterPress(e, title.id)
               }
             }}
           />
@@ -109,12 +109,9 @@ function Title(props) {
             playStatus={playStatus}
             setPlayStatus={setPlayStatus}
             titleId={title.id}
-            handleTodoNameChange={props.handleTodoNameChange}
-            handleTodoNameEnterPress={props.handleTodoNameEnterPress}
-            handleTodoNameOnBlur={props.handleTodoNameOnBlur}
             todoExpandedKeys={props.todoExpandedKeys}
             setTodoExpandedKeys={props.setTodoExpandedKeys}
-            deleteTomato={props.deleteTomato}
+            todoMethods={todoMethods}
           />)}
       </TodoBoard>
     </TitleContainer>

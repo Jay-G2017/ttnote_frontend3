@@ -77,11 +77,9 @@ function Todo(props) {
   const {
     todo,
     titleId,
-    handleTodoNameChange,
-    handleTodoNameEnterPress,
-    handleTodoNameOnBlur,
     todoExpandedKeys,
     setTodoExpandedKeys,
+    todoMethods,
   } = props;
   const [done, setDone] = useState(todo.done);
   // const [collapse, setCollapse] = useState(true);
@@ -126,13 +124,13 @@ function Todo(props) {
             placeholder={'输入内容'}
             onChange={(e) => {
               const value = e.currentTarget.value;
-              handleTodoNameChange(todo.id, value);
+              todoMethods.handleTodoNameChange(todo.id, value);
             }}
-            onBlur={() => handleTodoNameOnBlur(todo.id, titleId)}
+            onBlur={() => todoMethods.handleTodoNameOnBlur(todo.id, titleId)}
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
-                handleTodoNameEnterPress(e, todo.id, titleId)
+                todoMethods.handleTodoNameEnterPress(e, todo.id, titleId)
               }
             }}
           />
@@ -174,7 +172,7 @@ function Todo(props) {
             key={tomato.id}
             sequence={index + 1}
             tomato={tomato}
-            deleteTomato={props.deleteTomato}
+            deleteTomato={todoMethods.deleteTomato}
           />)}
       </TomatoGroup>
     </TodoRowGroup>

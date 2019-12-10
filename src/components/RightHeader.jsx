@@ -72,7 +72,7 @@ const LongBreakCell = styled.div`
 `;
 
 function RightHeader(props) {
-  const {isMobileView, postToCreateTomato} = props;
+  const {isMobileView, createTomato} = props;
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
 
   // for tomato
@@ -81,7 +81,7 @@ function RightHeader(props) {
 
     if (tomatoState.id) {
       window.timeId = setInterval(() => {
-        tomatoDispatch({type: 'play', afterFinishCallback: postToCreateTomato});
+        tomatoDispatch({type: 'play', afterFinishCallback: createTomato});
       }, 1000);
     } else {
       window.timeId = setInterval(() => {
@@ -89,7 +89,7 @@ function RightHeader(props) {
       }, 1000);
     }
     return () => window.timeId = clearInterval(window.timeId)
-  }, [tomatoState.isPlaying, tomatoState.id, tomatoDispatch, postToCreateTomato]);
+  }, [tomatoState.isPlaying, tomatoState.id, tomatoDispatch, createTomato]);
 
   return (
   <HeaderRow className={'t-container'}>

@@ -119,24 +119,15 @@ function Right(props) {
 
   const {
     project,
-    postToCreateTomato,
     handleNewTodo,
     handleNewTitle,
-    handleTodoNameChange,
-    handleTitleNameChange,
-    handleProjectNameChange,
     projectNameInput,
     projectDescInput,
-    handleProjectNameEnterPress,
-    handleProjectNameOnBlur,
-    handleProjectDescOnChange,
-    handleProjectDescOnBlur,
-    handleTodoNameEnterPress,
-    handleTitleNameEnterPress,
-    handleTodoNameOnBlur,
     todoExpandedKeys,
     setTodoExpandedKeys,
-    deleteTomato,
+    projectMethods,
+    todoMethods,
+    titleMethods,
   } = useProject(projectId);
   const {todoIds, todos, titleIds, titles} = project;
 
@@ -154,7 +145,7 @@ function Right(props) {
       <RightContainer>
         <RightHeader
           isMobileView={isMobileView}
-          postToCreateTomato={postToCreateTomato}
+          createTomato={todoMethods.createTomato}
         />
         <RightContent>
           {!projectId ? <div>no project</div> :
@@ -167,14 +158,14 @@ function Right(props) {
                     placeholder={'输入项目标题'}
                     onChange={e => {
                         const value = e.currentTarget.value;
-                        handleProjectNameChange(value);
+                        projectMethods.handleProjectNameChange(value);
                       }
                     }
-                    onBlur={handleProjectNameOnBlur}
+                    onBlur={projectMethods.handleProjectNameOnBlur}
                     onKeyPress={e => {
                       if (e.key === 'Enter') {
                        e.preventDefault();
-                       handleProjectNameEnterPress(e);
+                       projectMethods.handleProjectNameEnterPress(e);
                       }
                     }}
                   />
@@ -187,8 +178,8 @@ function Right(props) {
                     <TTextArea
                       style={{minHeight: '3rem'}}
                       ref={projectDescInput}
-                      onChange={handleProjectDescOnChange}
-                      onBlur={handleProjectDescOnBlur}
+                      onChange={projectMethods.handleProjectDescOnChange}
+                      onBlur={projectMethods.handleProjectDescOnBlur}
                       // onKeyPress={e => {
                       //   if (e.key === 'Enter') {
                       //     e.preventDefault();
@@ -208,12 +199,9 @@ function Right(props) {
                   <Todo
                     key={todoId}
                     todo={todos[todoId]}
-                    handleTodoNameChange={handleTodoNameChange}
-                    handleTodoNameEnterPress={handleTodoNameEnterPress}
-                    handleTodoNameOnBlur={handleTodoNameOnBlur}
                     todoExpandedKeys={todoExpandedKeys}
                     setTodoExpandedKeys={setTodoExpandedKeys}
-                    deleteTomato={deleteTomato}
+                    todoMethods={todoMethods}
                   />
                 ))}
               </TodoGroupRow>
@@ -227,14 +215,10 @@ function Right(props) {
                       key={titleId}
                       todos={todos}
                       title={titles[titleId]}
-                      handleTitleNameChange={handleTitleNameChange}
-                      handleTitleNameEnterPress={handleTitleNameEnterPress}
-                      handleTodoNameChange={handleTodoNameChange}
-                      handleTodoNameEnterPress={handleTodoNameEnterPress}
-                      handleTodoNameOnBlur={handleTodoNameOnBlur}
                       todoExpandedKeys={todoExpandedKeys}
                       setTodoExpandedKeys={setTodoExpandedKeys}
-                      deleteTomato={deleteTomato}
+                      todoMethods={todoMethods}
+                      titleMethods={titleMethods}
                     />
                   )
                 }

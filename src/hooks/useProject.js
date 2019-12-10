@@ -83,7 +83,7 @@ function useProject(projectId) {
     // new todo
   };
 
-  const postToCreateTomato = (todoId, seconds) => {
+  const createTomato = (todoId, seconds) => {
     const url = window.ttnote.baseUrl + '/todos/' + todoId + '/tomatoes';
     window.ttnote.fetch(url, {
       method: 'post',
@@ -429,29 +429,29 @@ function useProject(projectId) {
 
   return {
     project,
-    setProject,
-    projectInitial,
-    fetchProject,
-    postToCreateTomato,
     updateProject,
     handleNewTodo,
     handleNewTitle,
-    handleTodoNameChange,
-    handleTitleNameChange,
-    handleProjectNameChange,
     projectNameInput,
     projectDescInput,
-    handleProjectNameEnterPress,
-    handleProjectNameOnBlur,
-    handleProjectDescOnChange,
-    handleProjectDescOnBlur,
-    handleProjectDescEnterPress,
-    handleTodoNameEnterPress,
-    handleTitleNameEnterPress,
-    handleTodoNameOnBlur,
     todoExpandedKeys,
     setTodoExpandedKeys,
-    deleteTomato,
+    projectMethods: {
+      handleProjectNameChange,
+      handleProjectNameEnterPress,
+      handleProjectNameOnBlur,
+      handleProjectDescOnChange,
+      handleProjectDescOnBlur,
+      handleProjectDescEnterPress,
+    },
+    todoMethods: {
+      handleTodoNameChange,
+      handleTodoNameOnBlur,
+      handleTodoNameEnterPress,
+      createTomato,
+      deleteTomato,
+    },
+    titleMethods: {handleTitleNameChange, handleTitleNameEnterPress},
   }
 }
 
