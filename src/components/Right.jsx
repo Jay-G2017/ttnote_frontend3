@@ -140,7 +140,7 @@ function Right(props) {
   } = useProject(projectId);
   const {todoIds, todos, titleIds, titles} = project;
 
-  const newMode = Object.keys(todos).some(id => id < 0) || titleIds.some(id => id < 0);
+  // const newMode = Object.keys(todos).some(id => id < 0) || titleIds.some(id => id < 0);
 
   return (
     <CSSTransition
@@ -245,12 +245,8 @@ function Right(props) {
         </RightContent>
         <RightFooter>
           <NewTodoCell
-            onClick={() => {
-              if (!newMode) {
-                handleNewTodo();
-              }
-            }}
-            disabled={newMode}
+            onClick={handleNewTodo}
+            disabled={false}
           >
             <IconStyled>
               <IoIosAddCircle/>
@@ -258,11 +254,8 @@ function Right(props) {
             <IconName>新任务</IconName>
           </NewTodoCell>
           <NewTitleCell
-            disabled={newMode}
-            onClick={() => {
-              if (!newMode)
-                handleNewTitle();
-            }}
+            disabled={false}
+            onClick={handleNewTitle}
           >
             <IconStyled>
               <IoIosAddCircle/>
