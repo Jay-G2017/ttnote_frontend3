@@ -1,10 +1,11 @@
 import React, {useContext, useState} from "react";
 import styled from 'styled-components';
-import {IoIosRadioButtonOff, IoIosCheckmarkCircle, IoIosPlayCircle, IoIosMore} from 'react-icons/io';
+import {IoIosPlayCircle, IoIosMore} from 'react-icons/io';
 import {PaddingRow, TTextArea, TBadge} from '../common/style';
 import {TomatoContext} from '../reducers/tomatoReducer';
 import Tomato from "./Tomato";
 import Circle from 'react-circle';
+import TCheckbox from "./TCheckbox";
 
 const TodoRowGroup = styled.div`
   margin-bottom: 0.5rem;
@@ -22,11 +23,6 @@ const TomatoGroup = styled.div`
 
 const CheckCell = styled.div`
   font-size: 1.4rem;
-  color: ${props => props.done ?
-  window.ttnoteThemeLight.colorPrimary :
-  window.ttnoteThemeLight.textColorDesc};
-
-  visibility: ${props => props.visible ? 'visible' : 'hidden'};
   flex: none;
   display: flex;
   align-items: center;
@@ -42,6 +38,7 @@ const NameCell = styled.div`
   padding: 0.3rem;
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
   margin-right: 0.4rem;
+  color: ${props => props.done ? window.ttnoteThemeLight.textColorDesc : 'inherit'};
 `;
 
 const CountCell = styled.div`
@@ -108,16 +105,14 @@ function Todo(props) {
   return (
     <TodoRowGroup>
       <TodoRow>
-        <CheckCell
-          visible={todo.id > 0}
-          done={done}
-          onClick={() => {
-            setDone(!done);
-          }}
-        >
-          {done ? <IoIosCheckmarkCircle/> : <IoIosRadioButtonOff/>}
+        <CheckCell>
+          <TCheckbox
+            disabled={todo.id < 0}
+            checked={done}
+            onChange={value => setDone(value)}
+          />
         </CheckCell>
-        <NameCell>
+        <NameCell done={done}>
           <TTextArea
             value={todo.name}
             autoFocus={todo.id < 0}
