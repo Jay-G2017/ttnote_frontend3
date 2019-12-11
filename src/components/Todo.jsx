@@ -1,4 +1,4 @@
-import React, {useContext, useState} from "react";
+import React, {useCallback, useContext, useState} from "react";
 import styled from 'styled-components';
 import {IoIosPlayCircle, IoIosMore} from 'react-icons/io';
 import {PaddingRow, TTextArea, TBadge} from '../common/style';
@@ -87,9 +87,20 @@ function Todo(props) {
   const tomatoSizeToMax = tomatoSize >= 9;
   const playButtonDisabled = tomatoState.isPlaying || tomatoSizeToMax || todo.id < 0;
 
-  // const handleTodoNameChange = (e) => {
-  //   // const value = e.currentTarget.value;
-  // };
+  const toggleTodo = useCallback((todoId, done) => {
+    const url = window.ttnote.baseUrl + '/todos/' + todoId;
+    window.ttnote.fetch(url, {
+      method: 'PATCH',
+      body: JSON.stringify({done: done}),
+    })
+      .then(res => {
+        console.log('toggle todo res:', res);
+      })
+      .catch(() => {
+        setDone(!done)
+      })
+
+  }, []);
 
   const handleTodoExpand = () => {
     const newTodoExpandedKeys = [...todoExpandedKeys];
@@ -109,7 +120,10 @@ function Todo(props) {
           <TCheckbox
             disabled={todo.id < 0}
             checked={done}
-            onChange={value => setDone(value)}
+            onChange={value => {
+              setDone(value);
+              toggleTodo(todo.id, value);
+            }}
           />
         </CheckCell>
         <NameCell done={done}>

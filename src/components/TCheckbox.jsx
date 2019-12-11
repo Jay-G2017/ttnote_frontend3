@@ -25,6 +25,7 @@ function TCheckbox(props) {
       <input
         type={'checkbox'}
         disabled={disabled}
+        checked={checked}
         onClick={e => {
           const value = e.currentTarget.checked;
           onChange(value);
