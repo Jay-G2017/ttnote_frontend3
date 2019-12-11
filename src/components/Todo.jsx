@@ -6,6 +6,8 @@ import {TomatoContext} from '../reducers/tomatoReducer';
 import Tomato from "./Tomato";
 import Circle from 'react-circle';
 import TCheckbox from "./TCheckbox";
+import Countdown from "react-countdown-now";
+import {enableSound} from "../utils/helper";
 
 const TodoRowGroup = styled.div`
   margin-bottom: 0.5rem;
@@ -152,21 +154,32 @@ function Todo(props) {
         </CountCell>
         <PlayAndStatus>
           {tomatoState.id === todo.id ?
-            <Circle
-              size={21}
-              lineWidth={40}
-              progress={tomatoState.progress}
-              roundedStroke={true}
-              progressColor={window.ttnoteThemeLight.colorPrimary}
-              showPercentage={false}
-            /> :
+            <Countdown
+              date={Date.now() + tomatoState.minutes * 60 * 1000}
+              renderer={({total}) => {
+                const tomatoTime = tomatoState.minutes * 60 * 1000;
+                const progress = Math.round((tomatoTime - total) / tomatoTime * 100);
+                return (
+                  <Circle
+                    size={21}
+                    lineWidth={40}
+                    progress={progress || 1}
+                    roundedStroke={true}
+                    progressColor={window.ttnoteThemeLight.colorPrimary}
+                    showPercentage={false}
+                  />
+                  )
+              }}
+            />
+             :
             <PlayCell
               disabled={playButtonDisabled}
               onClick={() => {
                 if (playButtonDisabled) return;
+                enableSound();
                 tomatoDispatch({
-                  type: 'init',
-                  payload: {id: todo.id, isPlaying: true, seconds: window.ttnote.tomatoTime * 60, progress: 1}
+                  type: 'play',
+                  payload: {id: todo.id, minutes: window.ttnote.tomatoTime}
                 });
                 window.ttnote.currentTomatoUrl = window.ttnote.searchObject();
               }}

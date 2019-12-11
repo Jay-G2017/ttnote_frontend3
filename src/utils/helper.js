@@ -1,3 +1,6 @@
+import {Howl} from "howler";
+import BreakSound from "../audio/BreakSound.mp3";
+
 export function setCookie(name, value, exSeconds) {
   let d = new Date();
   d.setTime(d.getTime() + (exSeconds * 1000));
@@ -14,4 +17,10 @@ export function getCookie(name) {
     });
   }
   return cookieObject[name];
+}
+
+export function enableSound() {
+  const sound = new Howl({src: BreakSound});
+  sound.play();
+  sound.stop();
 }

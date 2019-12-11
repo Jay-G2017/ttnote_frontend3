@@ -1,7 +1,13 @@
-import React, {useContext, useEffect} from "react";
+import React, {useCallback, useContext} from "react";
 import styled from "styled-components";
 import {IoIosArrowBack, IoIosClose, IoIosAlarm, IoIosCafe} from 'react-icons/io';
 import {TomatoContext} from "../reducers/tomatoReducer";
+import Countdown, {zeroPad} from 'react-countdown-now';
+import BreakSound from '../audio/BreakSound.mp3'
+import {Howl} from 'howler';
+import DingSound from '../audio/DingSound.mp3';
+import DingDingSound from '../audio/DingDingSound.mp3';
+import {enableSound} from "../utils/helper";
 
 const HeaderRow = styled.div`
   height: 3.3rem;
@@ -75,21 +81,33 @@ function RightHeader(props) {
   const {isMobileView, createTomato} = props;
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
 
-  // for tomato
-  useEffect(() => {
-    if (!tomatoState.isPlaying) return;
+  const handleTomatoComplete = useCallback((todoId) => {
+    createTomato(todoId);
+    tomatoDispatch({type: 'cancel'});
+    new Howl({src: DingDingSound}).play();
 
-    if (tomatoState.id) {
-      window.timeId = setInterval(() => {
-        tomatoDispatch({type: 'play', afterFinishCallback: createTomato});
-      }, 1000);
-    } else {
-      window.timeId = setInterval(() => {
-        tomatoDispatch({type: 'break'});
-      }, 1000);
-    }
-    return () => window.timeId = clearInterval(window.timeId)
-  }, [tomatoState.isPlaying, tomatoState.id, tomatoDispatch, createTomato]);
+  }, [tomatoDispatch, createTomato]);
+
+  const handleRestComplete = useCallback(() => {
+    tomatoDispatch({type: 'cancel'});
+    new Howl({src: BreakSound}).play();
+  }, [tomatoDispatch]);
+
+  // for tomato
+  // useEffect(() => {
+  //   if (!tomatoState.isPlaying) return;
+  //
+  //   if (tomatoState.id) {
+  //     window.timeId = setInterval(() => {
+  //       tomatoDispatch({type: 'play', afterFinishCallback: createTomato});
+  //     }, 1000);
+  //   } else {
+  //     window.timeId = setInterval(() => {
+  //       tomatoDispatch({type: 'break'});
+  //     }, 1000);
+  //   }
+  //   return () => window.timeId = clearInterval(window.timeId)
+  // }, [tomatoState.isPlaying, tomatoState.id, tomatoDispatch, createTomato]);
 
   return (
   <HeaderRow className={'t-container'}>
@@ -110,7 +128,17 @@ function RightHeader(props) {
         <TomatoCountCell onClick={()=> {
           window.ttnote.goto('/note' +  window.ttnote.objectToUrl(window.ttnote.currentTomatoUrl))
         }}>
-          {getCountTime(tomatoState.seconds)}
+          <Countdown
+            date={Date.now() + tomatoState.minutes * 60 * 1000}
+            renderer={({ minutes, seconds }) => <span>{zeroPad(minutes)}:{zeroPad(seconds)}</span>}
+            onComplete={() => {
+              if (tomatoState.id) {
+                handleTomatoComplete(tomatoState.id)
+              } else {
+                handleRestComplete()
+              }
+            }}
+          />
         </TomatoCountCell>
         <CancelCell
           onClick={() => {
@@ -122,18 +150,19 @@ function RightHeader(props) {
       </TimerRow> :
       <TimerActionRow>
         <ShortBreakCell
-          onClick={() => (
-            tomatoDispatch({type: 'init', payload: {isPlaying: true, id: null, seconds: window.ttnote.shortBreakTime * 60}}
-            )
-          )}
+          onClick={() => {
+            enableSound();
+            tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.shortBreakTime}}
+          )}}
         >
           <IoIosAlarm/>
           <IconName>短休息</IconName>
         </ShortBreakCell>
         <LongBreakCell
-          onClick={() => (
-            tomatoDispatch({type: 'init', payload: {isPlaying: true, id: null, seconds: window.ttnote.longBreakTime * 60}})
-          )}
+          onClick={() => {
+            enableSound();
+            tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.longBreakTime}})
+          }}
         >
           <IoIosCafe/>
           <IconName>长休息</IconName>
@@ -146,13 +175,3 @@ function RightHeader(props) {
 }
 
 export default RightHeader;
-
-const getCountTime = (secs) => {
-  const minutes = Math.floor(secs / 60);
-  const seconds = secs - minutes * 60;
-
-  function formatTimeStr(num) {
-    return num < 10 ? `0${num}` : num;
-  }
-  return `${formatTimeStr(minutes)} : ${formatTimeStr(seconds)}`;
-};
