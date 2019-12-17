@@ -9,46 +9,43 @@ dayjs.extend(relativeTime);
 dayjs.locale('zh-cn');
 
 const TomatoRowGroup = styled.div`
- 
-`;
-
-const TomatoRow = styled.div`
-  cursor: pointer;
-  padding: 0.3rem 7vw;
-  font-size: 0.7rem;
-  color: ${window.ttnoteThemeLight.textColorDesc};
-  &:active {
-    background-color: #ECECEC;
+ padding: 0.3rem 5vw;
+ @media (min-width: 576px) {
+    padding: 0.3rem 7vw;
   }
-  @media (min-width: 576px) {
-    &:active {
-      background-color: transparent;
-    }
-    padding: 0.3rem 8vw;
-  }
-  
   display: flex;
-  //grid-template-columns: repeat(20, 1fr);
-  //grid-template-rows: 1fr;
-  //justify-items: end;
-  align-items: center;
-  justify-content: space-between;
+  align-items: baseline;
 `;
 
 const Sequence = styled.div`
-  //margin-right: 1em;
+  font-size: 0.7rem;
+  color: ${window.ttnoteThemeLight.textColorDesc};
+  //margin-right: 0.6rem;
   flex: 0 0 1.8rem;
   text-align: center;
   //grid-area: 1 / 1 / 2 / 2;
   //justify-self: center; 
 `;
 
+const TomatoRow = styled.div`
+  flex: auto;
+`;
+
+const TomatoInfoRow = styled.div`
+  color: ${window.ttnoteThemeLight.textColorDesc};
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.2rem;
+`;
+
 const MinutesCell = styled.div`
   //margin-right: 1em;
   //flex: 2;
   //grid-area: 1 / 5 / 2 / 8;
-  flex: 0 0 2rem;
-  text-align: end;
+  flex: 0 0 3rem;
+  //text-align: end;
 `;
 
 const TimeCell = styled.div`
@@ -65,21 +62,16 @@ const DeleteCell = styled.div`
   cursor: pointer;
 `;
 
-const CollapseCell = styled.div`
- //grid-area: 1 / 16 / 2 / 20;
-  flex: 0 0 2rem;
-  text-align: end;
-  cursor: pointer;
-`;
-
 const DescCell = styled.div`
+  //flex: auto;
+  padding: 0.3rem;
+  border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
   font-size: 0.8rem;
   color: ${window.ttnoteThemeLight.textColorTitle}; 
-  padding: 0.2rem 12vw;
-  @media (min-width: 576px) {
-    padding: 0.2rem 10vw;
-  }
-  display: ${props => props.visible ? 'block' : 'none'};
+  background-color: ${window.ttnoteThemeLight.bgColorDefault};
+  //display: ${props => props.visible ? 'block' : 'none'};
+  display: flex;
+  align-items: center;
 `;
 
 function Tomato(props) {
@@ -93,9 +85,9 @@ function Tomato(props) {
       method: 'PATCH',
       body: JSON.stringify({desc: value}),
     })
-    .then(res => {
-      console.log(res);
-    })
+      .then(res => {
+        console.log(res);
+      })
   };
 
   const handleTomatoDelete = (e) => {
@@ -105,22 +97,22 @@ function Tomato(props) {
 
   return (
     <TomatoRowGroup>
+      <Sequence>{`${sequence}.`}</Sequence>
       <TomatoRow onClick={() => setTomatoDescShow(!tomatoDescShow)}>
-        <Sequence>{`${sequence}.`}</Sequence>
-        <MinutesCell>{`${tomato.minutes}分钟`}</MinutesCell>
-        <TimeCell>{fromNow}</TimeCell>
-        <CollapseCell
-        >{tomatoDescShow ? '折叠' : '展开'}</CollapseCell>
-        <DeleteCell
-          onClick={handleTomatoDelete}
-        >删除</DeleteCell>
+        <DescCell visible={tomatoDescShow}>
+          <TextareaDebounced
+            defaultValue={tomato.desc}
+            saveInfo={saveInfo}
+          />
+        </DescCell>
+        <TomatoInfoRow>
+          <MinutesCell>{`${tomato.minutes}分钟`}</MinutesCell>
+          <TimeCell>{fromNow}</TimeCell>
+          <DeleteCell
+            onClick={handleTomatoDelete}
+          >删除</DeleteCell>
+        </TomatoInfoRow>
       </TomatoRow>
-      <DescCell visible={tomatoDescShow}>
-       <TextareaDebounced
-         defaultValue={tomato.desc}
-         saveInfo={saveInfo}
-       />
-      </DescCell>
     </TomatoRowGroup>
   )
 }

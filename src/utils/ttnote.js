@@ -1,5 +1,8 @@
 import {createBrowserHistory} from 'history';
 import {getCookie, setCookie} from './helper';
+import BreakSound from '../audio/BreakSound.mp3'
+import DingDingSound from '../audio/DingDingSound.mp3';
+import {Howl} from 'howler';
 
 window.browserHistory = createBrowserHistory();
 
@@ -67,3 +70,6 @@ const _ttnote = {
 };
 
 window.ttnote = _ttnote;
+window.restAudio = new Howl({src: BreakSound, html5: true});
+window.dingDingAudio = new Howl({src: DingDingSound, html5: true});
+

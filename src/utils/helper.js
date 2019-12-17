@@ -1,6 +1,3 @@
-import {Howl} from "howler";
-import BreakSound from "../audio/BreakSound.mp3";
-
 export function setCookie(name, value, exSeconds) {
   let d = new Date();
   d.setTime(d.getTime() + (exSeconds * 1000));
@@ -19,8 +16,13 @@ export function getCookie(name) {
   return cookieObject[name];
 }
 
+// 针对mobile端第一次进入网页后，点击定时播放后立即进入后台，声音会不法播放。
+// 需要先播放一下后，才能转入到后台。
 export function enableSound() {
-  const sound = new Howl({src: BreakSound});
-  sound.play();
-  sound.stop();
+  // window.restAudio.resume();
+  window.restAudio.play();
+  window.restAudio.pause();
+  // const audio = new Howl({src: RestAudio, html5: true})
+  // audio.play();
+  // audio.pause();
 }

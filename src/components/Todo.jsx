@@ -7,7 +7,6 @@ import Tomato from "./Tomato";
 import Circle from 'react-circle';
 import TCheckbox from "./TCheckbox";
 import Countdown from "react-countdown-now";
-import {enableSound} from "../utils/helper";
 
 const TodoRowGroup = styled.div`
   margin-bottom: 0.5rem;
@@ -19,7 +18,7 @@ const TodoRow = styled(PaddingRow)`
 `;
 
 const TomatoGroup = styled.div`
-  margin-top: 0.5rem;
+  //margin-top: 0.5rem;
   display: ${props => props.open ? 'block' : 'none'};
 `;
 
@@ -176,7 +175,6 @@ function Todo(props) {
               disabled={playButtonDisabled}
               onClick={() => {
                 if (playButtonDisabled) return;
-                enableSound();
                 tomatoDispatch({
                   type: 'play',
                   payload: {id: todo.id, minutes: window.ttnote.tomatoTime}

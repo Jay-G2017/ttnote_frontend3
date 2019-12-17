@@ -96,7 +96,7 @@ function useProject(projectId) {
       });
       setTodoExpandedKeys(keys => {
         keys.push(todoId);
-        return keys;
+        return [...keys];
       });
     })
   };
