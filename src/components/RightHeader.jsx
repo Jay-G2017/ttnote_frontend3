@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useRef} from "react";
+import React, {useCallback, useContext, useMemo, useRef} from "react";
 import styled from "styled-components";
 import {IoIosArrowBack, IoIosClose, IoIosAlarm, IoIosCafe} from 'react-icons/io';
 import {TomatoContext} from "../reducers/tomatoReducer";
@@ -109,70 +109,72 @@ function RightHeader(props) {
   //   return () => window.timeId = clearInterval(window.timeId)
   // }, [tomatoState.isPlaying, tomatoState.id, tomatoDispatch, createTomato]);
 
-  return (
-    <HeaderRow className={'t-container'}>
-      {isMobileView &&
-      <BackCell>
-        <IoIosArrowBack
-          onClick={() => {
-            const params = window.ttnote.searchObject();
-            params.mobileShowingArea = 'middle';
-            params.enterFrom = 'left';
-            window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
-          }}
-        />
-      </BackCell>
-      }
-      {tomatoState.isPlaying ?
-        <TimerRow>
-          <TomatoCountCell onClick={() => {
-            window.ttnote.goto('/note' + window.ttnote.objectToUrl(window.ttnote.currentTomatoUrl))
-          }}>
-            <Countdown
-              ref={countdownRef}
-              date={Date.now() + tomatoState.minutes * 60 * 1000}
-              renderer={({minutes, seconds}) => <span>{zeroPad(minutes)}:{zeroPad(seconds)}</span>}
-              onComplete={() => {
-                if (tomatoState.id) {
-                  handleTomatoComplete(tomatoState.id)
-                } else {
-                  handleRestComplete()
-                }
+  return useMemo(() => {
+    return (
+      <HeaderRow className={'t-container'}>
+        {isMobileView &&
+        <BackCell>
+          <IoIosArrowBack
+            onClick={() => {
+              const params = window.ttnote.searchObject();
+              params.mobileShowingArea = 'middle';
+              params.enterFrom = 'left';
+              window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
+            }}
+          />
+        </BackCell>
+        }
+        {tomatoState.isPlaying ?
+          <TimerRow>
+            <TomatoCountCell onClick={() => {
+              window.ttnote.goto('/note' + window.ttnote.objectToUrl(window.ttnote.currentTomatoUrl))
+            }}>
+              <Countdown
+                ref={countdownRef}
+                date={Date.now() + tomatoState.minutes * 60 * 1000}
+                renderer={({minutes, seconds}) => <span>{zeroPad(minutes)}:{zeroPad(seconds)}</span>}
+                onComplete={() => {
+                  if (tomatoState.id) {
+                    handleTomatoComplete(tomatoState.id)
+                  } else {
+                    handleRestComplete()
+                  }
+                }}
+              />
+            </TomatoCountCell>
+            <CancelCell
+              onClick={() => {
+                tomatoDispatch({type: 'cancel'});
               }}
-            />
-          </TomatoCountCell>
-          <CancelCell
-            onClick={() => {
-              tomatoDispatch({type: 'cancel'});
-            }}
-          >
-            <IoIosClose/>
-          </CancelCell>
-        </TimerRow> :
-        <TimerActionRow>
-          <ShortBreakCell
-            onClick={() => {
-              window.beginAudio.play();
-              tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.shortBreakTime}})
-            }}
-          >
-            <IoIosAlarm/>
-            <IconName>短休息</IconName>
-          </ShortBreakCell>
-          <LongBreakCell
-            onClick={() => {
-              window.beginAudio.play();
-              tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.longBreakTime}})
-            }}
-          >
-            <IoIosCafe/>
-            <IconName>长休息</IconName>
-          </LongBreakCell>
+            >
+              <IoIosClose/>
+            </CancelCell>
+          </TimerRow> :
+          <TimerActionRow>
+            <ShortBreakCell
+              onClick={() => {
+                window.beginAudio.play();
+                tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.shortBreakTime}})
+              }}
+            >
+              <IoIosAlarm/>
+              <IconName>短休息</IconName>
+            </ShortBreakCell>
+            <LongBreakCell
+              onClick={() => {
+                window.beginAudio.play();
+                tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.longBreakTime}})
+              }}
+            >
+              <IoIosCafe/>
+              <IconName>长休息</IconName>
+            </LongBreakCell>
 
-        </TimerActionRow>
-      }
-    </HeaderRow>
-  )
+          </TimerActionRow>
+        }
+      </HeaderRow>
+    )
+  }, [handleTomatoComplete, tomatoState.id, tomatoState.isPlaying, tomatoState.minutes, handleRestComplete, isMobileView, tomatoDispatch]);
 }
 
 export default RightHeader;

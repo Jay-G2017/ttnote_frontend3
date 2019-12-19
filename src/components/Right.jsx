@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useMemo} from "react";
 import styled from "styled-components";
 import {CSSTransition} from 'react-transition-group';
 import Title from "./Title";

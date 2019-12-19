@@ -83,23 +83,25 @@ function useProject(projectId) {
     // new todo
   };
 
-  const createTomato = (todoId, seconds) => {
+  const createTomato = useCallback((todoId, seconds) => {
     const url = window.ttnote.baseUrl + '/todos/' + todoId + '/tomatoes';
     window.ttnote.fetch(url, {
       method: 'post',
       body: JSON.stringify({minutes: window.ttnote.tomatoTime})
     }).then(res => {
       // fetchProject();
-      setProject(data => {
-        data.todos[todoId].tomatoes.push(res);
-        return {...data}
-      });
-      setTodoExpandedKeys(keys => {
-        keys.push(todoId);
-        return [...keys];
-      });
+        setProject(data => {
+          if (data.todos[todoId]) { // 有可能已经切换成其它project的了
+            data.todos[todoId].tomatoes.push(res);
+          }
+          return {...data}
+        });
+        setTodoExpandedKeys(keys => {
+          keys.push(todoId);
+          return [...keys];
+        });
     })
-  };
+  }, []);
 
   const deleteTomato = (todoId, tomatoId) => {
     const url = window.ttnote.baseUrl + '/tomatoes/' + tomatoId;
