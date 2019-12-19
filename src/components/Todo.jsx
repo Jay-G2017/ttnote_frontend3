@@ -175,6 +175,7 @@ function Todo(props) {
               disabled={playButtonDisabled}
               onClick={() => {
                 if (playButtonDisabled) return;
+                window.beginAudio.play();
                 tomatoDispatch({
                   type: 'play',
                   payload: {id: todo.id, minutes: window.ttnote.tomatoTime}

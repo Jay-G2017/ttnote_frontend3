@@ -3,9 +3,9 @@ import styled from "styled-components";
 import {IoIosArrowBack, IoIosClose, IoIosAlarm, IoIosCafe} from 'react-icons/io';
 import {TomatoContext} from "../reducers/tomatoReducer";
 import Countdown, {zeroPad} from 'react-countdown-now';
-import {enableSound} from "../utils/helper";
 
 const HeaderRow = styled.div`
+  backdrop-filter: blur(10px);
   height: 3.3rem;
   border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorLight};
   position: fixed;
@@ -13,13 +13,14 @@ const HeaderRow = styled.div`
   right: 0;
   width: 100%;
   @media (min-width: 768px) {
-    width: 66.6%;
+    width: calc(60% - 1px);
   }
-  background-color: ${window.ttnoteThemeLight.bgColorPrimary};
+  background-color: ${window.ttnoteThemeLight.bgColorDefaultRgba};
   
   display: flex;
   justify-content: space-between;
   align-items: center;
+  z-index: 10;
 `;
 
 const TimerRow = styled.div`
@@ -79,8 +80,8 @@ function RightHeader(props) {
   const countdownRef = useRef(null);
 
   const handleTomatoComplete = useCallback((todoId) => {
-    window.dingDingAudio.play();
     createTomato(todoId);
+    window.dingDingAudio.play();
     if (window.ttnote.continueBreak) {
       tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.shortBreakTime}});
       countdownRef.current.start();
@@ -151,9 +152,8 @@ function RightHeader(props) {
         <TimerActionRow>
           <ShortBreakCell
             onClick={() => {
-              enableSound();
-              tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.shortBreakTime}}
-              )
+              window.beginAudio.play();
+              tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.shortBreakTime}})
             }}
           >
             <IoIosAlarm/>
@@ -161,6 +161,7 @@ function RightHeader(props) {
           </ShortBreakCell>
           <LongBreakCell
             onClick={() => {
+              window.beginAudio.play();
               tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.longBreakTime}})
             }}
           >

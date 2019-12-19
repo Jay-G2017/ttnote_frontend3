@@ -17,19 +17,29 @@ const ttnoteThemeLight = {
   linkColorDefault: '#576B95',
 
   // background
-  bgColorDefault: '#EDEDED',
-  bgColorPrimary: '#F7F7F7',
+  bgColorDefault: '#EDEDED', // hsl 0 0 93
+  bgColorDefaultRgba: 'rgba(237,237,237,0.9)', // hsl 0 0 93
+  bgColorPrimary: '#F7F7F7', // hsl 0 0 97
+  bgColorPrimaryRgba: 'rgba(247,247,247,0.9)', // hsl 0 0 97
   bgColorActive: '#ECECEC',
+  bgColorDark: '#343537',
+  bgColorDarkRgba: 'rgba(52,53,55,0.9)',
+  bgColorDarkLighter: '#4F5054',
+  bgColorDarkLighterRgba: 'rgba(79,80,84,0.9)',
+  bgColorDarkHover: '#313E49',
+  bgColorDarkActive: '#1E56C1',
 
   // line
   lineColorLight: 'rgba(0,0,0,.1)',
   lineColorDark: 'rgba(0,0,0,.3)',
+  lineColorSilver: '#545454',
 
   // text
   textColorTitle: 'rgba(0,0,0,.9)',
   textColorDesc: 'rgba(0,0,0,.5)',
   textColorTips: 'rgba(0,0,0,.3)',
   textColorWarn: '#FA5151',
+  textColorLight: '#fff',
 
   // btn
   // btn default

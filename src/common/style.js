@@ -85,3 +85,9 @@ export const TBadge = styled.span`
   vertical-align:middle;
   text-align:center;
 `;
+
+export const VLine = styled.div`
+ width: 1px;
+ height: 120%;
+ background-color: ${window.ttnoteThemeLight.lineColorDark};
+`;

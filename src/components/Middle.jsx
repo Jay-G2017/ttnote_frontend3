@@ -1,40 +1,109 @@
 import React from "react";
 import styled from "styled-components";
-import {IoIosMenu} from 'react-icons/io';
+import {IoIosMenu, IoIosAddCircle} from 'react-icons/io';
 import {CSSTransition} from "react-transition-group";
 import useProjects from "../hooks/useProjects";
 
 const MiddleContainer = styled.div`
   flex: 1;
-  border-left: 1px solid ${window.ttnoteThemeLight.lineColorLight};
+  border-left: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
   //align-items: center;
   //justify-content: center;
   overflow: auto;
-  // background-color: ${window.ttnoteThemeLight.bgColorDefault};
-  background-color: #fff;
+   background-color: ${window.ttnoteThemeLight.bgColorDark};
+   color: #fff;
+  //background-color: #fff;
 `;
 
 const HeaderRow = styled.div`
+  padding: 0 6vw;
   display: flex;
   align-items: center;
+  height: 3.3rem;
+  border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
+  
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background-color: ${window.ttnoteThemeLight.bgColorDarkRgba};
+  backdrop-filter: blur(10px);
 `;
 
 const ListRow = styled.div`
-  border-bottom: 1px solid ${window.ttnoteThemeLight.lineColorLight};
+  border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 1em;
   &:hover {
    cursor: pointer;
+   background-color: ${props => props.active ? '' : window.ttnoteThemeLight.bgColorDarkHover};
   }
-  background: ${props => props.active ? window.ttnoteThemeLight.bgColorPrimary : '' };
+  background: ${props => props.active ? window.ttnoteThemeLight.bgColorDarkActive : '' };
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
+`;
+
+const MiddleBody = styled.div`
+  :after {
+    content: '';
+    display: block;
+    height: 3rem;
+  }
+`;
+
+const MiddleFooter = styled.div`
+ display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${window.ttnoteThemeLight.bgColorDarkLighterRgba};
+  backdrop-filter: blur(10px);
+  
+  position: fixed;
+  bottom: 0;
+  z-index: 10;
+  left: 0;
+  width: 100%;
+  height: 3rem;
+  
+  padding: 1rem 4vw;
+  @media (min-width: 768px) {
+    left: calc(20% + 0.5px);
+    width: calc(20% - 0px);
+    padding: 1rem 1vw;
+  }
+  border-top: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
+  border-right: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
+`;
+
+const NewProjectCell = styled.div`
+  display: flex;
+  align-items: center;
+  color: ${props => props.disabled ?
+  window.ttnoteThemeLight.btnDefaultDisabledFontColor :
+  window.ttnoteThemeLight.textColorLight};
+  cursor: pointer;
+`;
+
+const IconStyled = styled.div`
+  font-size: 1.6rem;
+  display: flex;
+`;
+
+const IconName = styled.div`
+  font-size: 1rem;
+  font-weight: 600;
+  margin-left: 0.4rem;
+  line-height: 1.2;
+`;
+
+const PlaceholderDiv = styled.div`
+  height: 3.3rem;
 `;
 
 function Middle(props) {
   const {isMobileView, mobileShowingArea} = props;
-  const iconStyle = {fontSize: '24px', marginBottom: '20px'};
+  const iconStyle = {fontSize: '24px'};
   const visible = (isMobileView && mobileShowingArea === 'middle') || !isMobileView;
 
   const searchObject = window.ttnote.searchObject();
@@ -74,8 +143,8 @@ function Middle(props) {
       exit={false}
     >
       <MiddleContainer visible={visible}>
-        <HeaderRow>
           {isMobileView &&
+          <HeaderRow>
             <IoIosMenu
               onClick={() => {
                 // setMobileShowingArea('left');
@@ -86,12 +155,24 @@ function Middle(props) {
               }}
               style={iconStyle}
             />
+          </HeaderRow>
           }
-
-        </HeaderRow>
-        <div>
+        <MiddleBody>
+          {isMobileView &&
+            <PlaceholderDiv />
+          }
           {projects.map(row => renderList(row))}
-        </div>
+        </MiddleBody>
+        <MiddleFooter>
+          <NewProjectCell
+            // onClick={() => handleNewTodo()}
+          >
+            <IconStyled>
+              <IoIosAddCircle/>
+            </IconStyled>
+            <IconName>新项目</IconName>
+          </NewProjectCell>
+        </MiddleFooter>
       </MiddleContainer>
     </CSSTransition>
   )

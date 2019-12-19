@@ -9,21 +9,32 @@ import RightHeader from "./RightHeader";
 import {IoIosAddCircle} from 'react-icons/io'
 
 const RightContainer = styled.div`
-  flex: 4;
+  flex: 3;
   //border-left: 1px solid #fff;
-  border-left: 1px solid ${window.ttnoteThemeLight.lineColorLight};
-  background-color: ${window.ttnoteThemeLight.bgColorPrimary};
+  border-left: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
+  //background-color: ${window.ttnoteThemeLight.bgColorDefault};
+  background-color: ${window.ttnoteThemeLight.bgColorActive};
   //align-items: center;
   //justify-content: center;
   height: 100%;
   position: relative;
   overflow: auto;
-  padding-bottom: 3rem;
 `;
 
 const RightContent = styled.div`
-  margin-top: 3.3rem;
+  //margin-top: 3.3rem;
   //height: calc(100vh - 3.3rem);
+  :before {
+   content: '';
+   height: 3.3rem;
+   display: block;
+  }
+  :after {
+    content: '';
+    height: 3rem;
+    display: block;
+  }
+  overflow: scroll;
 `;
 
 const ProjectNameRow = styled(PaddingRow)`
@@ -64,10 +75,11 @@ const TitleGroupRow = styled.div`
 `;
 
 const RightFooter = styled.div`
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: ${window.ttnoteThemeLight.bgColorPrimary};
+  background-color: ${window.ttnoteThemeLight.bgColorPrimaryRgba};
   
   position: fixed;
   bottom: 0;
@@ -77,9 +89,10 @@ const RightFooter = styled.div`
   
   padding: 1rem 4vw;
   @media (min-width: 768px) {
-    width: 66.6%;
+    width: calc(60% - 1px);
     padding: 1rem 6vw;
   }
+  border-top: 0.5px solid ${window.ttnoteThemeLight.lineColorLight};
 `;
 
 const NewTodoCell = styled.div`
@@ -229,7 +242,7 @@ function Right(props) {
         </RightContent>
         <RightFooter>
           <NewTodoCell
-            onClick={handleNewTodo}
+            onClick={() => handleNewTodo()}
             disabled={false}
           >
             <IconStyled>
