@@ -68,7 +68,7 @@ const DescCell = styled.div`
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
   font-size: 0.8rem;
   color: ${window.ttnoteThemeLight.textColorTitle}; 
-  background-color: ${window.ttnoteThemeLight.bgColorDefault};
+  background-color: ${window.ttnoteThemeLight.bgColorPrimary};
   //display: ${props => props.visible ? 'block' : 'none'};
   display: flex;
   align-items: center;
@@ -77,7 +77,7 @@ const DescCell = styled.div`
 function Tomato(props) {
   const {sequence, tomato} = props;
   const [tomatoDescShow, setTomatoDescShow] = useState(tomato.desc);
-  const fromNow = dayjs(tomato.created_at).fromNow();
+  const fromNow = dayjs(tomato.createdAt).fromNow();
 
   const saveInfo = (value) => {
     const url = window.ttnote.baseUrl + '/tomatoes/' + tomato.id;
