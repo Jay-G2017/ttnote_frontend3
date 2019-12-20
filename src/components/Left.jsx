@@ -11,16 +11,17 @@ const LeftContainer = styled.div`
   background-color: ${window.ttnoteThemeLight.bgColorDark};
   //align-items: center;
   //justify-content: center;
-  overflow: auto;
+  height: 100%;
+  position: relative;
 `;
 
 const HeaderRow = styled.div`
-  justify-content: flex-end;
+  //justify-content: center;
   padding: 0 6vw;
   display: flex;
   align-items: center;
   height: 3.3rem;
-  border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
+  border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorDark};
   
   position: fixed;
   width: 100%;
@@ -28,6 +29,15 @@ const HeaderRow = styled.div`
   left: 0;
   background-color: ${window.ttnoteThemeLight.bgColorDarkRgba};
   backdrop-filter: blur(10px);
+  @media (min-width: 768px) {
+    position: absolute;
+    padding: 0 2vw;
+  }
+`;
+
+const LeftLogo = styled.div`
+ color: ${window.ttnoteThemeLight.textColorDarkTips};
+ font-weight: 600;
 `;
 
 const ListRow = styled.div`
@@ -46,7 +56,7 @@ const LeftFooter = styled.div`
  display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: ${window.ttnoteThemeLight.bgColorDarkLighterRgba};
+  background-color: ${window.ttnoteThemeLight.bgColorDarkRgba};
   backdrop-filter: blur(10px);
   
   position: fixed;
@@ -57,11 +67,11 @@ const LeftFooter = styled.div`
   
   padding: 1rem 4vw;
   @media (min-width: 768px) {
-    width: calc(20% - 0.5px);
+    position: absolute;
     padding: 1rem 1.5vw;
-    z-index: 2;
+    //z-index: 2;
   }
-  border-top: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
+  border-top: 0.5px solid ${window.ttnoteThemeLight.lineColorDark};
 `;
 
 const NewCategoryCell = styled.div`
@@ -142,8 +152,8 @@ function Left(props) {
       unmountOnExit
     >
       <LeftContainer>
-        {isMobileView &&
-          <HeaderRow>
+        <HeaderRow>
+          {isMobileView &&
             <IoIosArrowForward
               onClick={() => {
                 if (isMobileView) {
@@ -155,12 +165,11 @@ function Left(props) {
               }}
               style={iconStyle}
             />
-          </HeaderRow>
-        }
-        <div>
-          {isMobileView &&
-          <PlaceholderDiv />
           }
+          <LeftLogo>蕃茄时光</LeftLogo>
+          </HeaderRow>
+        <div>
+          <PlaceholderDiv />
           {renderList({id: -1, name: 'Inbox'})}
           {categories.map(list => renderList(list))}
         </div>

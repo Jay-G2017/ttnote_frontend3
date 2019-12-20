@@ -9,16 +9,15 @@ import RightHeader from "./RightHeader";
 import {IoIosAddCircle} from 'react-icons/io'
 
 const RightContainer = styled.div`
-  flex: 3;
+  flex: 3.5;
   //border-left: 1px solid #fff;
-  border-left: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
+  //border-left: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
   //background-color: ${window.ttnoteThemeLight.bgColorDefault};
   background-color: ${window.ttnoteThemeLight.bgColorActive};
   //align-items: center;
   //justify-content: center;
   height: 100%;
   position: relative;
-  overflow: auto;
 `;
 
 const RightContent = styled.div`
@@ -34,7 +33,8 @@ const RightContent = styled.div`
     height: 3rem;
     display: block;
   }
-  overflow: scroll;
+  height: 100%;
+  overflow: auto;
 `;
 
 const ProjectNameRow = styled(PaddingRow)`
@@ -89,7 +89,8 @@ const RightFooter = styled.div`
   
   padding: 1rem 4vw;
   @media (min-width: 768px) {
-    width: calc(60% - 1px);
+    position: absolute;
+    //width: calc(60% - 1px);
     padding: 1rem 6vw;
   }
   border-top: 0.5px solid ${window.ttnoteThemeLight.lineColorLight};

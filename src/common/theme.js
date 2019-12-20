@@ -22,24 +22,31 @@ const ttnoteThemeLight = {
   bgColorPrimary: '#F7F7F7', // hsl 0 0 97
   bgColorPrimaryRgba: 'rgba(247,247,247,0.9)', // hsl 0 0 97
   bgColorActive: '#ECECEC',
-  bgColorDark: '#343537',
-  bgColorDarkRgba: 'rgba(52,53,55,0.9)',
+  bgColorDark: '#2A2723',
+  bgColorDarkRgba: 'rgba(42,39,35,0.9)',
   bgColorDarkLighter: '#4F5054',
   bgColorDarkLighterRgba: 'rgba(79,80,84,0.9)',
   bgColorDarkHover: '#313E49',
-  bgColorDarkActive: '#1E56C1',
+  bgColorDarkActive: '#393A3C',
+  bgColorGrey: '#35322F',
+  bgColorGreyRgba: 'rgba(53,50,47,0.9)',
+  bgColorGreyHover: '#313E49',
+  bgColorGreyActive: '#294372',
 
   // line
   lineColorLight: 'rgba(0,0,0,.1)',
-  lineColorDark: 'rgba(0,0,0,.3)',
+  lineColorDark2: 'rgba(0,0,0,.3)',
   lineColorSilver: '#545454',
+  lineColorDark: '#211F1E',
 
   // text
   textColorTitle: 'rgba(0,0,0,.9)',
   textColorDesc: 'rgba(0,0,0,.5)',
   textColorTips: 'rgba(0,0,0,.3)',
   textColorWarn: '#FA5151',
-  textColorLight: '#fff',
+  textColorLight: '#D5D4D3',
+  textColorDarkDesc: '#6F6C69',
+  textColorDarkTips: '#4a4745',
 
   // btn
   // btn default

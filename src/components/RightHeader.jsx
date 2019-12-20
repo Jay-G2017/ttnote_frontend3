@@ -13,7 +13,8 @@ const HeaderRow = styled.div`
   right: 0;
   width: 100%;
   @media (min-width: 768px) {
-    width: calc(60% - 1px);
+    position: absolute;
+    //width: calc(60% - 1px);
   }
   background-color: ${window.ttnoteThemeLight.bgColorDefaultRgba};
   

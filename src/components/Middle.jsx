@@ -5,14 +5,15 @@ import {CSSTransition} from "react-transition-group";
 import useProjects from "../hooks/useProjects";
 
 const MiddleContainer = styled.div`
-  flex: 1;
-  border-left: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
+  flex: 1.5;
+  border-left: 0.5px solid ${window.ttnoteThemeLight.lineColorDark};
   //align-items: center;
   //justify-content: center;
-  overflow: auto;
-   background-color: ${window.ttnoteThemeLight.bgColorDark};
-   color: #fff;
+  background-color: ${window.ttnoteThemeLight.bgColorGrey};
+  //color: #fff;
   //background-color: #fff;
+  height: 100%;
+  position: relative;
 `;
 
 const HeaderRow = styled.div`
@@ -20,43 +21,53 @@ const HeaderRow = styled.div`
   display: flex;
   align-items: center;
   height: 3.3rem;
-  border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
+  border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorDark};
   
   position: fixed;
   width: 100%;
   top: 0;
   left: 0;
-  background-color: ${window.ttnoteThemeLight.bgColorDarkRgba};
+  background-color: ${window.ttnoteThemeLight.bgColorGreyRgba};
   backdrop-filter: blur(10px);
+  @media (min-width: 768px) {
+    position: absolute;
+  }
 `;
 
 const ListRow = styled.div`
   border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
+  color: ${window.ttnoteThemeLight.textColorLight};
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 1em;
   &:hover {
    cursor: pointer;
-   background-color: ${props => props.active ? '' : window.ttnoteThemeLight.bgColorDarkHover};
   }
-  background: ${props => props.active ? window.ttnoteThemeLight.bgColorDarkActive : '' };
+  background: ${props => props.active ? window.ttnoteThemeLight.bgColorGreyActive : '' };
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
 `;
 
 const MiddleBody = styled.div`
+  :before {
+    content: '';
+    display: block;
+    height: 3.3rem;
+  }
   :after {
     content: '';
     display: block;
     height: 3rem;
   }
+  height: 100%;
+  overflow: auto;
 `;
 
 const MiddleFooter = styled.div`
  display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${window.ttnoteThemeLight.bgColorDarkLighterRgba};
+  background-color: ${window.ttnoteThemeLight.bgColorGreyRgba};
   backdrop-filter: blur(10px);
   
   position: fixed;
@@ -68,12 +79,13 @@ const MiddleFooter = styled.div`
   
   padding: 1rem 4vw;
   @media (min-width: 768px) {
-    left: calc(20% + 0.5px);
-    width: calc(20% - 0px);
+    position: absolute;
+    //left: calc(20% + 0.5px);
+    //width: calc(20% - 0px);
     padding: 1rem 1vw;
   }
-  border-top: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
-  border-right: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
+  border-top: 0.5px solid ${window.ttnoteThemeLight.lineColorDark};
+  //border-right: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
 `;
 
 const NewProjectCell = styled.div`
@@ -143,8 +155,8 @@ function Middle(props) {
       exit={false}
     >
       <MiddleContainer visible={visible}>
+        <HeaderRow>
           {isMobileView &&
-          <HeaderRow>
             <IoIosMenu
               onClick={() => {
                 // setMobileShowingArea('left');
@@ -155,8 +167,8 @@ function Middle(props) {
               }}
               style={iconStyle}
             />
-          </HeaderRow>
           }
+          </HeaderRow>
         <MiddleBody>
           {isMobileView &&
             <PlaceholderDiv />
