@@ -1,8 +1,13 @@
 import React from "react";
 import styled from "styled-components";
-import {IoIosMenu, IoIosAddCircle} from 'react-icons/io';
+import {IoIosMenu, IoIosAddCircle, IoIosMore} from 'react-icons/io';
 import {CSSTransition} from "react-transition-group";
 import useProjects from "../hooks/useProjects";
+import dayjs from 'dayjs';
+import relativeTime from "dayjs/plugin/relativeTime";
+import LinesEllipsis from 'react-lines-ellipsis';
+dayjs.extend(relativeTime);
+dayjs.locale('zh-cn');
 
 const MiddleContainer = styled.div`
   flex: 1.5;
@@ -35,17 +40,33 @@ const HeaderRow = styled.div`
 `;
 
 const ListRow = styled.div`
-  border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
+  //border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
   color: ${window.ttnoteThemeLight.textColorLight};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 1em;
+  //display: flex;
+  //justify-content: center;
+  //align-items: center;
+  padding: 0 0 0 1.2rem;
   &:hover {
    cursor: pointer;
   }
-  background: ${props => props.active ? window.ttnoteThemeLight.bgColorGreyActive : '' };
-  border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
+  // background: ${props => props.active ? window.ttnoteThemeLight.bgColorGreyActive : '' };
+  //border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
+  position: relative;
+  :before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 0.3rem;
+    background-color: ${props => props.active ? window.ttnoteThemeLight.bgColorGreyActive2: ''};
+  }
+  
+`;
+
+const Inner = styled.div`
+  padding: 0.6rem 1rem 0.1rem 0 ;
+  border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorDark};
 `;
 
 const MiddleBody = styled.div`
@@ -61,6 +82,9 @@ const MiddleBody = styled.div`
   }
   height: 100%;
   overflow: auto;
+  & .middleList:last-child .middleListInner {
+    border-bottom: none;
+  }
 `;
 
 const MiddleFooter = styled.div`
@@ -88,6 +112,7 @@ const MiddleFooter = styled.div`
   //border-right: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
 `;
 
+
 const NewProjectCell = styled.div`
   display: flex;
   align-items: center;
@@ -113,6 +138,45 @@ const PlaceholderDiv = styled.div`
   height: 3.3rem;
 `;
 
+// const Right = styled.div`
+//
+// `;
+
+const ProjectNameRow = styled.div`
+  font-weight: 500;
+`;
+
+const ProjectDescRow = styled.div`
+  padding: 0.5rem 0;
+  color: ${window.ttnoteThemeLight.textColorDarkDesc};
+  font-size: 0.9rem;
+`;
+
+const ProjectInfoRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: ${window.ttnoteThemeLight.textColorDarkDesc};
+  font-size: 0.9rem;
+`;
+
+const TimeCell = styled.div`
+  width: 5rem;
+`;
+
+const TomatoCountCell = styled.div`
+  width: 3rem;
+  display: flex;
+  align-items: center;
+`;
+
+const MoreCell = styled(IoIosMore)`
+  font-size: 1.4rem;
+  color: ${window.ttnoteThemeLight.primaryFont};
+  
+  flex: none;
+`;
+
 function Middle(props) {
   const {isMobileView, mobileShowingArea} = props;
   const iconStyle = {fontSize: '24px'};
@@ -125,9 +189,11 @@ function Middle(props) {
   const {projects} = useProjects(categoryId);
 
   const renderList = (project) => {
+    const fromNow = dayjs(project.updatedAt).fromNow();
     const active = project.id === projectId;
     return(
       <ListRow
+        className={'middleList'}
         active={active}
         key={project.id}
         onClick={() => {
@@ -141,7 +207,32 @@ function Middle(props) {
           window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
         }}
       >
-        {project.name}
+        {/*<Left>{fromNow}</Left>*/}
+        {/*<Right>*/}
+        {/*</Right>*/}
+        <Inner className={'middleListInner'}>
+          <ProjectNameRow>{project.name}</ProjectNameRow>
+          <ProjectDescRow>
+            <LinesEllipsis
+              text={project.desc || ''}
+              maxLine={2}
+            />
+          </ProjectDescRow>
+          <ProjectInfoRow>
+            <TimeCell>{fromNow}</TimeCell>
+            <TomatoCountCell>
+              <span
+                role='img'
+                aria-label={'tomato'}
+                style={{marginRight: '0.2rem', color: 'transparent', textShadow: `0 0 ${window.ttnoteThemeLight.colorSecondary}`}}
+              >🍅</span>
+              <span>
+              </span>
+              <span>{project.tomatoesCount}</span>
+            </TomatoCountCell>
+            <MoreCell/>
+          </ProjectInfoRow>
+        </Inner>
       </ListRow>
     )
   };

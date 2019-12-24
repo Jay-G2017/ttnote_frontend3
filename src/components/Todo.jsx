@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useState} from "react";
+import React, {useCallback, useContext, useMemo, useRef, useState} from "react";
 import styled from 'styled-components';
 import {IoIosPlayCircle, IoIosMore} from 'react-icons/io';
 import {PaddingRow, TTextArea, TBadge} from '../common/style';
@@ -7,6 +7,7 @@ import Tomato from "./Tomato";
 import Circle from 'react-circle';
 import TCheckbox from "./TCheckbox";
 import Countdown from "react-countdown-now";
+import Overlay from 'react-bootstrap/Overlay';
 
 const TodoRowGroup = styled.div`
   margin-bottom: 0.5rem;
@@ -78,10 +79,15 @@ function Todo(props) {
     todoExpandedKeys,
     setTodoExpandedKeys,
     todoMethods,
+    showMore,
+    setShowMore,
+    testMethods,
   } = props;
   const [done, setDone] = useState(todo.done);
   // const [collapse, setCollapse] = useState(true);
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
+  const moreButtonRef = useRef(null);
+  const showOverlay = showMore.type === 'todo' && showMore.id === todo.id;
 
   const tomatoes = todo.tomatoes || [];
   const tomatoSize = tomatoes.length;
@@ -103,7 +109,7 @@ function Todo(props) {
 
   }, []);
 
-  const handleTodoExpand = () => {
+  const handleTodoExpand = useCallback(() => {
     const newTodoExpandedKeys = [...todoExpandedKeys];
     if (todoExpandedKeys.includes(todo.id)) {
       const index = newTodoExpandedKeys.indexOf(todo.id);
@@ -112,8 +118,10 @@ function Todo(props) {
       newTodoExpandedKeys.push(todo.id);
     }
     setTodoExpandedKeys(newTodoExpandedKeys);
-  };
+  }, [todoExpandedKeys, setTodoExpandedKeys, todo.id]);
 
+  return useMemo(() => {
+    console.log('todo reRender');
   return (
     <TodoRowGroup>
       <TodoRow>
@@ -134,7 +142,8 @@ function Todo(props) {
             placeholder={'输入内容'}
             onChange={(e) => {
               const value = e.currentTarget.value;
-              todoMethods.handleTodoNameChange(todo.id, value);
+              // todoMethods.handleTodoNameChange(todo.id, value);
+              testMethods.handleTodoNameChange(todo.id, value);
             }}
             onBlur={() => todoMethods.handleTodoNameOnBlur(todo.id, titleId)}
             onKeyPress={(e) => {
@@ -167,10 +176,10 @@ function Todo(props) {
                     progressColor={window.ttnoteThemeLight.colorPrimary}
                     showPercentage={false}
                   />
-                  )
+                )
               }}
             />
-             :
+            :
             <PlayCell
               disabled={playButtonDisabled}
               onClick={() => {
@@ -185,7 +194,35 @@ function Todo(props) {
             />
           }
         </PlayAndStatus>
-        <MoreCell/>
+        <div ref={moreButtonRef} onClick={e => {
+          e.stopPropagation();
+          if (showOverlay) {
+            setShowMore({type: 'todo', id: null})
+          } else {
+            setShowMore({type: 'todo', id: todo.id})
+          }
+        }}
+        >
+          <MoreCell/>
+        </div>
+        <Overlay
+          show={showOverlay}
+          target={moreButtonRef.current}
+          placement='left'
+          transition={false}
+        >
+          {({
+              scheduleUpdate,
+              arrowProps,
+              outOfBoundaries,
+              show,
+              ...props,
+            }) => {
+            return (
+              <div {...props}>Test</div>
+            )
+          }}
+        </Overlay>
       </TodoRow>
       <TomatoGroup open={todoExpandedKeys.includes(todo.id)}>
         {tomatoes.map((tomato, index) =>
@@ -198,6 +235,24 @@ function Todo(props) {
       </TomatoGroup>
     </TodoRowGroup>
   )
+  }, [
+    showOverlay,
+    setShowMore,
+    done,
+    setDone,
+    tomatoState,
+    tomatoDispatch,
+    handleTodoExpand,
+    playButtonDisabled,
+    titleId,
+    todo,
+    todoExpandedKeys,
+    // todoMethods,
+    toggleTodo,
+    tomatoSize,
+    tomatoes,
+    testMethods,
+  ]);
 }
 
 export default Todo;

@@ -1,4 +1,4 @@
-import React, {useMemo} from "react";
+import React, {useState} from "react";
 import styled from "styled-components";
 import {CSSTransition} from 'react-transition-group';
 import Title from "./Title";
@@ -130,6 +130,7 @@ function Right(props) {
   const {isMobileView, mobileShowingArea} = props;
   const visible = (isMobileView && mobileShowingArea === 'right') || !isMobileView;
   const projectId = window.ttnote.searchObject().projectId;
+  const [showMore, setShowMore] = useState({type: null, id: null});
 
   const {
     project,
@@ -142,6 +143,7 @@ function Right(props) {
     projectMethods,
     todoMethods,
     titleMethods,
+    testMethods,
   } = useProject(projectId);
   const {todoIds, todos, titleIds, titles} = project;
 
@@ -156,7 +158,7 @@ function Right(props) {
       unmountOnExit
       classNames='enter-from-right'
     >
-      <RightContainer>
+      <RightContainer onClick={() => setShowMore({id: null, type: null})}>
         <RightHeader
           isMobileView={isMobileView}
           createTomato={todoMethods.createTomato}
@@ -216,6 +218,9 @@ function Right(props) {
                     todoExpandedKeys={todoExpandedKeys}
                     setTodoExpandedKeys={setTodoExpandedKeys}
                     todoMethods={todoMethods}
+                    showMore={showMore}
+                    setShowMore={setShowMore}
+                    testMethods={testMethods}
                   />
                 ))}
               </TodoGroupRow>
@@ -233,6 +238,8 @@ function Right(props) {
                       setTodoExpandedKeys={setTodoExpandedKeys}
                       todoMethods={todoMethods}
                       titleMethods={titleMethods}
+                      showMore={showMore}
+                      setShowMore={setShowMore}
                     />
                   )
                 }

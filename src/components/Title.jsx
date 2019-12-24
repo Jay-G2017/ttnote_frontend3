@@ -68,6 +68,8 @@ function Title(props) {
     todos,
     todoMethods,
     titleMethods,
+    showMore,
+    setShowMore,
   } = props;
 
   let tomatoCount = 0;
@@ -112,6 +114,8 @@ function Title(props) {
             todoExpandedKeys={props.todoExpandedKeys}
             setTodoExpandedKeys={props.setTodoExpandedKeys}
             todoMethods={todoMethods}
+            showMore={showMore}
+            setShowMore={setShowMore}
           />)}
       </TodoBoard>
     </TitleContainer>

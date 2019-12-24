@@ -32,6 +32,7 @@ const ttnoteThemeLight = {
   bgColorGreyRgba: 'rgba(53,50,47,0.9)',
   bgColorGreyHover: '#313E49',
   bgColorGreyActive: '#294372',
+  bgColorGreyActive2: '#1C57C3',
 
   // line
   lineColorLight: 'rgba(0,0,0,.1)',
@@ -45,7 +46,8 @@ const ttnoteThemeLight = {
   textColorTips: 'rgba(0,0,0,.3)',
   textColorWarn: '#FA5151',
   textColorLight: '#D5D4D3',
-  textColorDarkDesc: '#6F6C69',
+  // textColorDarkDesc: '#6F6C69',
+  textColorDarkDesc: '#9b9997',
   textColorDarkTips: '#4a4745',
 
   // btn

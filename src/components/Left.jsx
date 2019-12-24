@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import {IoIosArrowForward, IoIosAddCircle, IoIosSettings} from 'react-icons/io';
+import {IoIosArrowForward, IoIosAddCircle, IoIosSettings, IoIosFiling, IoIosFolder} from 'react-icons/io';
 import {CSSTransition} from 'react-transition-group';
 import useCategory from "../hooks/useCategory";
 import {VLine} from "../common/style";
@@ -40,8 +40,12 @@ const LeftLogo = styled.div`
  font-weight: 600;
 `;
 
+const LeftBody = styled.div`
+ font-weight: 600;
+`;
+
 const ListRow = styled.div`
-  padding: 1em;
+  padding: 0.6rem 1rem;
   &:hover {
     cursor: pointer;
     background-color: ${props => props.active ? '' : window.ttnoteThemeLight.bgColorDarkHover};
@@ -50,10 +54,12 @@ const ListRow = styled.div`
   background: ${props => props.active ? window.ttnoteThemeLight.bgColorDarkActive : '' };
   color: ${props => props.active ? window.ttnoteThemeLight.textColorLight : '' };
   //border-radius: ${window.ttnoteThemeLight.primaryBorderRadius};
+  display: flex;
+  align-items: center;
 `;
 
 const LeftFooter = styled.div`
- display: flex;
+  display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: ${window.ttnoteThemeLight.bgColorDarkRgba};
@@ -139,7 +145,15 @@ function Left(props) {
          }
          window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
        }}
-     >{list.name}</ListRow>
+     >
+       {list.id === -1 ?
+         <IoIosFiling/> :
+         <IoIosFolder/>
+       }
+       <div style={{marginLeft: '0.3rem'}}>
+         {list.name}
+       </div>
+     </ListRow>
     )
   };
 
@@ -168,11 +182,11 @@ function Left(props) {
           }
           <LeftLogo>蕃茄时光</LeftLogo>
           </HeaderRow>
-        <div>
+        <LeftBody>
           <PlaceholderDiv />
-          {renderList({id: -1, name: 'Inbox'})}
+          {renderList({id: -1, name: '收件箱'})}
           {categories.map(list => renderList(list))}
-        </div>
+        </LeftBody>
         <LeftFooter>
           <NewCategoryCell
             // onClick={() => handleNewTodo()}

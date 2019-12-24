@@ -92,7 +92,9 @@ function Tomato(props) {
 
   const handleTomatoDelete = (e) => {
     e.stopPropagation();
-    props.deleteTomato(tomato.todoId, tomato.id)
+    if (window.confirm('确定要删除吗')) {
+      props.deleteTomato(tomato.todoId, tomato.id)
+    }
   };
 
   return (

@@ -41,8 +41,8 @@ function Note() {
   }, [isMobileView]);
 
   useEffect(() => {
-    window.ttnote.tomatoTime = 0.1;
-    window.ttnote.shortBreakTime = 0.1;
+    window.ttnote.tomatoTime = 25;
+    window.ttnote.shortBreakTime = 15;
     window.ttnote.longBreakTime = 15;
     window.ttnote.continueBreak = true;
     window.ttnote.midAlert = false;
