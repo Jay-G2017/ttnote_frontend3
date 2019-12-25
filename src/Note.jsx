@@ -1,4 +1,4 @@
-import React, {useEffect, useReducer, useState} from 'react';
+import React, {useCallback, useEffect, useReducer, useState} from 'react';
 import styled from 'styled-components';
 import Left from "./components/Left";
 import Middle from "./components/Middle";
@@ -40,6 +40,10 @@ function Note() {
     return () => window.removeEventListener('resize', handleResize);
   }, [isMobileView]);
 
+  // const initUserSetting = useCallback(() => {
+  //   const url = window.ttnote.baseUrl +
+  //
+  // }, []);
   useEffect(() => {
     window.ttnote.tomatoTime = 25;
     window.ttnote.shortBreakTime = 5;

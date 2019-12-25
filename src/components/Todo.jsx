@@ -70,6 +70,7 @@ const MoreCell = styled.div`
   // color: ${window.ttnoteThemeLight.bgColorDark};
   display: flex;
   align-items: center;
+  cursor: pointer;
   
   flex: none;
 `;

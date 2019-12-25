@@ -1,9 +1,11 @@
-import React from "react";
+import React, {useState} from "react";
 import styled from "styled-components";
 import {IoIosArrowForward, IoIosAddCircle, IoIosSettings, IoIosFiling, IoIosFolder} from 'react-icons/io';
 import {CSSTransition} from 'react-transition-group';
 import useCategory from "../hooks/useCategory";
 import {VLine} from "../common/style";
+import {Modal} from "react-bootstrap";
+import Setting from "./Setting";
 
 const LeftContainer = styled.div`
   flex: 1;
@@ -114,6 +116,7 @@ const PlaceholderDiv = styled.div`
 
 function Left(props) {
   const {isMobileView, mobileShowingArea} = props;
+  const [settingModalShow, setSettingModalShow] = useState(false);
   const iconStyle = {fontSize: '24px'};
   const visible = !isMobileView || (isMobileView && mobileShowingArea === 'left');
 
@@ -198,14 +201,21 @@ function Left(props) {
           </NewCategoryCell>
           <VLine/>
           <SettingCell
-            onClick={() => {
-            }}
+            onClick={() => setSettingModalShow(true)}
           >
             <IconStyled>
               <IoIosSettings/>
             </IconStyled>
           </SettingCell>
         </LeftFooter>
+        <Modal
+          centered={true}
+          animation={true}
+          show={settingModalShow}
+          onHide={() => setSettingModalShow(false)}
+        >
+          <Setting/>
+        </Modal>
       </LeftContainer>
     </CSSTransition>
   )
