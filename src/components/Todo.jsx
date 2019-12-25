@@ -90,6 +90,7 @@ function Todo(props) {
     handleTodoNameOnBlur,
     handleTodoNameEnterPress,
     deleteTomato,
+    handleTodoDeleteWithConfirm,
   } = todoMethods;
   const [done, setDone] = useState(todo.done);
   // const [collapse, setCollapse] = useState(true);
@@ -128,7 +129,19 @@ function Todo(props) {
     setTodoExpandedKeys(newTodoExpandedKeys);
   }, [todoExpandedKeys, setTodoExpandedKeys, todo.id]);
 
+  const handleTodoDelete = useCallback((todoId, titleId) => {
+    if (tomatoSize > 0) {
+      if (window.confirm('这会删除当前任务下的所有蕃茄，确定要删除吗？')) {
+        handleTodoDeleteWithConfirm(todoId, titleId)
+      }
+    } else {
+      handleTodoDeleteWithConfirm(todoId, titleId)
+    }
+
+  }, [tomatoSize, handleTodoDeleteWithConfirm]);
+
   return useMemo(() => {
+    console.log('todo in');
     return (
       <TodoRowGroup>
         <TodoRow>
@@ -219,7 +232,9 @@ function Todo(props) {
           >
             {props => (
               <OverlayComp {...props}>
-                <div>删除</div>
+                <div
+                  onClick={() => handleTodoDelete(todo.id, titleId)}
+                >删除</div>
               </OverlayComp>
             )
             }
@@ -255,6 +270,7 @@ function Todo(props) {
     toggleTodo,
     tomatoSize,
     tomatoes,
+    handleTodoDelete,
   ]);
 }
 

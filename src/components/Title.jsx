@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React, {useCallback, useRef} from "react";
 import styled from "styled-components";
 import Todo from "./Todo";
 import {PaddingRow, TTextArea, TBadge} from '../common/style';
@@ -76,6 +76,8 @@ function Title(props) {
     setShowMore,
   } = props;
 
+  const {handleTitleDeleteWithConfirm} = titleMethods;
+
   const moreButtonRef = useRef(null);
   const showOverlay = showMore.type === 'title' && showMore.id === title.id;
 
@@ -84,6 +86,18 @@ function Title(props) {
    const tSize = todos[todoId].tomatoes ? todos[todoId].tomatoes.length : 0;
     tomatoCount += tSize;
   });
+
+  const todoSize = title.todoIds ? title.todoIds.length : 0;
+
+  const handleTitleDelete = useCallback(() => {
+    if (todoSize > 0) {
+      if (window.confirm('这会删除当前组下的所有任务，确定要删除吗？')) {
+        handleTitleDeleteWithConfirm(title.id)
+      }
+    } else {
+      handleTitleDeleteWithConfirm(title.id)
+    }
+  }, [handleTitleDeleteWithConfirm, title.id, todoSize]);
 
   return (
     <TitleContainer>
@@ -127,7 +141,9 @@ function Title(props) {
         >
           {props => (
             <OverlayComp {...props}>
-              <div>删除</div>
+              <div
+                onClick={handleTitleDelete}
+              >删除</div>
             </OverlayComp>
           )
           }

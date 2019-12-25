@@ -143,7 +143,6 @@ function Right(props) {
     projectMethods,
     todoMethods,
     titleMethods,
-    testMethods,
   } = useProject(projectId);
   const {todoIds, todos, titleIds, titles} = project;
 
@@ -158,7 +157,11 @@ function Right(props) {
       unmountOnExit
       classNames='enter-from-right'
     >
-      <RightContainer onClick={() => setShowMore({id: null, type: null})}>
+      <RightContainer
+        onClick={() => {
+          if (showMore.id)
+            setShowMore({id: null, type: null})
+        }}>
         <RightHeader
           isMobileView={isMobileView}
           createTomato={todoMethods.createTomato}
@@ -220,7 +223,6 @@ function Right(props) {
                     todoMethods={todoMethods}
                     showMore={showMore}
                     setShowMore={setShowMore}
-                    testMethods={testMethods}
                   />
                 ))}
               </TodoGroupRow>

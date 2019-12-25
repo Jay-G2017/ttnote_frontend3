@@ -165,8 +165,6 @@ function useProject(projectId) {
     })
   };
 
-
-
   const handleTitleNameEnterPress = (e, titleId) => {
     stopEventFlag.current = true;
     e.currentTarget.blur();
@@ -196,6 +194,22 @@ function useProject(projectId) {
     stopEventFlag.current = false;
   };
 
+  const handleTodoDeleteWithConfirm = useCallback((todoId, titleId) => {
+    setProject(data => {
+      let index;
+      if (titleId) {
+        index = data.titles[titleId].todoIds.indexOf(todoId);
+        data.titles[titleId].todoIds.splice(index, 1);
+      } else {
+        index = data.todoIds.indexOf(todoId);
+        data.todoIds.splice(index, 1);
+      }
+      delete data.todos[todoId];
+      return {...data};
+    });
+    deleteTodo(todoId);
+  }, []);
+
   const handleTodoDelete = useCallback((todoId, titleId) => {
     // 如果todo下面有蕃茄，就不删，返回原值
     const haveTomatoes = todos[todoId].tomatoes && todos[todoId].tomatoes.length > 0;
@@ -205,21 +219,19 @@ function useProject(projectId) {
         return {...data}
       })
     } else {
-      setProject(data => {
-        let index;
-        if (titleId) {
-          index = data.titles[titleId].todoIds.indexOf(todoId);
-          data.titles[titleId].todoIds.splice(index, 1);
-        } else {
-          index = data.todoIds.indexOf(todoId);
-          data.todoIds.splice(index, 1);
-        }
-        delete data.todos[todoId];
-        return {...data};
-      });
-      deleteTodo(todoId);
+      handleTodoDeleteWithConfirm(todoId, titleId);
     }
-  }, [todos]);
+  }, [todos, handleTodoDeleteWithConfirm]);
+
+  const handleTitleDeleteWithConfirm = useCallback((titleId) => {
+    setProject(data => {
+      const index = data.titleIds.indexOf(titleId);
+      data.titleIds.splice(index, 1);
+      delete data.titles[titleId];
+      return {...data};
+    });
+    deleteTitle(titleId);
+  }, []);
 
   const handleTitleDelete = (titleId) => {
     // 如果title下面有todo就不删，返回原值
@@ -230,13 +242,7 @@ function useProject(projectId) {
         return {...data}
       })
     } else {
-      setProject(data => {
-        const index = data.titleIds.indexOf(titleId);
-        data.titleIds.splice(index, 1);
-        delete data.titles[titleId];
-        return {...data};
-      });
-      deleteTitle(titleId);
+      handleTitleDeleteWithConfirm(titleId);
     }
   };
 
@@ -456,9 +462,13 @@ function useProject(projectId) {
       handleTodoNameEnterPress,
       createTomato,
       deleteTomato,
+      handleTodoDeleteWithConfirm,
     },
-    titleMethods: {handleTitleNameChange, handleTitleNameEnterPress},
-    testMethods: {handleTodoNameChange}
+    titleMethods: {
+      handleTitleNameChange,
+      handleTitleNameEnterPress,
+      handleTitleDeleteWithConfirm,
+    },
   }
 }
 
