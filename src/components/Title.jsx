@@ -1,8 +1,10 @@
-import React from "react";
+import React, {useRef} from "react";
 import styled from "styled-components";
 import Todo from "./Todo";
 import {PaddingRow, TTextArea, TBadge} from '../common/style';
 import {IoIosMore} from 'react-icons/io';
+import Overlay from "react-bootstrap/Overlay";
+import OverlayComp from "./OverlayComp";
 
 const TitleContainer = styled.div`
   //background-color: #fff;
@@ -49,9 +51,11 @@ const CountCell = styled(TBadge)`
   visibility: ${props => props.visible ? 'visible' : 'hidden'};
 `;
 
-const MoreCell = styled(IoIosMore)`
+const MoreCell = styled.div`
   font-size: 1.4rem;
-  color: ${window.ttnoteThemeLight.primaryFont};
+  // color: ${window.ttnoteThemeLight.bgColorDark};
+  display: flex;
+  align-items: center;
   
   flex: none;
 `;
@@ -71,6 +75,9 @@ function Title(props) {
     showMore,
     setShowMore,
   } = props;
+
+  const moreButtonRef = useRef(null);
+  const showOverlay = showMore.type === 'title' && showMore.id === title.id;
 
   let tomatoCount = 0;
   (title.todoIds || []).forEach(todoId => {
@@ -101,7 +108,30 @@ function Title(props) {
           />
         </NameCell>
         <CountCell visible={tomatoCount > 0}>{tomatoCount}</CountCell>
-        <MoreCell/>
+        <MoreCell ref={moreButtonRef} onClick={e => {
+          e.stopPropagation();
+          if (showOverlay) {
+            setShowMore({type: 'title', id: null})
+          } else {
+            setShowMore({type: 'title', id: title.id})
+          }
+        }}
+        >
+          <IoIosMore/>
+        </MoreCell>
+        <Overlay
+          show={showOverlay}
+          target={moreButtonRef.current}
+          placement='left'
+          transition={false}
+        >
+          {props => (
+            <OverlayComp {...props}>
+              <div>删除</div>
+            </OverlayComp>
+          )
+          }
+        </Overlay>
       </TitleRow>
       <TodoBoard>
         {(title.todoIds || []).map(todoId =>

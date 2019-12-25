@@ -42,7 +42,7 @@ function Note() {
 
   useEffect(() => {
     window.ttnote.tomatoTime = 25;
-    window.ttnote.shortBreakTime = 15;
+    window.ttnote.shortBreakTime = 5;
     window.ttnote.longBreakTime = 15;
     window.ttnote.continueBreak = true;
     window.ttnote.midAlert = false;
