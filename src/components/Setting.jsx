@@ -17,9 +17,9 @@ function Setting() {
   );
 
   const settings = [
-    {name: '蕃茄时长', value: 'tomatoTime', patchValue: 'tomato_minutes'},
-    {name: '短休息时长', value: 'shortBreakTime', patchValue: 'short_rest_minutes'},
-    {name: '长休息时长', value: 'longBreakTime', patchValue: 'long_rest_minutes'},
+    {name: '蕃茄时长', key: 'tomatoMinutes', patchKey: 'tomato_minutes'},
+    {name: '短休息时长', key: 'shortRestMinutes', patchKey: 'short_rest_minutes'},
+    {name: '长休息时长', key: 'longRestMinutes', patchKey: 'long_rest_minutes'},
   ];
 
   const updateSetting = useCallback((name, value) => {
@@ -27,23 +27,26 @@ function Setting() {
     window.ttnote.fetch(url, {
       method: 'PATCH',
       body: JSON.stringify({[name]: value})
-    }).then(res => console.log(res))
+    }).then(res => {
+      localStorage.setItem('ttnoteUserSetting', JSON.stringify(res));
+      window.ttnote.userSetting = res;
+    })
 
   }, []);
 
   return (
     <Container>
       {settings.map(settingObj => (
-      <FormGroup key={settingObj.value}>
+      <FormGroup key={settingObj.key}>
         <FormLabel column={false}>{settingObj.name}</FormLabel>
         <FormControl
           size={'sm'}
           as='select'
-          defaultValue={window.ttnote[settingObj.value]}
+          defaultValue={window.ttnote.userSetting[settingObj.key]}
           onChange={e => {
             const value = e.currentTarget.value;
-            window.ttnote[settingObj.value] = value;
-            updateSetting(settingObj.patchValue, value);
+            window.ttnote.userSetting[settingObj.key] = value;
+            updateSetting(settingObj.patchKey, value);
           }}
         >
           {minutesOptions}
@@ -52,10 +55,10 @@ function Setting() {
       ))}
       <FormGroup>
         <FormCheck
-          defaultChecked={window.ttnote.continueBreak}
+          defaultChecked={window.ttnote.userSetting.autoRest}
           onChange={e => {
             const value = e.target.checked;
-            window.ttnote.continueBreak = value;
+            window.ttnote.userSetting.autoRest = value;
             updateSetting('auto_rest', value);
           }}
           type='checkbox'

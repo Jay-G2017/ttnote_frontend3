@@ -207,7 +207,7 @@ function Todo(props) {
                   window.beginAudio.play();
                   tomatoDispatch({
                     type: 'play',
-                    payload: {id: todo.id, minutes: window.ttnote.tomatoTime}
+                    payload: {id: todo.id, minutes: window.ttnote.userSetting.tomatoMinutes}
                   });
                   window.ttnote.currentTomatoUrl = window.ttnote.searchObject();
                 }}

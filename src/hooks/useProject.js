@@ -87,7 +87,7 @@ function useProject(projectId) {
     const url = window.ttnote.baseUrl + '/todos/' + todoId + '/tomatoes';
     window.ttnote.fetch(url, {
       method: 'post',
-      body: JSON.stringify({minutes: window.ttnote.tomatoTime})
+      body: JSON.stringify({minutes: window.ttnote.userSetting.tomatoMinutes})
     }).then(res => {
       // fetchProject();
         setProject(data => {

@@ -83,8 +83,8 @@ function RightHeader(props) {
   const handleTomatoComplete = useCallback((todoId) => {
     createTomato(todoId);
     window.dingDingAudio.play();
-    if (window.ttnote.continueBreak) {
-      tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.shortBreakTime}});
+    if (window.ttnote.userSetting.autoRest) {
+      tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.userSetting.shortRestMinutes}});
       countdownRef.current.start();
     }
   }, [tomatoDispatch, createTomato]);
@@ -155,7 +155,7 @@ function RightHeader(props) {
             <ShortBreakCell
               onClick={() => {
                 window.beginAudio.play();
-                tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.shortBreakTime}})
+                tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.userSetting.shortRestMinutes}})
               }}
             >
               <IoIosAlarm/>
@@ -164,7 +164,7 @@ function RightHeader(props) {
             <LongBreakCell
               onClick={() => {
                 window.beginAudio.play();
-                tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.longBreakTime}})
+                tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.userSetting.longRestMinutes}})
               }}
             >
               <IoIosCafe/>

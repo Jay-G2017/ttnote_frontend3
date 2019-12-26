@@ -20,6 +20,7 @@ const _ttnote = {
 
     baseUrl: SERVER_URL[process.env.NODE_ENV],
     user: JSON.parse(localStorage.getItem('ttnoteUser')),
+    userSetting: JSON.parse(localStorage.getItem('ttnoteUserSetting')),
 
     searchObject() {
         const query = decodeURIComponent(window.location.search)
