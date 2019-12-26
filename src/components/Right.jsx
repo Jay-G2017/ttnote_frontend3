@@ -140,6 +140,7 @@ function Right(props) {
     projectDescInput,
     todoExpandedKeys,
     setTodoExpandedKeys,
+    todayTomatoSize,
     projectMethods,
     todoMethods,
     titleMethods,
@@ -165,6 +166,7 @@ function Right(props) {
         <RightHeader
           isMobileView={isMobileView}
           createTomato={todoMethods.createTomato}
+          todayTomatoSize={todayTomatoSize}
         />
         <RightContent>
           {!projectId ? <div>no project</div> :

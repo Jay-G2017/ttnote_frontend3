@@ -1,7 +1,7 @@
 import React, {useCallback, useRef} from "react";
 import styled from "styled-components";
 import Todo from "./Todo";
-import {PaddingRow, TTextArea, TBadge} from '../common/style';
+import {PaddingRow, TTextArea} from '../common/style';
 import {IoIosMore} from 'react-icons/io';
 import Overlay from "react-bootstrap/Overlay";
 import OverlayComp from "./OverlayComp";
@@ -43,13 +43,20 @@ const NameCell = styled.div`
   font-weight: 700;
 `;
 
-const CountCell = styled(TBadge)`
-  flex: none;
-  margin-right: 0.3rem;
-  background-color: ${window.ttnoteThemeLight.bgColorDefault};
-  color: ${window.ttnoteThemeLight.textColorTitle};
-  visibility: ${props => props.visible ? 'visible' : 'hidden'};
-`;
+// const CountCell = styled(TBadge)`
+//   flex: none;
+//   margin-right: 0.3rem;
+//   background-color: ${window.ttnoteThemeLight.bgColorDefault};
+//   color: ${window.ttnoteThemeLight.textColorTitle};
+//   visibility: ${props => props.visible ? 'visible' : 'hidden'};
+// `;
+//
+// const TomatoBadge = styled(Badge)`
+//   flex: none;
+//   margin-right: 0.6rem;
+//   visibility: ${props => props.visible ? 'visible' : 'hidden'};
+//   color: ${window.ttnoteThemeLight.colorSecondary};
+// `;
 
 const MoreCell = styled.div`
   font-size: 1.4rem;
@@ -58,6 +65,7 @@ const MoreCell = styled.div`
   align-items: center;
   cursor: pointer;
   flex: none;
+  color: ${window.ttnoteThemeLight.colorSecondary};
 `;
 
 const TodoBoard = styled.div`
@@ -81,11 +89,11 @@ function Title(props) {
   const moreButtonRef = useRef(null);
   const showOverlay = showMore.type === 'title' && showMore.id === title.id;
 
-  let tomatoCount = 0;
-  (title.todoIds || []).forEach(todoId => {
-   const tSize = todos[todoId].tomatoes ? todos[todoId].tomatoes.length : 0;
-    tomatoCount += tSize;
-  });
+  // let tomatoCount = 0;
+  // (title.todoIds || []).forEach(todoId => {
+  //  const tSize = todos[todoId].tomatoes ? todos[todoId].tomatoes.length : 0;
+  //   tomatoCount += tSize;
+  // });
 
   const todoSize = title.todoIds ? title.todoIds.length : 0;
 
@@ -121,7 +129,11 @@ function Title(props) {
             }}
           />
         </NameCell>
-        <CountCell visible={tomatoCount > 0}>{tomatoCount}</CountCell>
+        {/*<CountCell visible={tomatoCount > 0}>{tomatoCount}</CountCell>*/}
+        {/*<TomatoBadge*/}
+        {/*  variant={'light'}*/}
+        {/*  visible={tomatoCount > 0}*/}
+        {/*>{tomatoCount}</TomatoBadge>*/}
         <MoreCell ref={moreButtonRef} onClick={e => {
           e.stopPropagation();
           if (showOverlay) {

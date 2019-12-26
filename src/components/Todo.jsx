@@ -1,7 +1,7 @@
 import React, {useCallback, useContext, useMemo, useRef, useState} from "react";
 import styled from 'styled-components';
 import {IoIosPlayCircle, IoIosMore} from 'react-icons/io';
-import {PaddingRow, TTextArea, TBadge} from '../common/style';
+import {PaddingRow, TTextArea} from '../common/style';
 import {TomatoContext} from '../reducers/tomatoReducer';
 import Tomato from "./Tomato";
 import Circle from 'react-circle';
@@ -9,6 +9,7 @@ import TCheckbox from "./TCheckbox";
 import Countdown from "react-countdown-now";
 import Overlay from 'react-bootstrap/Overlay';
 import OverlayComp from "./OverlayComp";
+import {Badge} from "react-bootstrap";
 
 const TodoRowGroup = styled.div`
   margin-bottom: 0.5rem;
@@ -31,6 +32,9 @@ const CheckCell = styled.div`
   align-items: center;
   
   margin-right: 0.3rem;
+  & label {
+    margin-bottom: 0;
+  }
 `;
 
 const NameCell = styled.div`
@@ -38,19 +42,29 @@ const NameCell = styled.div`
   align-items: center;
   flex: auto;
   background-color: #fff;
-  padding: 0.3rem;
+  padding: 0.3rem 0.5rem 0.3rem 0.3rem;
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
-  margin-right: 0.4rem;
+  margin-right: 0.7rem;
   color: ${props => props.done ? window.ttnoteThemeLight.textColorDesc : 'inherit'};
+  position: relative;
 `;
 
-const CountCell = styled.div`
-  margin-right: 0.3rem;
-  display: flex;
-  align-items: center;
+const TomatoBadge = styled(Badge)`
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-radius: 3px;
   visibility: ${props => props.visible ? 'visible' : 'hidden'};
-  cursor: pointer;
+  color: ${window.ttnoteThemeLight.colorSecondary};
 `;
+
+// const CountCell = styled.div`
+//   margin-right: 0.4rem;
+//   display: flex;
+//   align-items: center;
+//   visibility: ${props => props.visible ? 'visible' : 'hidden'};
+//   cursor: pointer;
+// `;
 
 const PlayAndStatus = styled.div`
   flex: none;
@@ -58,11 +72,12 @@ const PlayAndStatus = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 1.4rem;
-  margin-right: 0.3rem;
+  margin-right: 0.4rem;
 `;
 
 const PlayCell = styled(IoIosPlayCircle)`
   color: ${props => props.disabled ? window.ttnoteThemeLight.btnDefaultDisabledFontColor : window.ttnoteThemeLight.primary};
+  cursor: pointer;
 `;
 
 const MoreCell = styled.div`
@@ -71,6 +86,7 @@ const MoreCell = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
+  color: ${window.ttnoteThemeLight.colorSecondary};
   
   flex: none;
 `;
@@ -101,7 +117,7 @@ function Todo(props) {
 
   const tomatoes = todo.tomatoes || [];
   const tomatoSize = tomatoes.length;
-  const tomatoSizeToMax = tomatoSize >= 9;
+  const tomatoSizeToMax = tomatoSize >= 20;
   const playButtonDisabled = tomatoState.isPlaying || tomatoSizeToMax || todo.id < 0;
 
   const toggleTodo = useCallback((todoId, done) => {
@@ -173,13 +189,17 @@ function Todo(props) {
                 }
               }}
             />
+            <TomatoBadge
+              variant={'light'}
+              visible={tomatoSize > 0}
+            >{tomatoSize}</TomatoBadge>
           </NameCell>
-          <CountCell
-            visible={tomatoSize > 0}
-            onClick={handleTodoExpand}
-          >
-            <TBadge>{tomatoSize}</TBadge>
-          </CountCell>
+          {/*<CountCell*/}
+          {/*  visible={tomatoSize > 0}*/}
+          {/*  onClick={handleTodoExpand}*/}
+          {/*>*/}
+          {/*  <TBadge>{tomatoSize}</TBadge>*/}
+          {/*</CountCell>*/}
           <PlayAndStatus>
             {tomatoState.id === todo.id ?
               <Countdown

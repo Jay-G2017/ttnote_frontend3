@@ -1,6 +1,6 @@
 import React, {useCallback, useContext, useMemo, useRef} from "react";
 import styled from "styled-components";
-import {IoIosArrowBack, IoIosClose, IoIosAlarm, IoIosCafe} from 'react-icons/io';
+import {IoIosArrowBack, IoIosClose, IoIosAlarm, IoIosCafe, IoIosRibbon} from 'react-icons/io';
 import {TomatoContext} from "../reducers/tomatoReducer";
 import Countdown, {zeroPad} from 'react-countdown-now';
 
@@ -61,6 +61,7 @@ const ShortBreakCell = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  cursor: pointer;
 `;
 
 const IconName = styled.div`
@@ -69,14 +70,25 @@ const IconName = styled.div`
 `;
 
 const LongBreakCell = styled.div`
+  margin-right: 1rem;
   font-size: 1.4rem;
   display: flex;
   flex-direction: column;
   align-items: center;
+  cursor: pointer;
+`;
+
+const TodayCell = styled.div`
+  font-size: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
 `;
 
 function RightHeader(props) {
-  const {isMobileView, createTomato} = props;
+  const {isMobileView, createTomato, todayTomatoSize} = props;
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
   const countdownRef = useRef(null);
 
@@ -170,12 +182,25 @@ function RightHeader(props) {
               <IoIosCafe/>
               <IconName>长休息</IconName>
             </LongBreakCell>
+            <TodayCell>
+              <IoIosRibbon/>
+              <IconName>{`今日(${todayTomatoSize})`}</IconName>
+            </TodayCell>
 
           </TimerActionRow>
         }
       </HeaderRow>
     )
-  }, [handleTomatoComplete, tomatoState.id, tomatoState.isPlaying, tomatoState.minutes, handleRestComplete, isMobileView, tomatoDispatch]);
+  }, [
+    handleTomatoComplete,
+    tomatoState.id,
+    tomatoState.isPlaying,
+    tomatoState.minutes,
+    handleRestComplete,
+    isMobileView,
+    tomatoDispatch,
+    todayTomatoSize,
+  ]);
 }
 
 export default RightHeader;

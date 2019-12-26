@@ -4,6 +4,7 @@ import {cloneDeep} from 'lodash';
 function useProject(projectId) {
   const [project, setProject] = useState({todos: {}, titles: {}, todoIds: [], titleIds: []});
   const [todoExpandedKeys, setTodoExpandedKeys] = useState([]);
+  const [todayTomatoSize, setTodayTomatoSize] = useState(0);
   const projectInitial = useRef({todos: {}, titles: {}, todoIds: [], titleIds: []});
 
   const stopEventFlag = useRef(false);
@@ -26,6 +27,19 @@ function useProject(projectId) {
       fetchProject();
     }
   }, [projectId, fetchProject]);
+
+  const fetchTodayTomatoSize = useCallback(() => {
+    const url = window.ttnote.baseUrl + '/today_tomato_count';
+    window.ttnote.fetch(url)
+      .then(res => {
+        setTodayTomatoSize(res.size)
+      })
+
+  }, []);
+
+  useEffect(() => {
+    fetchTodayTomatoSize()
+  }, [fetchTodayTomatoSize]);
 
   const handleProjectNameChange = (value) => {
     setProject({...project, name: value});
@@ -90,18 +104,20 @@ function useProject(projectId) {
       body: JSON.stringify({minutes: window.ttnote.userSetting.tomatoMinutes})
     }).then(res => {
       // fetchProject();
-        setProject(data => {
-          if (data.todos[todoId]) { // 有可能已经切换成其它project的了
-            data.todos[todoId].tomatoes.push(res);
-          }
-          return {...data}
-        });
-        setTodoExpandedKeys(keys => {
-          keys.push(todoId);
-          return [...keys];
-        });
+      setProject(data => {
+        if (data.todos[todoId]) { // 有可能已经切换成其它project的了
+          data.todos[todoId].tomatoes.push(res);
+        }
+        return {...data}
+      });
+      setTodoExpandedKeys(keys => {
+        keys.push(todoId);
+        return [...keys];
+      });
+      // update today tomato size
+      fetchTodayTomatoSize()
     })
-  }, []);
+  }, [fetchTodayTomatoSize]);
 
   const deleteTomato = useCallback((todoId, tomatoId) => {
     const url = window.ttnote.baseUrl + '/tomatoes/' + tomatoId;
@@ -113,10 +129,12 @@ function useProject(projectId) {
           const index = data.todos[todoId].tomatoes.findIndex(tomato => tomato.id === tomatoId);
           data.todos[todoId].tomatoes.splice(index, 1);
           return {...data}
-        })
+        });
+        // update today tomato size
+        fetchTodayTomatoSize()
       })
 
-  }, []);
+  }, [fetchTodayTomatoSize]);
 
   const updateProject = (params) => {
     const url = window.ttnote.baseUrl + '/projects/' + projectId;
@@ -358,7 +376,6 @@ function useProject(projectId) {
   }, [createTodo, handleTodoDelete, todos]);
 
 
-
   const createTitle = (titleId, params, callback) => {
     const url = window.ttnote.baseUrl + `/projects/${projectId}/titles/`;
     window.ttnote.fetch(url, {
@@ -439,6 +456,7 @@ function useProject(projectId) {
       })
   };
 
+
   return {
     project,
     updateProject,
@@ -448,6 +466,7 @@ function useProject(projectId) {
     projectDescInput,
     todoExpandedKeys,
     setTodoExpandedKeys,
+    todayTomatoSize,
     projectMethods: {
       handleProjectNameChange,
       handleProjectNameEnterPress,
