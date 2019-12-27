@@ -28,12 +28,12 @@ const RightContent = styled.div`
    height: 3.3rem;
    display: block;
   }
-  :after {
-    content: '';
-    height: 3rem;
-    display: block;
-  }
-  height: 100%;
+  //:after {
+  //  content: '';
+  //  height: 3rem;
+  //  display: block;
+  //}
+  height: calc(100% - 3rem);
   overflow: auto;
 `;
 
