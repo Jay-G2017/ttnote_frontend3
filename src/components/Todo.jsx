@@ -56,6 +56,7 @@ const TomatoBadge = styled(Badge)`
   border-radius: 3px;
   visibility: ${props => props.visible ? 'visible' : 'hidden'};
   color: ${window.ttnoteThemeLight.colorSecondary};
+  cursor: pointer;
 `;
 
 // const CountCell = styled.div`
@@ -192,6 +193,7 @@ function Todo(props) {
             <TomatoBadge
               variant={'light'}
               visible={tomatoSize > 0}
+              onClick={handleTodoExpand}
             >{tomatoSize}</TomatoBadge>
           </NameCell>
           {/*<CountCell*/}
@@ -262,12 +264,12 @@ function Todo(props) {
           </Overlay>
         </TodoRow>
         <TomatoGroup open={todoExpandedKeys.includes(todo.id)}>
-          {tomatoes.map((tomato, index) =>
+          {tomatoes.map(tomato =>
             <Tomato
               key={tomato.id}
-              sequence={index + 1}
               tomato={tomato}
               deleteTomato={deleteTomato}
+              todoDone={done}
             />)}
         </TomatoGroup>
       </TodoRowGroup>
