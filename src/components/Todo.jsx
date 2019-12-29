@@ -92,6 +92,14 @@ const MoreCell = styled.div`
   flex: none;
 `;
 
+const OverlayContainer = styled.div`
+  background-color: ${window.ttnoteThemeLight.bgColorDark};
+  border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
+  padding: 0.2rem 0.7rem;
+  color: ${window.ttnoteThemeLight.textColorLight};
+  font-size: 0.8rem;
+`;
+
 
 function Todo(props) {
   const {
@@ -255,9 +263,11 @@ function Todo(props) {
           >
             {props => (
               <OverlayComp {...props}>
+                <OverlayContainer>
                 <div
                   onClick={() => handleTodoDelete(todo.id, titleId)}
                 >删除</div>
+                </OverlayContainer>
               </OverlayComp>
             )
             }

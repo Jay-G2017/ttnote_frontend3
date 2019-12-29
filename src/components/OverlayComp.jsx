@@ -19,9 +19,9 @@ const OverlayComp = React.forwardRef((props, ref) => {
     ...otherProps
   } = props;
   return(
-    <Container ref={ref} {...otherProps}>
+    <div ref={ref} {...otherProps}>
       {children}
-    </Container>
+    </div>
   )
 });
 

@@ -72,6 +72,14 @@ const TodoBoard = styled.div`
 
 `;
 
+const OverlayContainer = styled.div`
+  background-color: ${window.ttnoteThemeLight.bgColorDark};
+  border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
+  padding: 0.2rem 0.7rem;
+  color: ${window.ttnoteThemeLight.textColorLight};
+  font-size: 0.8rem;
+`;
+
 function Title(props) {
   const {
     title,
@@ -153,9 +161,11 @@ function Title(props) {
         >
           {props => (
             <OverlayComp {...props}>
+              <OverlayContainer>
               <div
                 onClick={handleTitleDelete}
               >删除</div>
+              </OverlayContainer>
             </OverlayComp>
           )
           }
