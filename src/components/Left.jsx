@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import styled from "styled-components";
-import {IoIosArrowForward, IoIosAddCircle, IoIosSettings, IoIosFiling, IoIosFolder} from 'react-icons/io';
+import {IoIosArrowForward, IoIosAddCircle, IoIosSettings, IoIosFiling, IoIosFolder, IoIosMore} from 'react-icons/io';
 import {CSSTransition} from 'react-transition-group';
 import useCategory from "../hooks/useCategory";
 import {VLine} from "../common/style";
@@ -56,6 +56,12 @@ const ListRow = styled.div`
   background: ${props => props.active ? window.ttnoteThemeLight.bgColorDarkActive : '' };
   color: ${props => props.active ? window.ttnoteThemeLight.textColorLight : '' };
   //border-radius: ${window.ttnoteThemeLight.primaryBorderRadius};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const LeftListInner = styled.div`
   display: flex;
   align-items: center;
 `;
@@ -149,6 +155,7 @@ function Left(props) {
          window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
        }}
      >
+       <LeftListInner>
        {list.id === -1 ?
          <IoIosFiling/> :
          <IoIosFolder/>
@@ -156,6 +163,8 @@ function Left(props) {
        <div style={{marginLeft: '0.3rem'}}>
          {list.name}
        </div>
+       </LeftListInner>
+       <IoIosMore/>
      </ListRow>
     )
   };
