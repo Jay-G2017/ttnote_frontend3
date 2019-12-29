@@ -88,6 +88,6 @@ export const TBadge = styled.span`
 
 export const VLine = styled.div`
  width: 1px;
- height: 120%;
  background-color: ${window.ttnoteThemeLight.lineColorDark};
+ height: 1em;
 `;
