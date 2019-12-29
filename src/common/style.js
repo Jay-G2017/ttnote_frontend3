@@ -57,6 +57,7 @@ export const TTextArea = styled(TextareaAutosize)`
     -webkit-appearance: none;
     background-color: transparent;
     font-size: inherit;
+    font-weight: inherit;
     color: inherit;
     height: 1.4em;
     line-height: 1.4;
@@ -83,4 +84,10 @@ export const TBadge = styled.span`
   font-size: 0.7rem;
   vertical-align:middle;
   text-align:center;
+`;
+
+export const VLine = styled.div`
+ width: 1px;
+ height: 120%;
+ background-color: ${window.ttnoteThemeLight.lineColorDark};
 `;

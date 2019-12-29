@@ -40,13 +40,6 @@ function Note() {
     return () => window.removeEventListener('resize', handleResize);
   }, [isMobileView]);
 
-  useEffect(() => {
-    window.ttnote.tomatoTime = 0.5;
-    window.ttnote.shortBreakTime = 0.5;
-    window.ttnote.longBreakTime = 5;
-    window.ttnote.continueBreak = true;
-  }, []);
-
   // const handleLogout = () => {
   //   const url = window.ttnote.baseUrl + '/users/logout';
   //   window.ttnote.fetch(url, {

@@ -15,3 +15,16 @@ export function getCookie(name) {
   }
   return cookieObject[name];
 }
+
+// 针对mobile端第一次进入网页后，点击定时播放后立即进入后台，声音会无法播放。
+// 需要先播放一下后，才能转入到后台。
+// 但似乎没什么用
+export function enableRestSound() {
+  window.restAudio.play();
+  window.restAudio.pause();
+}
+
+export function enableDingDingSound() {
+  window.dingDingAudio.play();
+  window.dingDingAudio.pause();
+}
