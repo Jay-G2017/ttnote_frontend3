@@ -91,3 +91,10 @@ export const VLine = styled.div`
  background-color: ${window.ttnoteThemeLight.lineColorDark};
  height: 1em;
 `;
+
+export const TSmallButton = styled.div`
+  font-size: 0.8rem;
+  padding: 0.2rem 0.6rem;
+  background-color: ${window.ttnoteThemeLight.colorPrimary};
+  border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
+`;

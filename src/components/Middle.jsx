@@ -37,6 +37,7 @@ const HeaderRow = styled.div`
   @media (min-width: 768px) {
     position: absolute;
   }
+  z-index: 10;
 `;
 
 const ListRow = styled.div`

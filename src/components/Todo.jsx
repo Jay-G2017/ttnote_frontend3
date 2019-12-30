@@ -54,7 +54,7 @@ const TomatoBadge = styled(Badge)`
   top: 0;
   right: 0;
   border-radius: 3px;
-  visibility: ${props => props.visible ? 'visible' : 'hidden'};
+  visibility: ${props => props.visible === 'true' ? 'visible' : 'hidden'};
   color: ${window.ttnoteThemeLight.colorSecondary};
   cursor: pointer;
 `;
@@ -200,7 +200,7 @@ function Todo(props) {
             />
             <TomatoBadge
               variant={'light'}
-              visible={tomatoSize > 0}
+              visible={(tomatoSize > 0).toString()}
               onClick={handleTodoExpand}
             >{tomatoSize}</TomatoBadge>
           </NameCell>

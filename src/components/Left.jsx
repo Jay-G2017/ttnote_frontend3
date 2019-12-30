@@ -45,6 +45,13 @@ const LeftLogo = styled.div`
 
 const LeftBody = styled.div`
  font-weight: 600;
+ :before {
+   content: '';
+   display: block;
+   height: 3.3rem;
+ }
+ height: calc(100% - 3.3rem);
+ overflow: auto;
 `;
 
 const LeftFooter = styled.div`
@@ -97,21 +104,24 @@ const SettingCell = styled.div`
   cursor: pointer;
 `;
 
-const PlaceholderDiv = styled.div`
-  height: 3.3rem;
-`;
-
 function Left(props) {
   const {isMobileView, mobileShowingArea} = props;
   const [settingModalShow, setSettingModalShow] = useState(false);
   const [showOverlayId, setShowOverlayId] = useState(null);
+  const [leftListEditId, setLeftListEditId] = useState(null);
+
   const iconStyle = {fontSize: '24px'};
   const visible = !isMobileView || (isMobileView && mobileShowingArea === 'left');
 
   const searchParams = window.ttnote.searchObject();
   const categoryId = parseInt(searchParams.categoryId) || -1;
 
-  const {categories} = useCategory(categoryId);
+  const {
+    categories,
+    categoryMethods,
+  } = useCategory(categoryId);
+
+  const hasNewId = categories.findIndex(ca => ca.id === 'new') !== -1;
 
   const handleCategoryDelete = useCallback(() => {
     console.log('category delete');
@@ -149,24 +159,33 @@ function Left(props) {
           <LeftLogo>蕃茄时光</LeftLogo>
           </HeaderRow>
         <LeftBody>
-          <PlaceholderDiv />
           <LeftList
             list={{id: -1, name: '收件箱'}}
             categoryId={categoryId}
             isMobileView={isMobileView}
           />
           {categories.map(list => <LeftList
+            key={list.id}
             list={list}
             categoryId={categoryId}
             isMobileView={isMobileView}
             showOverlayId={showOverlayId}
             setShowOverlayId={setShowOverlayId}
             handleCategoryDelete={handleCategoryDelete}
+            leftListEditId={leftListEditId}
+            setLeftListEditId={setLeftListEditId}
+            categoryMethods={categoryMethods}
           />)}
         </LeftBody>
         <LeftFooter>
           <NewCategoryCell
-            // onClick={() => handleNewTodo()}
+            onClick={() => {
+              if (!hasNewId) {
+
+              categoryMethods.handleNewCategory();
+              setLeftListEditId('new');
+              }
+            }}
           >
             <IconStyled>
               <IoIosAddCircle/>
