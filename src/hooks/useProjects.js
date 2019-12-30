@@ -1,7 +1,9 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
+import {cloneDeep} from 'lodash';
 
 function useProjects(categoryId) {
   const [projects, setProjects] = useState([]);
+  const [projectCreating, setProjectCreating] = useState(false);
 
   useEffect(() => {
     const fetchProjects = () => {
@@ -25,7 +27,37 @@ function useProjects(categoryId) {
     fetchProjects(categoryId);
   }, [categoryId]);
 
-  return {projects};
+  const handleNewProject = useCallback((categoryId) => {
+    setProjectCreating(true);
+    const url = window.ttnote.baseUrl + '/categories/' + categoryId + '/projects';
+    window.ttnote.fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({name: '新建项目'})
+    })
+      .then(res => {
+        // setProjectCreating(false);
+        const newProjects = cloneDeep(projects);
+        newProjects.splice(0, 0, res);
+        setProjects(newProjects);
+        gotoProject(res.id);
+      })
+      .catch(err => {
+        console.log('create failed');
+      })
+
+  }, [projects]);
+
+  return {
+    projects,
+    projectCreating,
+    handleNewProject,
+  };
 }
 
 export default useProjects;
+
+function gotoProject(projectId) {
+  const searchParams = window.ttnote.searchObject();
+  searchParams.projectId = projectId;
+  window.ttnote.goto('/note' + window.ttnote.objectToUrl(searchParams));
+}
