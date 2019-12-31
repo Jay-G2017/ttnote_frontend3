@@ -120,6 +120,7 @@ function Middle(props) {
     projects,
     projectCreating,
     handleNewProject,
+    handleProjectDelete,
   } = useProjects(categoryId);
 
   return (
@@ -162,6 +163,7 @@ function Middle(props) {
             isMobileView={isMobileView}
             showOverlayId={showOverlayId}
             setShowOverlayId={setShowOverlayId}
+            handleProjectDelete={handleProjectDelete}
           /> )}
         </MiddleBody>
         <MiddleFooter>

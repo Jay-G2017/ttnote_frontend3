@@ -20,6 +20,14 @@ const RightContainer = styled.div`
   position: relative;
 `;
 
+const NoProjectDiv = styled.p`
+  text-align: center;
+  height: calc(100vh - 3.3rem);
+  line-height: calc(100vh - 3.3rem);
+  font-weight: 500;
+  color: ${window.ttnoteThemeLight.textColorTips};
+`;
+
 const RightContent = styled.div`
   //margin-top: 3.3rem;
   //height: calc(100vh - 3.3rem);
@@ -169,7 +177,7 @@ function Right(props) {
           todayTomatoSize={todayTomatoSize}
         />
         <RightContent>
-          {!projectId ? <div>no project</div> :
+          {!projectId ? <NoProjectDiv>无项目</NoProjectDiv> :
             <>
               <ProjectNameRow>
                 <ProjectNameCell>

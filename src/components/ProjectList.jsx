@@ -105,6 +105,7 @@ function ProjectList(props) {
     isMobileView,
     showOverlayId,
     setShowOverlayId,
+    handleProjectDelete,
   } = props;
   const moreButtonRef = useRef(null);
   const fromNow = dayjs(project.updatedAt).fromNow();
@@ -169,7 +170,7 @@ function ProjectList(props) {
                     <OverlayItem
                       onClick={() => {
                         if (window.confirm('这会删除当前项目下的所有信息。\n确定要删除吗？')) {
-                          // categoryMethods.handleCategoryDelete(list.id)
+                          handleProjectDelete(project.id)
                         }
                       }}
                       style={{paddingRight: '0.7rem'}}

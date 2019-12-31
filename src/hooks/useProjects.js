@@ -5,27 +5,32 @@ function useProjects(categoryId) {
   const [projects, setProjects] = useState([]);
   const [projectCreating, setProjectCreating] = useState(false);
 
-  useEffect(() => {
-    const fetchProjects = () => {
-      let url;
-      if (categoryId === -1) {
-        url = window.ttnote.baseUrl + `/projects`;
-      } else {
-        url = window.ttnote.baseUrl + `/categories/${categoryId}/projects`;
-      }
-      window.ttnote.fetch(url)
-        .then(res => {
-          setProjects(res);
-          const params = window.ttnote.searchObject();
-          if (!params.projectId && res.length > 0) {
-            params.projectId = res[0].id;
-            window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
-          }
-        })
-    };
+  const fetchProjects = useCallback((categoryId, afterSuccessCallback) => {
+    let url;
+    if (categoryId === -1) {
+      url = window.ttnote.baseUrl + `/projects`;
+    } else {
+      url = window.ttnote.baseUrl + `/categories/${categoryId}/projects`;
+    }
+    window.ttnote.fetch(url)
+      .then(res => {
+        setProjects(res);
+        if (afterSuccessCallback) afterSuccessCallback(res);
+      })
+  }, []);
 
-    fetchProjects(categoryId);
-  }, [categoryId]);
+  const defaultGotoFirstProject = useCallback((res) => {
+    const params = window.ttnote.searchObject();
+    if (!params.projectId && res.length > 0) {
+      gotoProject(res[0].id);
+      // params.projectId = res[0].id;
+      // window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchProjects(categoryId, defaultGotoFirstProject);
+  }, [categoryId, fetchProjects, defaultGotoFirstProject]);
 
   const handleNewProject = useCallback((categoryId) => {
     setProjectCreating(true);
@@ -35,7 +40,7 @@ function useProjects(categoryId) {
       body: JSON.stringify({name: '新建项目'})
     })
       .then(res => {
-        // setProjectCreating(false);
+        setProjectCreating(false);
         const newProjects = cloneDeep(projects);
         newProjects.splice(0, 0, res);
         setProjects(newProjects);
@@ -47,10 +52,40 @@ function useProjects(categoryId) {
 
   }, [projects]);
 
+  const defaultGotoUpwards = useCallback((res, projectId) => {
+    const activeProjectId = window.ttnote.searchObject().projectId;
+    if (activeProjectId === projectId.toString()) {
+      // 删除的如果是选中项，选中状态默认往上移
+      const index = projects.findIndex(project => project.id === projectId);
+      if (res[index]) {
+        gotoProject(res[index].id);
+      } else if (res.length > 0) {
+        gotoProject(res.slice(-1)[0].id);
+      } else {
+        gotoProject(null);
+      }
+    }
+  }, [projects]);
+
+  const handleProjectDelete = useCallback((projectId) => {
+    const url = window.ttnote.baseUrl + '/projects/' + projectId;
+    window.ttnote.fetch(url, {
+      method: 'DELETE',
+    })
+      .then(res => {
+        fetchProjects(categoryId, (res) => defaultGotoUpwards(res, projectId));
+      })
+      .catch(err => {
+        console.log('delete failed');
+      })
+
+  }, [fetchProjects, categoryId, defaultGotoUpwards]);
+
   return {
     projects,
     projectCreating,
     handleNewProject,
+    handleProjectDelete,
   };
 }
 
@@ -58,6 +93,10 @@ export default useProjects;
 
 function gotoProject(projectId) {
   const searchParams = window.ttnote.searchObject();
-  searchParams.projectId = projectId;
+  if (projectId) {
+    searchParams.projectId = projectId;
+  } else {
+    delete searchParams.projectId
+  }
   window.ttnote.goto('/note' + window.ttnote.objectToUrl(searchParams));
 }
