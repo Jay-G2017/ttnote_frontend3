@@ -41,9 +41,13 @@ function useProject(projectId) {
     fetchTodayTomatoSize()
   }, [fetchTodayTomatoSize]);
 
-  const handleProjectNameChange = (value) => {
-    setProject({...project, name: value});
-  };
+  const handleProjectChange = useCallback((params) => {
+    setProject({...project, ...params});
+  }, [project]);
+
+  const projectNameChangeCancel = useCallback(() => {
+    setProject({...project, name: projectInitial.current.name})
+  }, [project]);
 
   const handleProjectNameEnterPress = (e) => {
     stopEventFlag.current = true;
@@ -54,7 +58,8 @@ function useProject(projectId) {
         updateProject({name: value});
         projectDescInput.current.focus();
       } else {
-        setProject({...project, name: projectInitial.current.name})
+        // setProject({...project, name: projectInitial.current.name})
+        projectNameChangeCancel();
       }
     } else {
       projectDescInput.current.focus();
@@ -69,14 +74,9 @@ function useProject(projectId) {
       if (value) {
         updateProject({name: value});
       } else {
-        setProject({...project, name: projectInitial.current.name})
+        projectNameChangeCancel();
       }
     }
-  };
-
-  const handleProjectDescOnChange = (e) => {
-    const value = e.currentTarget.value;
-    setProject({...project, desc: value});
   };
 
   const handleProjectDescOnBlur = () => {
@@ -136,16 +136,16 @@ function useProject(projectId) {
 
   }, [fetchTodayTomatoSize]);
 
-  const updateProject = (params) => {
+  const updateProject = useCallback((params) => {
     const url = window.ttnote.baseUrl + '/projects/' + projectId;
     window.ttnote.fetch(url, {
       method: 'PATCH',
       body: JSON.stringify(params)
     })
       .then(res => {
-        console.log(res)
+        fetchProject()
       })
-  };
+  }, [fetchProject, projectId]);
 
   const handleNewTodo = (titleId) => {
     setProject(data => {
@@ -375,7 +375,6 @@ function useProject(projectId) {
     }
   }, [createTodo, handleTodoDelete, todos]);
 
-
   const createTitle = (titleId, params, callback) => {
     const url = window.ttnote.baseUrl + `/projects/${projectId}/titles/`;
     window.ttnote.fetch(url, {
@@ -459,7 +458,7 @@ function useProject(projectId) {
 
   return {
     project,
-    updateProject,
+    projectInitial,
     handleNewTodo,
     handleNewTitle,
     projectNameInput,
@@ -468,12 +467,12 @@ function useProject(projectId) {
     setTodoExpandedKeys,
     todayTomatoSize,
     projectMethods: {
-      handleProjectNameChange,
+      handleProjectChange,
       handleProjectNameEnterPress,
       handleProjectNameOnBlur,
-      handleProjectDescOnChange,
       handleProjectDescOnBlur,
       handleProjectDescEnterPress,
+      projectNameChangeCancel,
     },
     todoMethods: {
       handleTodoNameChange,

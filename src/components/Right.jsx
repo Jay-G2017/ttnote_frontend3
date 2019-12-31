@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import styled from "styled-components";
 import {CSSTransition} from 'react-transition-group';
 import Title from "./Title";
@@ -135,13 +135,18 @@ const IconName = styled.div`
 `;
 
 function Right(props) {
-  const {isMobileView, mobileShowingArea} = props;
+  const {
+    isMobileView,
+    mobileShowingArea,
+    handleProjectChangeFromRight,
+  } = props;
   const visible = (isMobileView && mobileShowingArea === 'right') || !isMobileView;
   const projectId = window.ttnote.searchObject().projectId;
   const [showMore, setShowMore] = useState({type: null, id: null});
 
   const {
     project,
+    projectInitial,
     handleNewTodo,
     handleNewTitle,
     projectNameInput,
@@ -183,18 +188,29 @@ function Right(props) {
                 <ProjectNameCell>
                   <TTextArea
                     ref={projectNameInput}
-                    value={project.name}
+                    value={project.name || ''}
                     placeholder={'输入项目标题'}
                     onChange={e => {
-                        const value = e.currentTarget.value;
-                        projectMethods.handleProjectNameChange(value);
-                      }
+                      const value = e.currentTarget.value;
+                      projectMethods.handleProjectChange({name: value});
+                      handleProjectChangeFromRight(project.id, {name: value});
                     }
-                    onBlur={projectMethods.handleProjectNameOnBlur}
+                    }
+                    onBlur={(e) => {
+                      const value = e.currentTarget.value;
+                      if (!value) {
+                        handleProjectChangeFromRight(project.id, {name: projectInitial.current.name})
+                      }
+                      projectMethods.handleProjectNameOnBlur(e)
+                    }}
                     onKeyPress={e => {
                       if (e.key === 'Enter') {
-                       e.preventDefault();
-                       projectMethods.handleProjectNameEnterPress(e);
+                        e.preventDefault();
+                        const value = e.currentTarget.value;
+                        if (!value) {
+                          handleProjectChangeFromRight(project.id, {name: projectInitial.current.name})
+                        }
+                        projectMethods.handleProjectNameEnterPress(e);
                       }
                     }}
                   />
@@ -207,15 +223,13 @@ function Right(props) {
                     <TTextArea
                       style={{minHeight: '3rem'}}
                       ref={projectDescInput}
-                      onChange={projectMethods.handleProjectDescOnChange}
+                      onChange={(e) => {
+                        const value = e.currentTarget.value;
+                        projectMethods.handleProjectChange({desc: value});
+                        handleProjectChangeFromRight(project.id, {desc: value});
+                      }}
                       onBlur={projectMethods.handleProjectDescOnBlur}
-                      // onKeyPress={e => {
-                      //   if (e.key === 'Enter') {
-                      //     e.preventDefault();
-                      //     handleProjectDescEnterPress(e)
-                      //   }
-                      // }}
-                      value={project.desc}
+                      value={project.desc || ''}
                       placeholder={'输入项目描述'}
                     />
                   </DescCell>

@@ -81,11 +81,19 @@ function useProjects(categoryId) {
 
   }, [fetchProjects, categoryId, defaultGotoUpwards]);
 
+  const handleProjectChangeFromRight = useCallback((projectId, params) => {
+    const newProjects = cloneDeep(projects);
+    const target = newProjects.find(project => project.id === projectId);
+    Object.assign(target, params);
+    setProjects(newProjects);
+  }, [projects]);
+
   return {
     projects,
     projectCreating,
     handleNewProject,
     handleProjectDelete,
+    handleProjectChangeFromRight,
   };
 }
 

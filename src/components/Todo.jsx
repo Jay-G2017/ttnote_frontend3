@@ -167,7 +167,6 @@ function Todo(props) {
   }, [tomatoSize, handleTodoDeleteWithConfirm]);
 
   return useMemo(() => {
-    console.log('todo in');
     return (
       <TodoRowGroup>
         <TodoRow>

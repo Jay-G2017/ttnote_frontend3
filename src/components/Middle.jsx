@@ -106,7 +106,14 @@ const PlaceholderDiv = styled.div`
 `;
 
 function Middle(props) {
-  const {isMobileView, mobileShowingArea} = props;
+  const {
+    isMobileView,
+    mobileShowingArea,
+    projects,
+    projectCreating,
+    handleNewProject,
+    handleProjectDelete,
+  } = props;
   const [showOverlayId, setShowOverlayId] = useState(null);
 
   const iconStyle = {fontSize: '24px'};
@@ -114,14 +121,8 @@ function Middle(props) {
 
   const searchObject = window.ttnote.searchObject();
   const enterFrom = searchObject.enterFrom || 'left';
-  const categoryId = parseInt(searchObject.categoryId) || -1;
   const activeProjectId = parseInt(searchObject.projectId);
-  const {
-    projects,
-    projectCreating,
-    handleNewProject,
-    handleProjectDelete,
-  } = useProjects(categoryId);
+  const categoryId = parseInt(searchObject.categoryId) || -1;
 
   return (
     <CSSTransition
