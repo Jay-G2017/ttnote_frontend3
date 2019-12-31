@@ -3,13 +3,12 @@ import {cloneDeep} from 'lodash';
 
 function useProject(projectId) {
   const [project, setProject] = useState({todos: {}, titles: {}, todoIds: [], titleIds: []});
+  const [isLoading, setIsLoading] = useState(true);
   const [todoExpandedKeys, setTodoExpandedKeys] = useState([]);
   const [todayTomatoSize, setTodayTomatoSize] = useState(0);
   const projectInitial = useRef({todos: {}, titles: {}, todoIds: [], titleIds: []});
 
   const stopEventFlag = useRef(false);
-  const projectNameInput = useRef(null);
-  const projectDescInput = useRef(null);
 
   const {todos, titles} = project;
 
@@ -18,12 +17,14 @@ function useProject(projectId) {
     window.ttnote.fetch(url)
       .then(res => {
         setProject(res);
+        setIsLoading(false);
         projectInitial.current = JSON.parse(JSON.stringify(res));
       })
   }, [projectId]);
 
   useEffect(() => {
     if (projectId) {
+      setIsLoading(true);
       fetchProject();
     }
   }, [projectId, fetchProject]);
@@ -49,35 +50,35 @@ function useProject(projectId) {
     setProject({...project, name: projectInitial.current.name})
   }, [project]);
 
-  const handleProjectNameEnterPress = (e) => {
-    stopEventFlag.current = true;
-    e.currentTarget.blur();
-    if (project.name !== projectInitial.current.name) {
-      const value = e.currentTarget.value;
-      if (value) {
-        updateProject({name: value});
-        projectDescInput.current.focus();
-      } else {
-        // setProject({...project, name: projectInitial.current.name})
-        projectNameChangeCancel();
-      }
-    } else {
-      projectDescInput.current.focus();
-    }
-    stopEventFlag.current = false;
-  };
+  // const handleProjectNameEnterPress = (e) => {
+  //   stopEventFlag.current = true;
+  //   e.currentTarget.blur();
+  //   if (project.name !== projectInitial.current.name) {
+  //     const value = e.currentTarget.value;
+  //     if (value) {
+  //       updateProject({name: value});
+  //       projectDescInput.current.focus();
+  //     } else {
+  //       // setProject({...project, name: projectInitial.current.name})
+  //       projectNameChangeCancel();
+  //     }
+  //   } else {
+  //     projectDescInput.current.focus();
+  //   }
+  //   stopEventFlag.current = false;
+  // };
 
-  const handleProjectNameOnBlur = () => {
-    if (stopEventFlag.current) return;
-    if (project.name !== projectInitial.current.name) {
-      const value = project.name;
-      if (value) {
-        updateProject({name: value});
-      } else {
-        projectNameChangeCancel();
-      }
-    }
-  };
+  // const handleProjectNameOnBlur = () => {
+  //   if (stopEventFlag.current) return;
+  //   if (project.name !== projectInitial.current.name) {
+  //     const value = project.name;
+  //     if (value) {
+  //       updateProject({name: value});
+  //     } else {
+  //       projectNameChangeCancel();
+  //     }
+  //   }
+  // };
 
   const handleProjectDescOnBlur = () => {
     if (stopEventFlag.current) return;
@@ -459,20 +460,18 @@ function useProject(projectId) {
   return {
     project,
     projectInitial,
+    isLoading,
     handleNewTodo,
     handleNewTitle,
-    projectNameInput,
-    projectDescInput,
     todoExpandedKeys,
     setTodoExpandedKeys,
     todayTomatoSize,
     projectMethods: {
       handleProjectChange,
-      handleProjectNameEnterPress,
-      handleProjectNameOnBlur,
       handleProjectDescOnBlur,
       handleProjectDescEnterPress,
       projectNameChangeCancel,
+      updateProject,
     },
     todoMethods: {
       handleTodoNameChange,
