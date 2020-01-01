@@ -110,15 +110,14 @@ function Todo(props) {
     todoMethods,
     showMore,
     setShowMore,
+    handleNewTodo,
   } = props;
   const {
-    handleTodoNameChange,
-    handleTodoNameOnBlur,
-    handleTodoNameEnterPress,
     deleteTomato,
     handleTodoDeleteWithConfirm,
   } = todoMethods;
   const [done, setDone] = useState(todo.done);
+  const [todoName, setTodoName] = useState(todo.name);
   // const [collapse, setCollapse] = useState(true);
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
   const moreButtonRef = useRef(null);
@@ -159,12 +158,38 @@ function Todo(props) {
     if (tomatoSize > 0) {
       if (window.confirm('这会删除当前任务下的所有蕃茄，确定要删除吗？')) {
         handleTodoDeleteWithConfirm(todoId, titleId)
+      } else {
+        setTodoName(todo.name)
       }
     } else {
       handleTodoDeleteWithConfirm(todoId, titleId)
     }
 
-  }, [tomatoSize, handleTodoDeleteWithConfirm]);
+  }, [tomatoSize, handleTodoDeleteWithConfirm, todo.name]);
+
+  const handleTodoNameOnBlur = useCallback((e, options={}) => {
+    const value = e.currentTarget.value;
+    if (value) {
+      if (todo.id > 0) {
+        if (todo.name !== value) {
+          // update todo
+          todoMethods.updateTodo(todo.id, {name: value})
+        }
+      } else {
+        // create todo
+        todoMethods.createTodo(todo.id, titleId, {name: value})
+      }
+      if (options.newTodo) handleNewTodo(titleId)
+    } else {
+      if (todo.id > 0) {
+        // delete todo
+        handleTodoDelete(todo.id, titleId)
+      } else {
+        // cancel new todo
+        todoMethods.cancelNewTodo(todo.id, titleId)
+      }
+    }
+  }, [handleNewTodo, handleTodoDelete, titleId, todo.id, todo.name, todoMethods]);
 
   return useMemo(() => {
     console.log('in todo');
@@ -183,18 +208,18 @@ function Todo(props) {
           </CheckCell>
           <NameCell done={done}>
             <TTextArea
-              value={todo.name}
+              value={todoName}
               autoFocus={todo.id < 0}
               placeholder={'输入内容'}
               onChange={(e) => {
                 const value = e.currentTarget.value;
-                handleTodoNameChange(todo.id, value);
+                setTodoName(value)
               }}
-              onBlur={() => handleTodoNameOnBlur(todo.id, titleId)}
+              onBlur={handleTodoNameOnBlur}
               onKeyPress={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  handleTodoNameEnterPress(e, todo.id, titleId)
+                  handleTodoNameOnBlur(e, {newTodo: true})
                 }
               }}
             />
@@ -284,27 +309,7 @@ function Todo(props) {
         </TomatoGroup>
       </TodoRowGroup>
     )
-  }, [
-    showOverlay,
-    setShowMore,
-    done,
-    setDone,
-    tomatoState,
-    tomatoDispatch,
-    handleTodoExpand,
-    playButtonDisabled,
-    titleId,
-    todo,
-    todoExpandedKeys,
-    handleTodoNameChange,
-    handleTodoNameEnterPress,
-    handleTodoNameOnBlur,
-    deleteTomato,
-    toggleTodo,
-    tomatoSize,
-    tomatoes,
-    handleTodoDelete,
-  ]);
+  }, [todo.id, done, todoName, tomatoSize, handleTodoExpand, tomatoState.id, tomatoState.minutes, playButtonDisabled, showOverlay, todoExpandedKeys, tomatoes, toggleTodo, handleTodoNameOnBlur, titleId, tomatoDispatch, setShowMore, handleTodoDelete, deleteTomato]);
 }
 
 export default Todo;

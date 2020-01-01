@@ -42,7 +42,6 @@ function Right(props) {
   const {
     project,
     isLoading,
-    projectInitial,
     handleNewTodo,
     handleNewTitle,
     todoExpandedKeys,
@@ -67,7 +66,6 @@ function Right(props) {
             project={project}
             projectMethods={projectMethods}
             handleProjectChangeFromRight={handleProjectChangeFromRight}
-            projectInitial={projectInitial}
             todoExpandedKeys={todoExpandedKeys}
             setTodoExpandedKeys={setTodoExpandedKeys}
             todoMethods={todoMethods}

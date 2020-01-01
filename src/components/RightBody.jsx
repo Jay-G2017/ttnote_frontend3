@@ -116,7 +116,6 @@ const RightBody = (props) => {
     project,
     projectMethods,
     handleProjectChangeFromRight,
-    projectInitial,
     todoExpandedKeys,
     setTodoExpandedKeys,
     todoMethods,
@@ -130,6 +129,7 @@ const RightBody = (props) => {
   const {todoIds, todos, titleIds, titles} = project;
 
   const [projectName, setProjectName] = useState(project.name);
+  const [projectDesc, setProjectDesc] = useState(project.desc);
 
   const projectDescInput = useRef(null);
 
@@ -182,11 +182,16 @@ const RightBody = (props) => {
                 ref={projectDescInput}
                 onChange={(e) => {
                   const value = e.currentTarget.value;
-                  projectMethods.handleProjectChange({desc: value});
+                  setProjectDesc(value);
                   handleProjectChangeFromRight(project.id, {desc: value});
                 }}
-                onBlur={projectMethods.handleProjectDescOnBlur}
-                value={project.desc || ''}
+                onBlur={(e) => {
+                  const value = e.currentTarget.value;
+                  if (value !== project.desc) {
+                    projectMethods.updateProject({desc: value})
+                  }
+                }}
+                value={projectDesc || ''}
                 placeholder={'输入项目描述'}
               />
             </DescCell>
@@ -223,6 +228,7 @@ const RightBody = (props) => {
                 titleMethods={titleMethods}
                 showMore={showMore}
                 setShowMore={setShowMore}
+                handleNewTodo={handleNewTodo}
               />
             )
           }
@@ -250,7 +256,7 @@ const RightBody = (props) => {
         </NewTitleCell>
       </RightFooter>
     </>
-  ), [handleNewTitle, handleNewTodo, handleProjectChangeFromRight, project.desc, project.id, project.name, projectDescInput, projectInitial, projectMethods, projectNameInput, setShowMore, setTodoExpandedKeys, showMore, titleIds, titleMethods, titles, todoExpandedKeys, todoIds, todoMethods, todos])
+  ), [handleNewTitle, handleNewTodo, handleProjectChangeFromRight, handleProjectNameOnBlur, project.desc, project.id, projectMethods, projectName, setShowMore, setTodoExpandedKeys, showMore, titleIds, titleMethods, titles, todoExpandedKeys, todoIds, todoMethods, todos])
 };
 
 export default RightBody;
