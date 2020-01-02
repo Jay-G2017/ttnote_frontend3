@@ -41,6 +41,7 @@ function useProjects(categoryId) {
     })
       .then(res => {
         setProjectCreating(false);
+        window.focusProjectName = true;
         const newProjects = cloneDeep(projects);
         newProjects.splice(0, 0, res);
         setProjects(newProjects);

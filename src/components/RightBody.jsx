@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useCallback, useRef} from "react";
+import React, {useState, useMemo, useCallback, useRef, useEffect} from "react";
 import {PaddingRow, TTextArea} from "../common/style";
 import Todo from "./Todo";
 import Title from "./Title";
@@ -132,6 +132,15 @@ const RightBody = (props) => {
   const [projectDesc, setProjectDesc] = useState(project.desc);
 
   const projectDescInput = useRef(null);
+  const projectTodoInputRef = useRef(null);
+
+  useEffect(() => {
+    if (window.focusProjectName) {
+      projectTodoInputRef.current.focus();
+      projectTodoInputRef.current.selectionStart = project.name.length;
+      projectTodoInputRef.current.selectionEnd = project.name.length;
+    }
+  }, [project.id, project.name.length]);
 
   const handleProjectNameOnBlur = useCallback((e) => {
     const value = e.currentTarget.value;
@@ -152,6 +161,7 @@ const RightBody = (props) => {
         <ProjectNameRow>
           <ProjectNameCell>
             <TTextArea
+              ref={projectTodoInputRef}
               value={projectName || ''}
               placeholder={'输入项目标题'}
               onChange={e => {
