@@ -37,11 +37,11 @@ function useProjects(categoryId) {
     const url = window.ttnote.baseUrl + '/categories/' + categoryId + '/projects';
     window.ttnote.fetch(url, {
       method: 'POST',
-      body: JSON.stringify({name: '新建项目'})
+      body: JSON.stringify({name: '新建项目', desc: ''})
     })
       .then(res => {
         setProjectCreating(false);
-        window.focusProjectName = true;
+        window.focusProjectName = true; // 用于新建项目自动focus
         const newProjects = cloneDeep(projects);
         newProjects.splice(0, 0, res);
         setProjects(newProjects);

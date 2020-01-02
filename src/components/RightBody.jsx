@@ -133,16 +133,18 @@ const RightBody = (props) => {
 
   const projectDescInput = useRef(null);
   const projectTodoInputRef = useRef(null);
+  const stopOnBlurFlag = useRef(false);
 
+  // 新建的project第一次自动focus
   useEffect(() => {
     if (window.focusProjectName) {
       projectTodoInputRef.current.focus();
-      projectTodoInputRef.current.selectionStart = project.name.length;
-      projectTodoInputRef.current.selectionEnd = project.name.length;
+      projectTodoInputRef.current.selectionStart = projectName.length;
+      projectTodoInputRef.current.selectionEnd = projectName.length;
     }
-  }, [project.id, project.name.length]);
+  });
 
-  const handleProjectNameOnBlur = useCallback((e) => {
+  const handleProjectNameOnEnterPress = useCallback((e) => {
     const value = e.currentTarget.value;
     if (value) {
       if (value !== project.name) {
@@ -153,7 +155,15 @@ const RightBody = (props) => {
       handleProjectChangeFromRight(project.id, {name: project.name});
       setProjectName(project.name)
     }
+    stopOnBlurFlag.current = false
   }, [handleProjectChangeFromRight, project.id, project.name, projectMethods]);
+
+  const handleProjectNameOnBlur = useCallback((e) => {
+    window.focusProjectName = false; // 取消自动激活
+    if (!stopOnBlurFlag.current) {
+      handleProjectNameOnEnterPress(e)
+    }
+  }, [handleProjectNameOnEnterPress]);
 
   return useMemo(() => (
     <>
@@ -174,7 +184,9 @@ const RightBody = (props) => {
               onKeyPress={e => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  handleProjectNameOnBlur(e);
+                  stopOnBlurFlag.current = true;
+                  e.currentTarget.blur();
+                  handleProjectNameOnEnterPress(e);
                   projectDescInput.current.focus();
                   projectDescInput.current.selectionStart = project.desc.length;
                   projectDescInput.current.selectionEnd = project.desc.length;
