@@ -9,11 +9,16 @@ const Header = styled.div`
   align-items: center;
   background-color: #e86c2a;
   height: 3rem;
+  position: fixed;
+  left: 0;
+  width: 100%;
+  top: 0;
 `;
 
 const BrandDiv = styled(TButton)`
   color: #fff;
   font-size: medium;
+  font-weight: 600;
 `;
 
 
@@ -26,6 +31,7 @@ function HomeHeader() {
                     <BrandDiv onClick={() => window.ttnote.goto('/')}>蕃茄时光</BrandDiv>
                   {isLogin ?
                     <Button
+                      variant={'light'}
                       size={'sm'}
                       onClick={() => window.ttnote.goto('/note')}
                     >进入应用</Button> :
