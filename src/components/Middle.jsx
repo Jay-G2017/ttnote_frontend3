@@ -2,7 +2,6 @@ import React, {useState} from "react";
 import styled from "styled-components";
 import {IoIosMenu, IoIosAddCircle} from 'react-icons/io';
 import {CSSTransition} from "react-transition-group";
-import useProjects from "../hooks/useProjects";
 import ProjectList from "./ProjectList";
 
 const MiddleContainer = styled.div`

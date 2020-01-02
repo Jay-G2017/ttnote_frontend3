@@ -115,6 +115,9 @@ function Todo(props) {
   const {
     deleteTomato,
     handleTodoDeleteWithConfirm,
+    updateTodo,
+    createTodo,
+    cancelNewTodo,
   } = todoMethods;
   const [done, setDone] = useState(todo.done);
   const [todoName, setTodoName] = useState(todo.name);
@@ -122,6 +125,8 @@ function Todo(props) {
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
   const moreButtonRef = useRef(null);
   const showOverlay = showMore.type === 'todo' && showMore.id === todo.id;
+
+  const stopOnBlurFlag = useRef(false);
 
   const tomatoes = todo.tomatoes || [];
   const tomatoSize = tomatoes.length;
@@ -167,29 +172,42 @@ function Todo(props) {
 
   }, [tomatoSize, handleTodoDeleteWithConfirm, todo.name]);
 
-  const handleTodoNameOnBlur = useCallback((e, options={}) => {
-    const value = e.currentTarget.value;
-    if (value) {
-      if (todo.id > 0) {
-        if (todo.name !== value) {
-          // update todo
-          todoMethods.updateTodo(todo.id, {name: value})
+  const handleTodoNameOnEnterPress = useCallback((e, options = {}) => {
+      const value = e.currentTarget.value;
+      if (value) {
+        if (todo.id > 0) {
+          if (todo.name !== value) {
+            // update todo
+            updateTodo(todo.id, {name: value});
+          }
+        } else {
+          // create todo
+          createTodo(todo.id, titleId, {name: value});
         }
+        if (options.newTodo) handleNewTodo(titleId)
       } else {
-        // create todo
-        todoMethods.createTodo(todo.id, titleId, {name: value})
+        if (todo.id > 0) {
+          // delete todo
+          handleTodoDelete(todo.id, titleId)
+        } else {
+          // cancel new todo
+          cancelNewTodo(todo.id, titleId)
+        }
       }
-      if (options.newTodo) handleNewTodo(titleId)
-    } else {
-      if (todo.id > 0) {
-        // delete todo
-        handleTodoDelete(todo.id, titleId)
-      } else {
-        // cancel new todo
-        todoMethods.cancelNewTodo(todo.id, titleId)
-      }
+      stopOnBlurFlag.current = false;
+  }, [
+    cancelNewTodo,
+    createTodo,
+    handleNewTodo,
+    handleTodoDelete, titleId,
+    todo.id, todo.name, updateTodo,
+  ]);
+
+  const handleTodoNameOnBlur = useCallback((e, options={newTodo: false}) => {
+    if (!stopOnBlurFlag.current) {
+      handleTodoNameOnEnterPress(e, options)
     }
-  }, [handleNewTodo, handleTodoDelete, titleId, todo.id, todo.name, todoMethods]);
+  }, [handleTodoNameOnEnterPress]);
 
   return useMemo(() => {
     console.log('in todo');
@@ -219,7 +237,9 @@ function Todo(props) {
               onKeyPress={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  handleTodoNameOnBlur(e, {newTodo: true})
+                  stopOnBlurFlag.current = true;
+                  e.currentTarget.blur();
+                  handleTodoNameOnEnterPress(e, {newTodo: true})
                 }
               }}
             />
@@ -289,9 +309,10 @@ function Todo(props) {
             {props => (
               <OverlayComp {...props}>
                 <OverlayContainer>
-                <div
-                  onClick={() => handleTodoDelete(todo.id, titleId)}
-                >删除</div>
+                  <div
+                    onClick={() => handleTodoDelete(todo.id, titleId)}
+                  >删除
+                  </div>
                 </OverlayContainer>
               </OverlayComp>
             )
@@ -309,7 +330,7 @@ function Todo(props) {
         </TomatoGroup>
       </TodoRowGroup>
     )
-  }, [todo.id, done, todoName, tomatoSize, handleTodoExpand, tomatoState.id, tomatoState.minutes, playButtonDisabled, showOverlay, todoExpandedKeys, tomatoes, toggleTodo, handleTodoNameOnBlur, titleId, tomatoDispatch, setShowMore, handleTodoDelete, deleteTomato]);
+  }, [todo.id, done, todoName, handleTodoNameOnBlur, tomatoSize, handleTodoExpand, tomatoState.id, tomatoState.minutes, playButtonDisabled, showOverlay, todoExpandedKeys, tomatoes, toggleTodo, handleTodoNameOnEnterPress, tomatoDispatch, setShowMore, handleTodoDelete, titleId, deleteTomato]);
 }
 
 export default Todo;

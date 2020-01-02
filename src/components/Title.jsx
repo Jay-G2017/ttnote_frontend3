@@ -215,7 +215,7 @@ function Title(props) {
           />)}
       </TodoBoard>
     </TitleContainer>
-  ), [handleTitleDelete, handleTitleNameOnBlur, playStatus, props.setTodoExpandedKeys, props.todoExpandedKeys, setPlayStatus, setShowMore, showMore, showOverlay, title.id, title.todoIds, titleName, todoMethods, todos]);
+  ), [handleNewTodo, handleTitleDelete, handleTitleNameOnBlur, playStatus, props.setTodoExpandedKeys, props.todoExpandedKeys, setPlayStatus, setShowMore, showMore, showOverlay, title.id, title.todoIds, titleName, todoMethods, todos]);
 }
 
 export default Title;

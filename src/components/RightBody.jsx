@@ -209,6 +209,7 @@ const RightBody = (props) => {
               todoMethods={todoMethods}
               showMore={showMore}
               setShowMore={setShowMore}
+              handleNewTodo={handleNewTodo}
             />
           ))}
         </TodoGroupRow>
@@ -256,7 +257,7 @@ const RightBody = (props) => {
         </NewTitleCell>
       </RightFooter>
     </>
-  ), [handleNewTitle, handleNewTodo, handleProjectChangeFromRight, handleProjectNameOnBlur, project.desc, project.id, projectMethods, projectName, setShowMore, setTodoExpandedKeys, showMore, titleIds, titleMethods, titles, todoExpandedKeys, todoIds, todoMethods, todos])
+  ), [handleNewTitle, handleNewTodo, handleProjectChangeFromRight, handleProjectNameOnBlur, project.desc, project.id, projectDesc, projectMethods, projectName, setShowMore, setTodoExpandedKeys, showMore, titleIds, titleMethods, titles, todoExpandedKeys, todoIds, todoMethods, todos])
 };
 
 export default RightBody;

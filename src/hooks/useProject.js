@@ -1,5 +1,4 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
-import {cloneDeep} from 'lodash';
 
 function useProject(projectId) {
   const [project, setProject] = useState({todos: {}, titles: {}, todoIds: [], titleIds: []});
@@ -8,9 +7,9 @@ function useProject(projectId) {
   const [todayTomatoSize, setTodayTomatoSize] = useState(0);
   const projectInitial = useRef({todos: {}, titles: {}, todoIds: [], titleIds: []});
 
-  const stopEventFlag = useRef(false);
+  // const stopEventFlag = useRef(false);
 
-  const {todos, titles} = project;
+  // const {todos, titles} = project;
 
   const fetchProject = useCallback((afterSuccessCallback) => {
     const url = window.ttnote.baseUrl + '/projects/' + projectId + '?v1=true';
@@ -43,9 +42,9 @@ function useProject(projectId) {
     fetchTodayTomatoSize()
   }, [fetchTodayTomatoSize]);
 
-  const handleProjectChange = useCallback((params) => {
-    setProject({...project, ...params});
-  }, [project]);
+  // const handleProjectChange = useCallback((params) => {
+  //   setProject({...project, ...params});
+  // }, [project]);
 
   const projectNameChangeCancel = useCallback(() => {
     setProject({...project, name: projectInitial.current.name})
@@ -88,16 +87,16 @@ function useProject(projectId) {
   //   }
   // };
 
-  const handleProjectDescEnterPress = (e) => {
-    stopEventFlag.current = true;
-    e.currentTarget.blur();
-    if (project.desc !== projectInitial.current.desc) {
-      updateProject({desc: project.desc});
-    }
-    stopEventFlag.current = false;
-
-    // new todo
-  };
+  // const handleProjectDescEnterPress = (e) => {
+  //   stopEventFlag.current = true;
+  //   e.currentTarget.blur();
+  //   if (project.desc !== projectInitial.current.desc) {
+  //     updateProject({desc: project.desc});
+  //   }
+  //   stopEventFlag.current = false;
+  //
+  //   // new todo
+  // };
 
   const createTomato = useCallback((todoId, seconds) => {
     const url = window.ttnote.baseUrl + '/todos/' + todoId + '/tomatoes';
@@ -149,7 +148,7 @@ function useProject(projectId) {
       })
   }, [fetchProject, projectId]);
 
-  const handleNewTodo = (titleId) => {
+  const handleNewTodo = useCallback((titleId) => {
     setProject(data => {
       const id = -Date.now();
       if (titleId) {
@@ -160,30 +159,30 @@ function useProject(projectId) {
       data.todos[id] = {id};
       return {...data};
     });
-  };
+  }, []);
 
-  const handleNewTitle = () => {
+  const handleNewTitle = useCallback(() => {
     setProject(data => {
       const id = -Date.now();
       data.titleIds.push(id);
       data.titles[id] = {id};
       return {...data};
     });
-  };
-
-  const handleTodoNameChange = useCallback((todoId, value) => {
-    setProject(data => {
-      data.todos[todoId].name = value;
-      return {...data}
-    })
   }, []);
 
-  const handleTitleNameChange = (titleId, value) => {
-    setProject(data => {
-      data.titles[titleId].name = value;
-      return {...data}
-    })
-  };
+  // const handleTodoNameChange = useCallback((todoId, value) => {
+  //   setProject(data => {
+  //     data.todos[todoId].name = value;
+  //     return {...data}
+  //   })
+  // }, []);
+  //
+  // const handleTitleNameChange = (titleId, value) => {
+  //   setProject(data => {
+  //     data.titles[titleId].name = value;
+  //     return {...data}
+  //   })
+  // };
 
   const localDeleteTitle = useCallback((titleId) => {
     setProject(data => {
@@ -271,30 +270,54 @@ function useProject(projectId) {
   // };
 
   const localReplaceTodoAfterCreate = useCallback((oldTodoId, newTodoObj) => {
-    const data = cloneDeep(project);
-    const index = data.todoIds.indexOf(oldTodoId);
-    data.todoIds.splice(index, 1);
-    data.todoIds.splice(index, 0, newTodoObj.id);
-    delete data.todos[oldTodoId];
-    data.todos[newTodoObj.id] = {...newTodoObj};
-    setProject(data);
+    // const data = cloneDeep(project);
+    // const index = data.todoIds.indexOf(oldTodoId);
+    // data.todoIds.splice(index, 1);
+    // data.todoIds.splice(index, 0, newTodoObj.id);
+    // delete data.todos[oldTodoId];
+    // data.todos[newTodoObj.id] = {...newTodoObj};
+    // setProject(data);
+    //
+    // projectInitial.current.todoIds.splice(index, 0, newTodoObj.id);
+    // projectInitial.current.todos[newTodoObj.id] = {...newTodoObj};
+    //
+    setProject((data) => {
+      const index = data.todoIds.indexOf(oldTodoId);
+      data.todoIds.splice(index, 1);
+      data.todoIds.splice(index, 0, newTodoObj.id);
+      delete data.todos[oldTodoId];
+      data.todos[newTodoObj.id] = {...newTodoObj};
 
-    projectInitial.current.todoIds.splice(index, 0, newTodoObj.id);
-    projectInitial.current.todos[newTodoObj.id] = {...newTodoObj};
-  }, [project]);
+      projectInitial.current.todoIds.splice(index, 0, newTodoObj.id);
+      projectInitial.current.todos[newTodoObj.id] = {...newTodoObj};
+      return {...data}
+    })
+  }, []);
 
   const localReplaceTodoAfterCreateWithTitle = useCallback((oldTodoId, titleId, newTodoObj) => {
-    const data = cloneDeep(project);
-    const index = data.titles[titleId].todoIds.indexOf(oldTodoId);
-    data.titles[titleId].todoIds.splice(index, 1);
-    data.titles[titleId].todoIds.splice(index, 0, newTodoObj.id);
-    delete data.todos[oldTodoId];
-    data.todos[newTodoObj.id] = {...newTodoObj};
-    setProject(data);
+    // const data = cloneDeep(project);
+    // const index = data.titles[titleId].todoIds.indexOf(oldTodoId);
+    // data.titles[titleId].todoIds.splice(index, 1);
+    // data.titles[titleId].todoIds.splice(index, 0, newTodoObj.id);
+    // delete data.todos[oldTodoId];
+    // data.todos[newTodoObj.id] = {...newTodoObj};
+    // setProject(data);
 
-    projectInitial.current.titles[titleId].todoIds.splice(index, 0, newTodoObj.id);
-    projectInitial.current.todos[newTodoObj.id] = {...newTodoObj};
-  }, [project]);
+    setProject((data) => {
+      const index = data.titles[titleId].todoIds.indexOf(oldTodoId);
+      data.titles[titleId].todoIds.splice(index, 1);
+      data.titles[titleId].todoIds.splice(index, 0, newTodoObj.id);
+      delete data.todos[oldTodoId];
+      data.todos[newTodoObj.id] = {...newTodoObj};
+
+      projectInitial.current.titles[titleId].todoIds.splice(index, 0, newTodoObj.id);
+      projectInitial.current.todos[newTodoObj.id] = {...newTodoObj};
+      return {...data}
+    });
+
+    // projectInitial.current.titles[titleId].todoIds.splice(index, 0, newTodoObj.id);
+    // projectInitial.current.todos[newTodoObj.id] = {...newTodoObj};
+  }, []);
 
   const createTodo = useCallback((todoId, titleId, params) => {
     const url = window.ttnote.baseUrl + `/projects/${projectId}/titles/${titleId ? titleId : '-1'}/todos`;
@@ -414,7 +437,7 @@ function useProject(projectId) {
       }).catch(res => {
       // todo
     })
-  }, [fetchProject, projectId]);
+  }, [fetchProject, handleNewTodo, projectId]);
 
 
 
@@ -466,7 +489,7 @@ function useProject(projectId) {
     projectMethods: {
       // handleProjectChange,
       // handleProjectDescOnBlur,
-      handleProjectDescEnterPress,
+      // handleProjectDescEnterPress,
       projectNameChangeCancel,
       updateProject,
     },
