@@ -1,11 +1,12 @@
-import React, {useState} from "react";
+import React, {useCallback, useState} from "react";
 import styled from "styled-components";
-import {IoIosArrowForward, IoIosAddCircle, IoIosSettings, IoIosFiling, IoIosFolder} from 'react-icons/io';
+import {IoIosArrowForward, IoIosAddCircle, IoIosSettings} from 'react-icons/io';
 import {CSSTransition} from 'react-transition-group';
 import useCategory from "../hooks/useCategory";
 import {VLine} from "../common/style";
 import {Modal} from "react-bootstrap";
 import Setting from "./Setting";
+import LeftList from "./LeftList";
 
 const LeftContainer = styled.div`
   flex: 1;
@@ -44,20 +45,13 @@ const LeftLogo = styled.div`
 
 const LeftBody = styled.div`
  font-weight: 600;
-`;
-
-const ListRow = styled.div`
-  padding: 0.6rem 1rem;
-  &:hover {
-    cursor: pointer;
-    background-color: ${props => props.active ? '' : window.ttnoteThemeLight.bgColorDarkHover};
-  }
-  // border-bottom: 1px solid ${window.ttnoteThemeLight.lineColorLight};
-  background: ${props => props.active ? window.ttnoteThemeLight.bgColorDarkActive : '' };
-  color: ${props => props.active ? window.ttnoteThemeLight.textColorLight : '' };
-  //border-radius: ${window.ttnoteThemeLight.primaryBorderRadius};
-  display: flex;
-  align-items: center;
+ :before {
+   content: '';
+   display: block;
+   height: 3.3rem;
+ }
+ height: calc(100% - 3.3rem);
+ overflow: auto;
 `;
 
 const LeftFooter = styled.div`
@@ -110,55 +104,28 @@ const SettingCell = styled.div`
   cursor: pointer;
 `;
 
-const PlaceholderDiv = styled.div`
-  height: 3.3rem;
-`;
-
 function Left(props) {
   const {isMobileView, mobileShowingArea} = props;
   const [settingModalShow, setSettingModalShow] = useState(false);
+  const [showOverlayId, setShowOverlayId] = useState(null);
+  const [leftListEditId, setLeftListEditId] = useState(null);
+
   const iconStyle = {fontSize: '24px'};
   const visible = !isMobileView || (isMobileView && mobileShowingArea === 'left');
 
   const searchParams = window.ttnote.searchObject();
   const categoryId = parseInt(searchParams.categoryId) || -1;
 
-  const {categories} = useCategory(categoryId);
+  const {
+    categories,
+    categoryMethods,
+  } = useCategory(categoryId);
 
-  const renderList = (list) => {
-    const active = list.id === categoryId;
-    return (
-     <ListRow
-       active={active}
-       key={list.id}
-       onClick={() => {
-         if (active && !isMobileView) {
-           return;
-         }
+  const hasNewId = categories.findIndex(ca => ca.id === 'new') !== -1;
 
-         const params = window.ttnote.searchObject();
-         if (!active) {
-           params.categoryId = list.id;
-           delete params.projectId;
-         }
-
-         if (isMobileView) {
-           params.mobileShowingArea = 'middle';
-           params.enterFrom = 'right';
-         }
-         window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
-       }}
-     >
-       {list.id === -1 ?
-         <IoIosFiling/> :
-         <IoIosFolder/>
-       }
-       <div style={{marginLeft: '0.3rem'}}>
-         {list.name}
-       </div>
-     </ListRow>
-    )
-  };
+  const handleCategoryDelete = useCallback(() => {
+    console.log('category delete');
+  }, []);
 
   return (
     <CSSTransition
@@ -168,7 +135,13 @@ function Left(props) {
       exit={false}
       unmountOnExit
     >
-      <LeftContainer>
+      <LeftContainer
+        onClick={() => {
+          if (showOverlayId) {
+            setShowOverlayId(null);
+          }
+        }}
+      >
         <HeaderRow>
           {isMobileView &&
             <IoIosArrowForward
@@ -186,13 +159,33 @@ function Left(props) {
           <LeftLogo>蕃茄时光</LeftLogo>
           </HeaderRow>
         <LeftBody>
-          <PlaceholderDiv />
-          {renderList({id: -1, name: '收件箱'})}
-          {categories.map(list => renderList(list))}
+          <LeftList
+            list={{id: -1, name: '收件箱'}}
+            categoryId={categoryId}
+            isMobileView={isMobileView}
+          />
+          {categories.map(list => <LeftList
+            key={list.id}
+            list={list}
+            categoryId={categoryId}
+            isMobileView={isMobileView}
+            showOverlayId={showOverlayId}
+            setShowOverlayId={setShowOverlayId}
+            handleCategoryDelete={handleCategoryDelete}
+            leftListEditId={leftListEditId}
+            setLeftListEditId={setLeftListEditId}
+            categoryMethods={categoryMethods}
+          />)}
         </LeftBody>
         <LeftFooter>
           <NewCategoryCell
-            // onClick={() => handleNewTodo()}
+            onClick={() => {
+              if (!hasNewId) {
+
+              categoryMethods.handleNewCategory();
+              setLeftListEditId('new');
+              }
+            }}
           >
             <IconStyled>
               <IoIosAddCircle/>

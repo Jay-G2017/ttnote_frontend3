@@ -1,4 +1,4 @@
-import React, {useCallback, useRef} from "react";
+import React, {useCallback, useMemo, useRef, useState} from "react";
 import styled from "styled-components";
 import Todo from "./Todo";
 import {PaddingRow, TTextArea} from '../common/style';
@@ -72,6 +72,14 @@ const TodoBoard = styled.div`
 
 `;
 
+const OverlayContainer = styled.div`
+  background-color: ${window.ttnoteThemeLight.bgColorDark};
+  border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
+  padding: 0.2rem 0.7rem;
+  color: ${window.ttnoteThemeLight.textColorLight};
+  font-size: 0.8rem;
+`;
+
 function Title(props) {
   const {
     title,
@@ -82,9 +90,12 @@ function Title(props) {
     titleMethods,
     showMore,
     setShowMore,
+    handleNewTodo,
   } = props;
 
   const {handleTitleDeleteWithConfirm} = titleMethods;
+
+  const [titleName, setTitleName] = useState(title.name);
 
   const moreButtonRef = useRef(null);
   const showOverlay = showMore.type === 'title' && showMore.id === title.id;
@@ -101,30 +112,54 @@ function Title(props) {
     if (todoSize > 0) {
       if (window.confirm('这会删除当前组下的所有任务，确定要删除吗？')) {
         handleTitleDeleteWithConfirm(title.id)
+      } else {
+        setTitleName(title.name)
       }
     } else {
       handleTitleDeleteWithConfirm(title.id)
     }
-  }, [handleTitleDeleteWithConfirm, title.id, todoSize]);
+  }, [handleTitleDeleteWithConfirm, title.id, title.name, todoSize]);
 
-  return (
+  const handleTitleNameOnBlur = useCallback((e, options={}) => {
+    const value = e.currentTarget.value;
+    if (value) {
+      if (title.id > 0) {
+        if (value !== title.name) {
+          titleMethods.updateTitle(title.id, {name: value})
+        }
+        if (options.createNewTodo)
+          handleNewTodo(title.id)
+      } else {
+        titleMethods.createTitle(title.id, {name: value}, {createNewTodo: options.createNewTodo})
+      }
+    } else {
+      if (title.id > 0) {
+        // 删除title
+        handleTitleDelete()
+      } else {
+        titleMethods.localDeleteTitle(title.id)
+      }
+    }
+  }, [handleNewTodo, handleTitleDelete, title.id, title.name, titleMethods]);
+
+  return useMemo(() => (
     <TitleContainer>
       <TitleRow>
         <VerticalLine/>
         <NameCell>
           <TTextArea
-            value={title.name}
+            value={titleName}
             autoFocus={title.id < 0}
             placeholder={'输入内容'}
             onChange={(e) => {
               const value = e.currentTarget.value;
-              titleMethods.handleTitleNameChange(title.id, value);
+              setTitleName(value)
             }}
-            // onBlur={() => handleTodoNameOnBlur(todo.id, titleId)}
+            onBlur={handleTitleNameOnBlur}
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
-                titleMethods.handleTitleNameEnterPress(e, title.id)
+                handleTitleNameOnBlur(e, {createNewTodo: true})
               }
             }}
           />
@@ -153,9 +188,11 @@ function Title(props) {
         >
           {props => (
             <OverlayComp {...props}>
+              <OverlayContainer>
               <div
                 onClick={handleTitleDelete}
               >删除</div>
+              </OverlayContainer>
             </OverlayComp>
           )
           }
@@ -174,11 +211,11 @@ function Title(props) {
             todoMethods={todoMethods}
             showMore={showMore}
             setShowMore={setShowMore}
+            handleNewTodo={handleNewTodo}
           />)}
       </TodoBoard>
     </TitleContainer>
-  )
-
+  ), [handleNewTodo, handleTitleDelete, handleTitleNameOnBlur, playStatus, props.setTodoExpandedKeys, props.todoExpandedKeys, setPlayStatus, setShowMore, showMore, showOverlay, title.id, title.todoIds, titleName, todoMethods, todos]);
 }
 
 export default Title;

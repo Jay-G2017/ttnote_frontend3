@@ -54,7 +54,7 @@ const TomatoBadge = styled(Badge)`
   top: 0;
   right: 0;
   border-radius: 3px;
-  visibility: ${props => props.visible ? 'visible' : 'hidden'};
+  visibility: ${props => props.visible === 'true' ? 'visible' : 'hidden'};
   color: ${window.ttnoteThemeLight.colorSecondary};
   cursor: pointer;
 `;
@@ -92,6 +92,14 @@ const MoreCell = styled.div`
   flex: none;
 `;
 
+const OverlayContainer = styled.div`
+  background-color: ${window.ttnoteThemeLight.bgColorDark};
+  border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
+  padding: 0.2rem 0.7rem;
+  color: ${window.ttnoteThemeLight.textColorLight};
+  font-size: 0.8rem;
+`;
+
 
 function Todo(props) {
   const {
@@ -102,19 +110,23 @@ function Todo(props) {
     todoMethods,
     showMore,
     setShowMore,
+    handleNewTodo,
   } = props;
   const {
-    handleTodoNameChange,
-    handleTodoNameOnBlur,
-    handleTodoNameEnterPress,
     deleteTomato,
     handleTodoDeleteWithConfirm,
+    updateTodo,
+    createTodo,
+    cancelNewTodo,
   } = todoMethods;
   const [done, setDone] = useState(todo.done);
+  const [todoName, setTodoName] = useState(todo.name);
   // const [collapse, setCollapse] = useState(true);
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
   const moreButtonRef = useRef(null);
   const showOverlay = showMore.type === 'todo' && showMore.id === todo.id;
+
+  const stopOnBlurFlag = useRef(false);
 
   const tomatoes = todo.tomatoes || [];
   const tomatoSize = tomatoes.length;
@@ -151,15 +163,54 @@ function Todo(props) {
     if (tomatoSize > 0) {
       if (window.confirm('这会删除当前任务下的所有蕃茄，确定要删除吗？')) {
         handleTodoDeleteWithConfirm(todoId, titleId)
+      } else {
+        setTodoName(todo.name)
       }
     } else {
       handleTodoDeleteWithConfirm(todoId, titleId)
     }
 
-  }, [tomatoSize, handleTodoDeleteWithConfirm]);
+  }, [tomatoSize, handleTodoDeleteWithConfirm, todo.name]);
+
+  const handleTodoNameOnEnterPress = useCallback((e, options = {}) => {
+      const value = e.currentTarget.value;
+      if (value) {
+        if (todo.id > 0) {
+          if (todo.name !== value) {
+            // update todo
+            updateTodo(todo.id, {name: value});
+          }
+        } else {
+          // create todo
+          createTodo(todo.id, titleId, {name: value});
+        }
+        if (options.newTodo) handleNewTodo(titleId)
+      } else {
+        if (todo.id > 0) {
+          // delete todo
+          handleTodoDelete(todo.id, titleId)
+        } else {
+          // cancel new todo
+          cancelNewTodo(todo.id, titleId)
+        }
+      }
+      stopOnBlurFlag.current = false;
+  }, [
+    cancelNewTodo,
+    createTodo,
+    handleNewTodo,
+    handleTodoDelete, titleId,
+    todo.id, todo.name, updateTodo,
+  ]);
+
+  const handleTodoNameOnBlur = useCallback((e, options={newTodo: false}) => {
+    if (!stopOnBlurFlag.current) {
+      handleTodoNameOnEnterPress(e, options)
+    }
+  }, [handleTodoNameOnEnterPress]);
 
   return useMemo(() => {
-    console.log('todo in');
+    console.log('in todo');
     return (
       <TodoRowGroup>
         <TodoRow>
@@ -175,24 +226,26 @@ function Todo(props) {
           </CheckCell>
           <NameCell done={done}>
             <TTextArea
-              value={todo.name}
+              value={todoName}
               autoFocus={todo.id < 0}
               placeholder={'输入内容'}
               onChange={(e) => {
                 const value = e.currentTarget.value;
-                handleTodoNameChange(todo.id, value);
+                setTodoName(value)
               }}
-              onBlur={() => handleTodoNameOnBlur(todo.id, titleId)}
+              onBlur={handleTodoNameOnBlur}
               onKeyPress={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  handleTodoNameEnterPress(e, todo.id, titleId)
+                  stopOnBlurFlag.current = true;
+                  e.currentTarget.blur();
+                  handleTodoNameOnEnterPress(e, {newTodo: true})
                 }
               }}
             />
             <TomatoBadge
               variant={'light'}
-              visible={tomatoSize > 0}
+              visible={(tomatoSize > 0).toString()}
               onClick={handleTodoExpand}
             >{tomatoSize}</TomatoBadge>
           </NameCell>
@@ -255,9 +308,12 @@ function Todo(props) {
           >
             {props => (
               <OverlayComp {...props}>
-                <div
-                  onClick={() => handleTodoDelete(todo.id, titleId)}
-                >删除</div>
+                <OverlayContainer>
+                  <div
+                    onClick={() => handleTodoDelete(todo.id, titleId)}
+                  >删除
+                  </div>
+                </OverlayContainer>
               </OverlayComp>
             )
             }
@@ -274,27 +330,7 @@ function Todo(props) {
         </TomatoGroup>
       </TodoRowGroup>
     )
-  }, [
-    showOverlay,
-    setShowMore,
-    done,
-    setDone,
-    tomatoState,
-    tomatoDispatch,
-    handleTodoExpand,
-    playButtonDisabled,
-    titleId,
-    todo,
-    todoExpandedKeys,
-    handleTodoNameChange,
-    handleTodoNameEnterPress,
-    handleTodoNameOnBlur,
-    deleteTomato,
-    toggleTodo,
-    tomatoSize,
-    tomatoes,
-    handleTodoDelete,
-  ]);
+  }, [todo.id, done, todoName, handleTodoNameOnBlur, tomatoSize, handleTodoExpand, tomatoState.id, tomatoState.minutes, playButtonDisabled, showOverlay, todoExpandedKeys, tomatoes, toggleTodo, handleTodoNameOnEnterPress, tomatoDispatch, setShowMore, handleTodoDelete, titleId, deleteTomato]);
 }
 
 export default Todo;

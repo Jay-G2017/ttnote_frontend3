@@ -5,6 +5,7 @@ import Middle from "./components/Middle";
 import Right from "./components/Right";
 import {TomatoContext, tomatoReducer, tomatoInitial} from './reducers/tomatoReducer';
 import {getCookie} from "./utils/helper";
+import useProjects from "./hooks/useProjects";
 
 const NoteContainer = styled.div`
   display: flex;
@@ -19,6 +20,16 @@ function Note() {
   const mobileShowingArea = window.ttnote.searchObject().mobileShowingArea || 'right';
 
   const [tomatoState, tomatoDispatch] = useReducer(tomatoReducer, tomatoInitial);
+
+  const searchObject = window.ttnote.searchObject();
+  const categoryId = parseInt(searchObject.categoryId) || -1;
+  const {
+    projects,
+    projectCreating,
+    handleNewProject,
+    handleProjectDelete,
+    handleProjectChangeFromRight,
+  } = useProjects(categoryId);
 
   useEffect(() => {
     const handleResize = () => {
@@ -68,11 +79,16 @@ function Note() {
       <Middle
         isMobileView={isMobileView}
         mobileShowingArea={mobileShowingArea}
+        projects={projects}
+        projectCreating={projectCreating}
+        handleNewProject={handleNewProject}
+        handleProjectDelete={handleProjectDelete}
       />
       <TomatoContext.Provider value={{tomatoState, tomatoDispatch}}>
         <Right
           isMobileView={isMobileView}
           mobileShowingArea={mobileShowingArea}
+          handleProjectChangeFromRight={handleProjectChangeFromRight}
         />
       </TomatoContext.Provider>
     </NoteContainer>
