@@ -7,10 +7,6 @@ function useProject(projectId) {
   const [todayTomatoSize, setTodayTomatoSize] = useState(0);
   const projectInitial = useRef({todos: {}, titles: {}, todoIds: [], titleIds: []});
 
-  // const stopEventFlag = useRef(false);
-
-  // const {todos, titles} = project;
-
   const fetchProject = useCallback((afterSuccessCallback) => {
     const url = window.ttnote.baseUrl + '/projects/' + projectId + '?v1=true';
     window.ttnote.fetch(url)

@@ -124,7 +124,6 @@ function ProjectList(props) {
           delete params.enterFrom;
         }
         window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
-        window.focusProjectName = false;
       }}
     >
       <Inner className={'middleListInner'}>
