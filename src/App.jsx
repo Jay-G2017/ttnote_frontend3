@@ -5,6 +5,9 @@ import Registration from "./Registration";
 import Login from "./Login";
 import NotFoundPage from "./NotFoundPage";
 import Note from "./Note";
+import Support from "./Support";
+import DevelopPlan from "./DevelopPlan";
+import Feedback from "./Feedback";
 
 function App() {
   return (

@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from "styled-components";
-import {FlexRow, FlexBetweenRow, TButton} from "./common/style";
-import {Button, Container} from "react-bootstrap";
+import {FlexRow, FlexBetweenRow, TButton, HomePaddingContainer} from "./common/style";
+import {Button} from "react-bootstrap";
 import {getCookie} from './utils/helper';
 
 const Header = styled.div`
-  display: flex;     
+  //display: flex;     
   align-items: center;
   background-color: #e86c2a;
   height: 3rem;
@@ -26,7 +26,7 @@ function HomeHeader() {
     const isLogin = !!getCookie('token');
     return (
         <Header>
-            <Container>
+            <HomePaddingContainer>
                 <FlexBetweenRow>
                     <BrandDiv onClick={() => window.ttnote.goto('/')}>蕃茄时光</BrandDiv>
                   {isLogin ?
@@ -48,7 +48,7 @@ function HomeHeader() {
                     </FlexRow>
                   }
                 </FlexBetweenRow>
-            </Container>
+            </HomePaddingContainer>
         </Header>
     )
 }

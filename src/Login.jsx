@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {HomeContainer} from "./common/style";
+import {HomeContainer, HomePaddingContainer, HomeBody} from "./common/style";
 import HomeHeader from "./HomeHeader";
-import {Container, Row, Col, Form, Button, Alert} from 'react-bootstrap';
+import {Row, Col, Form, Button, Alert} from 'react-bootstrap';
 import {setCookie, getCookie} from './utils/helper';
+import HomeFooter from "./HomeFooter";
 
 function Login() {
 
@@ -12,7 +13,7 @@ function Login() {
   const [needLogin, setNeedLogin] = useState(false);
   const [emailConfirmed, setEmailConfirmed] = useState(false);
   const [disabled, setDisabled] = useState(false);
-  const colStyle = {xs: 12, sm: {span: 8, offset: 2}, md: {span: 6, offset: 3}};
+  const colStyle = {xs: 12, sm: {span: 8, offset: 2}, md: {span: 8, offset: 2}};
 
   useEffect(() => {
     const _emailConfirmed = window.ttnote.searchObject().hasOwnProperty('emailConfirmed');
@@ -86,7 +87,8 @@ function Login() {
   return (
     <HomeContainer>
       <HomeHeader/>
-      <Container>
+      <HomeBody>
+        <HomePaddingContainer>
         {emailConfirmed &&
         <Row className={'mt-2'}>
           <Col {...colStyle}>
@@ -185,7 +187,9 @@ function Login() {
             </Col>
           </Row>
         </Form>
-      </Container>
+        </HomePaddingContainer>
+      </HomeBody>
+      <HomeFooter/>
     </HomeContainer>
   )
 }

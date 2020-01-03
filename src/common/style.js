@@ -13,6 +13,7 @@ export const FlexCenterRow = styled.div`
 `;
 
 export const FlexBetweenRow = styled.div`
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -20,6 +21,7 @@ export const FlexBetweenRow = styled.div`
 
 export const TButton = styled.div`
   color: #fff;
+  font-weight: 500;
   &:hover {
     cursor: pointer;
   }
@@ -31,6 +33,21 @@ export const HomeContainer = styled.div`
   flex-direction: column;
   height: 100vh;
   overflow: auto;
+`;
+
+export const HomeBody = styled.div`
+  flex: 1 1 85%;
+  padding: 5rem 0 2rem 0;
+`;
+
+export const HomePaddingContainer = styled.div`
+  height: 100%;
+  padding: 0 1rem;
+  @media (min-width: 576px) {
+    max-width: 720px;
+    margin: auto;
+    padding: 0 2rem;
+  }
 `;
 
 export const TInput = styled.input`
