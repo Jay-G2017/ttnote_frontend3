@@ -33,6 +33,12 @@ const TimerRow = styled.div`
 
 const TomatoCountCell = styled.div`
   font-size: 1.2rem;
+  flex: 0 0 4rem;
+  cursor: ${props => props.tomatoOn ? 'pointer' : 'auto'};
+`;
+
+const TomatoInfoCell = styled.div`
+  flex: 0 0 5rem;
 `;
 
 const CancelCell = styled.div`
@@ -93,6 +99,7 @@ function RightHeader(props) {
   const countdownRef = useRef(null);
 
   const handleTomatoComplete = useCallback((todoId) => {
+    document.title = "🍅 蕃茄时光 | Tomato Time";
     createTomato(todoId);
     window.dingDingAudio.play();
     if (window.ttnote.userSetting.autoRest) {
@@ -102,6 +109,7 @@ function RightHeader(props) {
   }, [tomatoDispatch, createTomato]);
 
   const handleRestComplete = useCallback(() => {
+    document.title = "🍅 蕃茄时光 | Tomato Time";
     tomatoDispatch({type: 'cancel'});
     window.restAudio.play();
   }, [tomatoDispatch]);
@@ -139,13 +147,21 @@ function RightHeader(props) {
         }
         {tomatoState.isPlaying ?
           <TimerRow>
-            <TomatoCountCell onClick={() => {
-              window.ttnote.goto('/note' + window.ttnote.objectToUrl(window.ttnote.currentTomatoUrl))
+            <TomatoCountCell
+              tomatoOn={!!tomatoState.id}
+              onClick={() => {
+                if (tomatoState.id)
+                  window.ttnote.goto('/note' + window.ttnote.objectToUrl(window.ttnote.currentTomatoUrl))
             }}>
               <Countdown
                 ref={countdownRef}
                 date={Date.now() + tomatoState.minutes * 60 * 1000}
-                renderer={({minutes, seconds}) => <span>{zeroPad(minutes)}:{zeroPad(seconds)}</span>}
+                renderer={({minutes, seconds}) => {
+                  document.title = `${zeroPad(minutes)}:${zeroPad(seconds)}`;
+                  return(
+                    <span>{zeroPad(minutes)}:{zeroPad(seconds)}</span>
+                  );
+                }}
                 onComplete={() => {
                   if (tomatoState.id) {
                     handleTomatoComplete(tomatoState.id)
@@ -155,8 +171,10 @@ function RightHeader(props) {
                 }}
               />
             </TomatoCountCell>
+            {tomatoState.id ? <TomatoInfoCell>蕃茄中...</TomatoInfoCell> : <TomatoInfoCell>休息中...</TomatoInfoCell>}
             <CancelCell
               onClick={() => {
+                document.title = "🍅 蕃茄时光 | Tomato Time";
                 tomatoDispatch({type: 'cancel'});
               }}
             >
