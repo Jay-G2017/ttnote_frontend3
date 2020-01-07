@@ -7,7 +7,7 @@ import {getCookie} from './utils/helper';
 const Header = styled.div`
   //display: flex;     
   align-items: center;
-  background-color: #e86c2a;
+  background-color: ${window.ttnoteHomeLight.bgColorPrimary};
   height: 3rem;
   position: fixed;
   left: 0;
