@@ -84,6 +84,7 @@ export const TTextArea = styled(TextareaAutosize)`
     line-height: 1.4;
     caret-color: ${window.ttnoteThemeLight.colorPrimary};
     padding-left: 0;
+    text-align: justify;
 `;
 
 export const PaddingRow = styled.div`
