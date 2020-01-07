@@ -78,7 +78,13 @@ const PlayAndStatus = styled.div`
 
 const PlayCell = styled(IoIosPlayCircle)`
   color: ${props => props.disabled ? window.ttnoteThemeLight.btnDefaultDisabledFontColor : window.ttnoteThemeLight.primary};
-  cursor: pointer;
+  cursor: ${props => props.disabled ? '' : 'pointer'};
+  :hover {
+    ${props => props.disabled ? '' : "transform: scale(1.1)"};
+  }
+  :active {
+    transform: scale(1);
+  }
 `;
 
 const MoreCell = styled.div`
