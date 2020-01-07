@@ -1,6 +1,6 @@
 import React, {useRef} from "react";
 import {IoIosMore} from 'react-icons/io';
-import LinesEllipsis from "react-lines-ellipsis";
+import Dotdotdot from "react-dotdotdot";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import styled from "styled-components";
@@ -129,10 +129,11 @@ function ProjectList(props) {
       <Inner className={'middleListInner'}>
         <ProjectNameRow>{project.name}</ProjectNameRow>
         <ProjectDescRow active={active} className={'project-desc-row'}>
-          <LinesEllipsis
-            text={project.desc || ''}
-            maxLine={2}
-          />
+          <Dotdotdot
+            clamp={2}
+          >
+            {project.desc || ''}
+          </Dotdotdot>
         </ProjectDescRow>
         <ProjectInfoRow active={active} className={'project-info-row'}>
           <TimeCell>{fromNow}</TimeCell>
