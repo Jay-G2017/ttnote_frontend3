@@ -83,7 +83,7 @@ const ttnoteThemeLight = {
 
 const ttnoteHomeLight = {
   bgColorDefault: '#FDF8F4',
-  bgColorPrimary: '#E56C34',
+  bgColorPrimary: '#e86c2a',
   bgColorLight: '#F5F5F7',
 };
 

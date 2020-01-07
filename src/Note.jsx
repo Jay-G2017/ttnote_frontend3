@@ -51,6 +51,13 @@ function Note() {
     return () => window.removeEventListener('resize', handleResize);
   }, [isMobileView]);
 
+  // 设置body的background-color
+  useEffect(() => {
+    document.body.style.backgroundColor = window.ttnoteThemeLight.bgColorGrey;
+
+    return () => document.body.style.backgroundColor = '#fff';
+  }, []);
+
   // const handleLogout = () => {
   //   const url = window.ttnote.baseUrl + '/users/logout';
   //   window.ttnote.fetch(url, {
