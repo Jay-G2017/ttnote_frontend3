@@ -60,9 +60,10 @@ const DescCell = styled.div`
   //display: ${props => props.visible ? 'block' : 'none'};
   display: flex;
   align-items: center;
-  margin-right: 0.5rem; 
+  margin-left: 1.7rem; //1.4 + 0.3
+  //margin-right: 0.5rem; 
   @media (min-width: 576px) {
-    margin-right: 1rem; 
+    //margin-right: 1rem; 
   }
 `;
 
@@ -92,13 +93,13 @@ function Tomato(props) {
   return (
     <TomatoRowGroup>
       <TomatoRow>
-        <TimeCell>{fromNow}</TimeCell>
         <DescCell todoDone={todoDone}>
           <TextareaDebounced
             defaultValue={tomato.desc}
             saveInfo={saveInfo}
           />
         </DescCell>
+        <TimeCell>{fromNow}</TimeCell>
         <MinutesCell>{`${tomato.minutes}分钟`}</MinutesCell>
           <DeleteCell
             onClick={handleTomatoDelete}
