@@ -81,5 +81,12 @@ const ttnoteThemeLight = {
   borderRadiusPrimary: '3px',
 };
 
+const ttnoteHomeLight = {
+  bgColorDefault: '#FDF8F4',
+  bgColorPrimary: '#E56C34',
+  bgColorLight: '#F5F5F7',
+};
+
 window.ttnoteThemeLight = ttnoteThemeLight;
+window.ttnoteHomeLight = ttnoteHomeLight;
 

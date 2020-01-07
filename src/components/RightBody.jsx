@@ -279,7 +279,7 @@ const RightBody = (props) => {
         </NewTitleCell>
       </RightFooter>
     </>
-  ), [handleNewTitle, handleNewTodo, handleProjectChangeFromRight, handleProjectNameOnBlur, project.desc, project.id, projectDesc, projectMethods, projectName, setShowMore, setTodoExpandedKeys, showMore, titleIds, titleMethods, titles, todoExpandedKeys, todoIds, todoMethods, todos])
+  ), [handleNewTitle, handleNewTodo, handleProjectChangeFromRight, handleProjectNameOnBlur, handleProjectNameOnEnterPress, project.desc, project.id, projectDesc, projectMethods, projectName, setShowMore, setTodoExpandedKeys, showMore, titleIds, titleMethods, titles, todoExpandedKeys, todoIds, todoMethods, todos])
 };
 
 export default RightBody;

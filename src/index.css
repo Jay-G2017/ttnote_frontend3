@@ -5,7 +5,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #fdf8f2;
+  /*background-color: #35322F;*/
+  background-color: #fff;
   -webkit-tap-highlight-color: rgba(0,0,0,0);
   box-sizing: border-box;
 }

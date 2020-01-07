@@ -1,6 +1,6 @@
 import React, {useCallback, useState} from "react";
 import styled from "styled-components";
-import {IoIosArrowForward, IoIosAddCircle, IoIosSettings} from 'react-icons/io';
+import {IoIosAddCircle, IoIosSettings} from 'react-icons/io';
 import {CSSTransition} from 'react-transition-group';
 import useCategory from "../hooks/useCategory";
 import {VLine} from "../common/style";
@@ -41,6 +41,7 @@ const HeaderRow = styled.div`
 const LeftLogo = styled.div`
  color: ${window.ttnoteThemeLight.textColorDarkTips};
  font-weight: 600;
+ cursor: pointer;
 `;
 
 const LeftBody = styled.div`
@@ -110,7 +111,6 @@ function Left(props) {
   const [showOverlayId, setShowOverlayId] = useState(null);
   const [leftListEditId, setLeftListEditId] = useState(null);
 
-  const iconStyle = {fontSize: '24px'};
   const visible = !isMobileView || (isMobileView && mobileShowingArea === 'left');
 
   const searchParams = window.ttnote.searchObject();
@@ -143,20 +143,9 @@ function Left(props) {
         }}
       >
         <HeaderRow>
-          {isMobileView &&
-            <IoIosArrowForward
-              onClick={() => {
-                if (isMobileView) {
-                  const params = window.ttnote.searchObject();
-                  params.mobileShowingArea = 'middle';
-                  params.enterFrom = 'right';
-                  window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
-                }
-              }}
-              style={iconStyle}
-            />
-          }
-          <LeftLogo>蕃茄时光</LeftLogo>
+          <LeftLogo
+            onClick={() => window.ttnote.goto('/')}
+          >蕃茄时光</LeftLogo>
           </HeaderRow>
         <LeftBody>
           <LeftList

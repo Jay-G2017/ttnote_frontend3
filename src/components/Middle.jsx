@@ -100,10 +100,6 @@ const IconName = styled.div`
   line-height: 1.2;
 `;
 
-const PlaceholderDiv = styled.div`
-  height: 3.3rem;
-`;
-
 function Middle(props) {
   const {
     isMobileView,
@@ -115,7 +111,7 @@ function Middle(props) {
   } = props;
   const [showOverlayId, setShowOverlayId] = useState(null);
 
-  const iconStyle = {fontSize: '24px'};
+  const iconStyle = {fontSize: '24px', color: window.ttnoteThemeLight.textColorLight};
   const visible = (isMobileView && mobileShowingArea === 'middle') || !isMobileView;
 
   const searchObject = window.ttnote.searchObject();
@@ -153,9 +149,6 @@ function Middle(props) {
           }
           </HeaderRow>
         <MiddleBody>
-          {isMobileView &&
-            <PlaceholderDiv />
-          }
           {projects.map(project => <ProjectList
             key={project.id}
             project={project}
