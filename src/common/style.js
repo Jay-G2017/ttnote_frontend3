@@ -80,8 +80,8 @@ export const TTextArea = styled(TextareaAutosize)`
     font-size: inherit;
     font-weight: inherit;
     color: inherit;
-    height: 1.4em;
-    line-height: 1.4;
+    height: 1.6em;
+    line-height: 1.6;
     caret-color: ${window.ttnoteThemeLight.colorPrimary};
     padding-left: 0;
 `;
