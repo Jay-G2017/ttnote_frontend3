@@ -100,10 +100,6 @@ const IconName = styled.div`
   line-height: 1.2;
 `;
 
-const PlaceholderDiv = styled.div`
-  height: 3.3rem;
-`;
-
 function Middle(props) {
   const {
     isMobileView,

@@ -8,6 +8,7 @@ import Note from "./Note";
 import Support from "./Support";
 import DevelopPlan from "./DevelopPlan";
 import Feedback from "./Feedback";
+import PomodoroTechnique from "./PomodoroTechnique";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path='/support' component={Support}/>
         <Route path='/develop_plan' component={DevelopPlan}/>
         <Route path='/feedback' component={Feedback}/>
+        <Route path='/pomodoro_technique' component={PomodoroTechnique}/>
         <Route component={NotFoundPage}/>
       </Switch>
     </Router>

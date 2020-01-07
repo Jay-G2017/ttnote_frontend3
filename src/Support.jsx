@@ -15,7 +15,6 @@ function Support() {
           <h4>手机端</h4>
           <p>对于Ios系统，由于苹果会屏蔽后台的声音播放，所以当你锁屏或者不在浏览器页面的时候，完成蕃茄后会听不到提示音. 这个问题后续可能会通过发送邮件的方式来解决，或者在手机端会开发一个小程序</p>
           <p>对于Android系统，目前还没测试</p>
-
         </HomePaddingContainer>
       </HomeBody>
       <HomeFooter/>

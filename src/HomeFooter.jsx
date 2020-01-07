@@ -53,8 +53,9 @@ function HomeFooter() {
       <HomePaddingContainer>
       <FooterNav>
         <NavCard>
-          <NavName>说明</NavName>
+          <NavName>蕃茄时光</NavName>
           <NavList>
+            <div><a href={'/pomodoro_technique'}>什么是蕃茄工作法</a></div>
             <div><a href={'/support'}>浏览器支持情况</a></div>
             <div><a href={'/develop_plan'}>功能开发计划</a></div>
           </NavList>
