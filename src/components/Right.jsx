@@ -1,6 +1,5 @@
-import React, {useState} from "react";
+import React, {useCallback, useMemo, useState} from "react";
 import styled from "styled-components";
-import {CSSTransition} from 'react-transition-group';
 import useProject from "../hooks/useProject";
 import RightHeader from "./RightHeader";
 import RightBody from "./RightBody";
@@ -15,6 +14,7 @@ const RightContainer = styled.div`
   //justify-content: center;
   height: 100%;
   position: relative;
+  display: ${props => props.visible ? 'block' : 'none'};
 `;
 
 const NoProjectDiv = styled.p`
@@ -51,7 +51,7 @@ function Right(props) {
 
   // const newMode = Object.keys(todos).some(id => id < 0) || titleIds.some(id => id < 0);
 
-  const renderRightBody = () => {
+  const renderRightBody = useCallback(() => {
     if (projectId) {
       if (isLoading) {
         return(
@@ -71,7 +71,6 @@ function Right(props) {
             titleMethods={titleMethods}
             handleNewTodo={handleNewTodo}
             handleNewTitle={handleNewTitle}
-
           />
         )
       }
@@ -80,18 +79,12 @@ function Right(props) {
         <NoProjectDiv>无项目</NoProjectDiv>
       )
     }
-  };
+  }, [handleNewTitle, handleNewTodo, handleProjectChangeFromRight, isLoading, project, projectId, projectMethods, setTodoExpandedKeys, showMore, titleMethods, todoExpandedKeys, todoMethods]);
 
   return (
-    <CSSTransition
-      component={null}
-      in={visible}
-      timeout={300}
-      exit={false}
-      unmountOnExit
-      classNames='enter-from-right'
-    >
+    useMemo(() => (
       <RightContainer
+        visible={visible}
         onClick={() => {
           if (showMore.id)
             setShowMore({id: null, type: null})
@@ -103,7 +96,7 @@ function Right(props) {
         />
         {renderRightBody()}
       </RightContainer>
-    </CSSTransition>
+    ), [isMobileView, renderRightBody, showMore.id, todayTomatoSize, todoMethods.createTomato, visible])
   )
 }
 
