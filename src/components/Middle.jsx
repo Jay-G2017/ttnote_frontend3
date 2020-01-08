@@ -1,7 +1,6 @@
-import React, {useState} from "react";
+import React, {useMemo, useState} from "react";
 import styled from "styled-components";
 import {IoIosMenu, IoIosAddCircle} from 'react-icons/io';
-import {CSSTransition} from "react-transition-group";
 import ProjectList from "./ProjectList";
 
 const MiddleContainer = styled.div`
@@ -14,6 +13,7 @@ const MiddleContainer = styled.div`
   //background-color: #fff;
   height: 100%;
   position: relative;
+  display: ${props => props.visible ? 'block' : 'none'};
 `;
 
 const HeaderRow = styled.div`
@@ -115,18 +115,12 @@ function Middle(props) {
   const visible = (isMobileView && mobileShowingArea === 'middle') || !isMobileView;
 
   const searchObject = window.ttnote.searchObject();
-  const enterFrom = searchObject.enterFrom || 'left';
+  // const enterFrom = searchObject.enterFrom || 'left';
   const activeProjectId = parseInt(searchObject.projectId);
   const categoryId = parseInt(searchObject.categoryId) || -1;
 
   return (
-    <CSSTransition
-      in={visible}
-      timeout={200}
-      classNames={enterFrom === 'left' ? 'enter-from-left' : 'enter-from-right'}
-      unmountOnExit
-      exit={false}
-    >
+    useMemo(() => (
       <MiddleContainer
         visible={visible}
         onClick={() => {
@@ -173,7 +167,7 @@ function Middle(props) {
           </NewProjectCell>
         </MiddleFooter>
       </MiddleContainer>
-    </CSSTransition>
+    ), [activeProjectId, categoryId, handleNewProject, handleProjectDelete, iconStyle, isMobileView, projectCreating, projects, showOverlayId, visible])
   )
 }
 

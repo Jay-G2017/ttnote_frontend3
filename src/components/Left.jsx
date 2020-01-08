@@ -1,7 +1,6 @@
-import React, {useCallback, useState} from "react";
+import React, {useCallback, useMemo, useState} from "react";
 import styled from "styled-components";
 import {IoIosAddCircle, IoIosSettings} from 'react-icons/io';
-import {CSSTransition} from 'react-transition-group';
 import useCategory from "../hooks/useCategory";
 import {VLine} from "../common/style";
 import {Modal} from "react-bootstrap";
@@ -16,6 +15,7 @@ const LeftContainer = styled.div`
   //justify-content: center;
   height: 100%;
   position: relative;
+  display: ${props => props.visible ? 'block' : 'none'};
 `;
 
 const HeaderRow = styled.div`
@@ -128,14 +128,9 @@ function Left(props) {
   }, []);
 
   return (
-    <CSSTransition
-      in={visible}
-      timeout={300}
-      classNames={'enter-from-left'}
-      exit={false}
-      unmountOnExit
-    >
+    useMemo(() => (
       <LeftContainer
+        visible={visible}
         onClick={() => {
           if (showOverlayId) {
             setShowOverlayId(null);
@@ -146,7 +141,7 @@ function Left(props) {
           <LeftLogo
             onClick={() => window.ttnote.goto('/')}
           >蕃茄时光</LeftLogo>
-          </HeaderRow>
+        </HeaderRow>
         <LeftBody>
           <LeftList
             list={{id: -1, name: '收件箱'}}
@@ -171,8 +166,8 @@ function Left(props) {
             onClick={() => {
               if (!hasNewId) {
 
-              categoryMethods.handleNewCategory();
-              setLeftListEditId('new');
+                categoryMethods.handleNewCategory();
+                setLeftListEditId('new');
               }
             }}
           >
@@ -199,7 +194,7 @@ function Left(props) {
           <Setting/>
         </Modal>
       </LeftContainer>
-    </CSSTransition>
+    ), [categories, categoryId, categoryMethods, handleCategoryDelete, hasNewId, isMobileView, leftListEditId, settingModalShow, showOverlayId, visible])
   )
 }
 
