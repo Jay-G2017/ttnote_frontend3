@@ -25,10 +25,14 @@ const VerticalLine = styled.div`
   border-radius: 0.05rem;
   background-color: ${window.ttnoteThemeLight.colorSecondary};
   position: absolute;
-  left: 0;
+  left: 1vw;
   @media (min-width: 576px) {
     //padding: 0.3rem 6vw;
     left: 5vw
+  }
+  @media (min-width: 992px) {
+    //padding: 0.3rem 6vw;
+    left: 8vw
   }
 `;
 

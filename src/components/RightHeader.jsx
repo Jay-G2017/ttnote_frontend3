@@ -72,6 +72,7 @@ const ShortBreakCell = styled.div`
 
 const IconName = styled.div`
   font-size: 0.6rem;
+  font-weight: 400;
   color: ${window.ttnoteThemeLight.textColorTitle};
 `;
 

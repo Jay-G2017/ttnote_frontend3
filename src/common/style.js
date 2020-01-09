@@ -91,6 +91,9 @@ export const PaddingRow = styled.div`
   @media (min-width: 576px) {
     padding: 0.2rem 6vw;
   }
+  @media (min-width: 992px) {
+    padding: 0.2rem 9vw;
+  }
 `;
 
 export const TBadge = styled.span`
