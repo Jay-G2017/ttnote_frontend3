@@ -30,8 +30,8 @@ const HeaderRow = styled.div`
   width: 100%;
   top: 0;
   left: 0;
-  background-color: ${window.ttnoteThemeLight.bgColorDarkRgba};
-  backdrop-filter: blur(10px);
+  //background-color: ${window.ttnoteThemeLight.bgColorDarkRgba};
+  //backdrop-filter: blur(10px);
   @media (min-width: 768px) {
     position: absolute;
     padding: 0 2vw;
@@ -59,8 +59,8 @@ const LeftFooter = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: ${window.ttnoteThemeLight.bgColorDarkRgba};
-  backdrop-filter: blur(10px);
+  //background-color: ${window.ttnoteThemeLight.bgColorDarkRgba};
+  //backdrop-filter: blur(10px);
   
   position: fixed;
   bottom: 0;
@@ -137,7 +137,7 @@ function Left(props) {
           }
         }}
       >
-        <HeaderRow>
+        <HeaderRow className={'backdrop-blur-left'}>
           <LeftLogo
             onClick={() => window.ttnote.goto('/')}
           >蕃茄时光</LeftLogo>
@@ -161,7 +161,7 @@ function Left(props) {
             categoryMethods={categoryMethods}
           />)}
         </LeftBody>
-        <LeftFooter>
+        <LeftFooter className={'backdrop-blur-left'}>
           <NewCategoryCell
             onClick={() => {
               if (!hasNewId) {

@@ -5,7 +5,7 @@ import {TomatoContext} from "../reducers/tomatoReducer";
 import Countdown, {zeroPad} from 'react-countdown-now';
 
 const HeaderRow = styled.div`
-  backdrop-filter: blur(10px);
+  //backdrop-filter: blur(10px);
   height: 3.3rem;
   border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorLight};
   position: fixed;
@@ -16,7 +16,7 @@ const HeaderRow = styled.div`
     position: absolute;
     //width: calc(60% - 1px);
   }
-  background-color: ${window.ttnoteThemeLight.bgColorDefaultRgba};
+  //background-color: ${window.ttnoteThemeLight.bgColorDefaultRgba};
   
   display: flex;
   justify-content: space-between;
@@ -133,7 +133,7 @@ function RightHeader(props) {
 
   return useMemo(() => {
     return (
-      <HeaderRow className={'t-container'}>
+      <HeaderRow className={'t-container backdrop-blur-right'}>
         {isMobileView &&
         <BackCell>
           <IoIosArrowBack

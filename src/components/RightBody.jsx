@@ -60,11 +60,11 @@ const TitleGroupRow = styled.div`
 `;
 
 const RightFooter = styled.div`
-  backdrop-filter: blur(10px);
+  //backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: ${window.ttnoteThemeLight.bgColorPrimaryRgba};
+  //background-color: ${window.ttnoteThemeLight.bgColorPrimaryRgba};
   
   position: fixed;
   bottom: 0;
@@ -258,7 +258,7 @@ const RightBody = (props) => {
         </TitleGroupRow>
         }
       </RightContent>
-      <RightFooter>
+      <RightFooter className={'backdrop-blur-right-footer'}>
         <NewTodoCell
           onClick={() => handleNewTodo()}
           disabled={false}

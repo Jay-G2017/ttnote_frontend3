@@ -96,3 +96,40 @@ code {
   transform: translate(0%);
   transition: transform 200ms ease;
 }
+
+.backdrop-blur-right {
+  background-color: #EDEDED;
+}
+.backdrop-blur-right-footer {
+  background-color: #F7F7F7;
+}
+.backdrop-blur-middle {
+  background-color: #35322F;
+}
+.backdrop-blur-left {
+  background-color: #2A2723;
+}
+
+@supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+  .backdrop-blur-right {
+    background-color: rgba(237,237,237,0.9);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+  .backdrop-blur-right-footer {
+    background-color: rgba(247,247,247,0.9);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+  .backdrop-blur-middle {
+    background-color: rgba(53,50,47,0.9);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+  .backdrop-blur-left {
+    background-color: rgba(42,39,35,0.9);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+}
+

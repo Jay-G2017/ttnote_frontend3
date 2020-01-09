@@ -27,8 +27,8 @@ const HeaderRow = styled.div`
   width: 100%;
   top: 0;
   left: 0;
-  background-color: ${window.ttnoteThemeLight.bgColorGreyRgba};
-  backdrop-filter: blur(10px);
+  //background-color: ${window.ttnoteThemeLight.bgColorGreyRgba};
+  //backdrop-filter: blur(10px);
   @media (min-width: 768px) {
     position: absolute;
   }
@@ -57,8 +57,8 @@ const MiddleFooter = styled.div`
  display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${window.ttnoteThemeLight.bgColorGreyRgba};
-  backdrop-filter: blur(10px);
+  //background-color: ${window.ttnoteThemeLight.bgColorGreyRgba};
+  //backdrop-filter: blur(10px);
   
   position: fixed;
   bottom: 0;
@@ -128,7 +128,7 @@ function Middle(props) {
             setShowOverlayId(null);
         }}
       >
-        <HeaderRow>
+        <HeaderRow className={'backdrop-blur-middle'}>
           {isMobileView &&
             <IoIosMenu
               onClick={() => {
@@ -153,7 +153,7 @@ function Middle(props) {
             handleProjectDelete={handleProjectDelete}
           /> )}
         </MiddleBody>
-        <MiddleFooter>
+        <MiddleFooter className={'backdrop-blur-middle'}>
           <NewProjectCell
             onClick={() => {
               if (!projectCreating)
