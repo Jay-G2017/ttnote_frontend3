@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import {HomeContainer, HomePaddingContainer, HomeBody} from './common/style'
 import HomeHeader from "./HomeHeader";
 import HomeFooter from "./HomeFooter";
+import {Button, Col, Row} from "react-bootstrap";
 
 const BodyContent = styled.div`
   background-color: ${window.ttnoteHomeLight.bgColorDefault};
@@ -18,6 +19,8 @@ const BodyContent = styled.div`
     padding: 2rem;
   }
 `;
+
+const colStyle = {xs: 12, sm: {span: 6, offset: 3}, md: {span: 6, offset: 3}};
 
 function Home() {
   return (
@@ -55,6 +58,18 @@ function Home() {
             <p style={{marginBottom: 0, textAlign: 'end'}}>杰</p>
             <p style={{textAlign: 'end'}}>2020.1.4</p>
           </BodyContent>
+          <Row>
+            <Col {...colStyle}>
+              <Button
+                onClick={() => window.ttnote.goto('/note')}
+                style={{marginTop: '2rem'}}
+                variant={'success'}
+                block
+              >
+                进入应用
+              </Button>
+            </Col>
+          </Row>
         </HomePaddingContainer>
       </HomeBody>
       <HomeFooter/>
