@@ -4,17 +4,13 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/zh-cn'
 import dayjs from 'dayjs';
 import TextareaDebounced from '../components/TextareaDebounced';
+import {PaddingRow} from "../common/style";
 
 dayjs.extend(relativeTime);
 dayjs.locale('zh-cn');
 
-const TomatoRowGroup = styled.div`
- padding: 0.3rem 4vw;
- @media (min-width: 576px) {
-    padding: 0.3rem 6vw;
-  }
-  //display: flex;
-  //align-items: baseline;
+const TomatoRowGroup = styled(PaddingRow)`
+ 
 `;
 
 const TomatoRow = styled.div`
