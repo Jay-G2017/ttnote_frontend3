@@ -3,6 +3,7 @@ import styled from "styled-components";
 import {IoIosArrowBack, IoIosClose, IoIosAlarm, IoIosCafe, IoIosRibbon} from 'react-icons/io';
 import {TomatoContext} from "../reducers/tomatoReducer";
 import Countdown, {zeroPad} from 'react-countdown-now';
+import {initSound} from "../utils/helper";
 
 const HeaderRow = styled.div`
   //backdrop-filter: blur(10px);
@@ -101,8 +102,8 @@ function RightHeader(props) {
 
   const handleTomatoComplete = useCallback((todoId) => {
     document.title = "🍅 蕃茄时光 | Tomato Time";
+    window.ttnoteSound.play('complete', true);
     createTomato(todoId);
-    window.dingDingAudio.play();
     if (window.ttnote.userSetting.autoRest) {
       tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.userSetting.shortRestMinutes}});
       countdownRef.current.start();
@@ -112,7 +113,7 @@ function RightHeader(props) {
   const handleRestComplete = useCallback(() => {
     document.title = "🍅 蕃茄时光 | Tomato Time";
     tomatoDispatch({type: 'cancel'});
-    window.restAudio.play();
+    window.ttnoteSound.play('rest', true);
   }, [tomatoDispatch]);
 
   // for tomato
@@ -185,7 +186,8 @@ function RightHeader(props) {
           <TimerActionRow>
             <ShortBreakCell
               onClick={() => {
-                window.beginAudio.play();
+                initSound();
+                window.ttnoteSound.play('begin', true);
                 tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.userSetting.shortRestMinutes}})
               }}
             >
@@ -194,7 +196,8 @@ function RightHeader(props) {
             </ShortBreakCell>
             <LongBreakCell
               onClick={() => {
-                window.beginAudio.play();
+                initSound();
+                window.ttnoteSound.play('begin', true);
                 tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.userSetting.longRestMinutes}})
               }}
             >

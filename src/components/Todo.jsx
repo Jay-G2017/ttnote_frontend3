@@ -10,6 +10,7 @@ import Countdown from "react-countdown-now";
 import Overlay from 'react-bootstrap/Overlay';
 import OverlayComp from "./OverlayComp";
 import {Badge} from "react-bootstrap";
+import {initSound} from "../utils/helper";
 
 const TodoRowGroup = styled.div`
   margin-bottom: 0.5rem;
@@ -285,7 +286,9 @@ function Todo(props) {
                 disabled={playButtonDisabled}
                 onClick={() => {
                   if (playButtonDisabled) return;
-                  window.beginAudio.play();
+                  // window.beginAudio.play();
+                  initSound();
+                  window.ttnoteSound.play('begin');
                   tomatoDispatch({
                     type: 'play',
                     payload: {id: todo.id, minutes: window.ttnote.userSetting.tomatoMinutes}
