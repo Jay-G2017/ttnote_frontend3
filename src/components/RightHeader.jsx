@@ -1,9 +1,9 @@
-import React, {useCallback, useContext, useMemo, useRef} from "react";
+import React, {useCallback, useContext, useMemo} from "react";
 import styled from "styled-components";
 import {IoIosArrowBack, IoIosClose, IoIosAlarm, IoIosCafe, IoIosRibbon} from 'react-icons/io';
 import {TomatoContext} from "../reducers/tomatoReducer";
-import Countdown, {zeroPad} from 'react-countdown-now';
 import {initSound} from "../utils/helper";
+import CountdownTimer from "./CountdownTimer";
 
 const HeaderRow = styled.div`
   //backdrop-filter: blur(10px);
@@ -98,20 +98,18 @@ const TodayCell = styled.div`
 function RightHeader(props) {
   const {isMobileView, createTomato, todayTomatoSize} = props;
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
-  const countdownRef = useRef(null);
 
   const handleTomatoComplete = useCallback((todoId) => {
-    document.title = "🍅 蕃茄时光 | Tomato Time";
+    document.title = "蕃茄时光 | Tomato Time";
     window.ttnoteSound.play('complete', true);
     createTomato(todoId);
     if (window.ttnote.userSetting.autoRest) {
       tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.userSetting.shortRestMinutes}});
-      countdownRef.current.start();
     }
   }, [tomatoDispatch, createTomato]);
 
   const handleRestComplete = useCallback(() => {
-    document.title = "🍅 蕃茄时光 | Tomato Time";
+    document.title = "蕃茄时光 | Tomato Time";
     tomatoDispatch({type: 'cancel'});
     window.ttnoteSound.play('rest', true);
   }, [tomatoDispatch]);
@@ -154,16 +152,10 @@ function RightHeader(props) {
               onClick={() => {
                 if (tomatoState.id)
                   window.ttnote.goto('/note' + window.ttnote.objectToUrl(window.ttnote.currentTomatoUrl))
-            }}>
-              <Countdown
-                ref={countdownRef}
-                date={Date.now() + tomatoState.minutes * 60 * 1000}
-                renderer={({minutes, seconds}) => {
-                  document.title = `${zeroPad(minutes)}:${zeroPad(seconds)}`;
-                  return(
-                    <span>{zeroPad(minutes)}:{zeroPad(seconds)}</span>
-                  );
-                }}
+              }}>
+              <CountdownTimer
+                key={tomatoState.id}
+                tomatoMinutes={tomatoState.minutes}
                 onComplete={() => {
                   if (tomatoState.id) {
                     handleTomatoComplete(tomatoState.id)
