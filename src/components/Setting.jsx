@@ -11,6 +11,11 @@ function Setting() {
   const minutesOptions = (
     <>
       <option key={0.1} value={0.1}>6秒</option>
+      <option key={0.2} value={0.2}>12秒</option>
+      <option key={0.3} value={0.3}>18秒</option>
+      <option key={0.4} value={0.4}>24秒</option>
+      <option key={0.5} value={0.5}>30秒</option>
+      <option key={0.6} value={0.6}>36秒</option>
       {[...Array(60).keys()].map(index => (
         <option key={index} value={index + 1}>{index + 1} 分钟</option>
       ))}
