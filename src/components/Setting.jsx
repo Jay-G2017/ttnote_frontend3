@@ -10,6 +10,7 @@ const Container = styled.div`
 function Setting() {
   const minutesOptions = (
     <>
+      <option key={0.1} value={0.1}>6秒</option>
       {[...Array(60).keys()].map(index => (
         <option key={index} value={index + 1}>{index + 1} 分钟</option>
       ))}
