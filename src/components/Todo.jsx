@@ -271,7 +271,8 @@ function Todo(props) {
                   if (playButtonDisabled) return;
                   // window.beginAudio.play();
                   initSound();
-                  window.ttnoteSound.play('begin');
+                  const id = window.ttnoteSound.play('begin');
+                  window.ttnoteSound.volume(0.7, id);
                   tomatoDispatch({
                     type: 'play',
                     payload: {id: todo.id, minutes: window.ttnote.userSetting.tomatoMinutes}

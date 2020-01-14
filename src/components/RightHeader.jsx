@@ -114,21 +114,13 @@ function RightHeader(props) {
     window.ttnoteSound.play('rest', true);
   }, [tomatoDispatch]);
 
-  // for tomato
-  // useEffect(() => {
-  //   if (!tomatoState.isPlaying) return;
-  //
-  //   if (tomatoState.id) {
-  //     window.timeId = setInterval(() => {
-  //       tomatoDispatch({type: 'play', afterFinishCallback: createTomato});
-  //     }, 1000);
-  //   } else {
-  //     window.timeId = setInterval(() => {
-  //       tomatoDispatch({type: 'break'});
-  //     }, 1000);
-  //   }
-  //   return () => window.timeId = clearInterval(window.timeId)
-  // }, [tomatoState.isPlaying, tomatoState.id, tomatoDispatch, createTomato]);
+  const handleComplete = useCallback(() => {
+    if (tomatoState.id) {
+      handleTomatoComplete(tomatoState.id)
+    } else {
+      handleRestComplete()
+    }
+  }, [handleRestComplete, handleTomatoComplete, tomatoState.id]);
 
   return useMemo(() => {
     return (
@@ -156,19 +148,13 @@ function RightHeader(props) {
               <CountdownTimer
                 key={tomatoState.id}
                 tomatoMinutes={tomatoState.minutes}
-                onComplete={() => {
-                  if (tomatoState.id) {
-                    handleTomatoComplete(tomatoState.id)
-                  } else {
-                    handleRestComplete()
-                  }
-                }}
+                onComplete={handleComplete}
               />
             </TomatoCountCell>
             {tomatoState.id ? <TomatoInfoCell>蕃茄中...</TomatoInfoCell> : <TomatoInfoCell>休息中...</TomatoInfoCell>}
             <CancelCell
               onClick={() => {
-                document.title = "🍅 蕃茄时光 | Tomato Time";
+                document.title = "蕃茄时光 | Tomato Time";
                 tomatoDispatch({type: 'cancel'});
               }}
             >
@@ -205,16 +191,7 @@ function RightHeader(props) {
         }
       </HeaderRow>
     )
-  }, [
-    handleTomatoComplete,
-    tomatoState.id,
-    tomatoState.isPlaying,
-    tomatoState.minutes,
-    handleRestComplete,
-    isMobileView,
-    tomatoDispatch,
-    todayTomatoSize,
-  ]);
+  }, [isMobileView, tomatoState.isPlaying, tomatoState.id, tomatoState.minutes, handleComplete, todayTomatoSize, tomatoDispatch]);
 }
 
 export default RightHeader;
