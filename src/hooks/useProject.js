@@ -1,4 +1,9 @@
-import {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {notification} from "antd";
+import 'antd/es/notification/style/index.css'
+import {IoIosClose} from 'react-icons/io';
+import dayjs from "dayjs";
+import {FlexBetweenRow} from "../common/style";
 
 function useProject(projectId) {
   const [project, setProject] = useState({todos: {}, titles: {}, todoIds: [], titleIds: []});
@@ -101,6 +106,24 @@ function useProject(projectId) {
       body: JSON.stringify({minutes: window.ttnote.userSetting.tomatoMinutes})
     }).then(res => {
       // fetchProject();
+      const fromNow = dayjs(res.createdAt).format('HH:mm');
+      const notificationHeader = (
+          <FlexBetweenRow>
+            <span role={'img'} aria-label={'tomato'}>🍅</span>
+            <span style={{fontSize: '0.9rem'}}>{fromNow}</span>
+          </FlexBetweenRow>
+    );
+
+      notification.open({
+        className: 't-notification',
+        style: {padding: '0.6rem 0.8rem'},
+        message: notificationHeader,
+        description: '完成了一个蕃茄',
+        duration: null,
+        top: '3.4rem',
+        closeIcon: <IoIosClose style={{fontSize: '1.6rem'}} />,
+      });
+
       setProject(data => {
         if (data.todos[todoId]) { // 有可能已经切换成其它project的了
           data.todos[todoId].tomatoes.push(res);

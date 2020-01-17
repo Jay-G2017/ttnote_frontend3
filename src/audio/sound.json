@@ -1,0 +1,20 @@
+{
+  "src": [
+    "sound.webm",
+    "sound.mp3"
+  ],
+  "sprite": {
+    "BeginSoundAbr64": [
+      0,
+      2243.6281179138323
+    ],
+    "BreakSoundLoudAbr64": [
+      4000,
+      3205.0113378684805
+    ],
+    "DingDingSoundAbr64": [
+      9000,
+      1764.353741496599
+    ]
+  }
+}

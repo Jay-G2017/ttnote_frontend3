@@ -1,8 +1,9 @@
-import React, {useCallback, useContext, useMemo, useRef} from "react";
+import React, {useCallback, useContext, useMemo} from "react";
 import styled from "styled-components";
 import {IoIosArrowBack, IoIosClose, IoIosAlarm, IoIosCafe, IoIosRibbon} from 'react-icons/io';
 import {TomatoContext} from "../reducers/tomatoReducer";
-import Countdown, {zeroPad} from 'react-countdown-now';
+import {initSound} from "../utils/helper";
+import CountdownTimer from "./CountdownTimer";
 
 const HeaderRow = styled.div`
   //backdrop-filter: blur(10px);
@@ -97,39 +98,31 @@ const TodayCell = styled.div`
 function RightHeader(props) {
   const {isMobileView, createTomato, todayTomatoSize} = props;
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
-  const countdownRef = useRef(null);
 
   const handleTomatoComplete = useCallback((todoId) => {
-    document.title = "🍅 蕃茄时光 | Tomato Time";
+    document.title = "蕃茄时光 | Tomato Time";
+    window.ttnoteSound.play('complete', false);
     createTomato(todoId);
-    window.dingDingAudio.play();
     if (window.ttnote.userSetting.autoRest) {
       tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.userSetting.shortRestMinutes}});
-      countdownRef.current.start();
+    } else {
+      tomatoDispatch({type: 'cancel'});
     }
-  }, [tomatoDispatch, createTomato]);
+  }, [createTomato, tomatoDispatch]);
 
   const handleRestComplete = useCallback(() => {
-    document.title = "🍅 蕃茄时光 | Tomato Time";
+    document.title = "蕃茄时光 | Tomato Time";
     tomatoDispatch({type: 'cancel'});
-    window.restAudio.play();
+    window.ttnoteSound.play('rest', false);
   }, [tomatoDispatch]);
 
-  // for tomato
-  // useEffect(() => {
-  //   if (!tomatoState.isPlaying) return;
-  //
-  //   if (tomatoState.id) {
-  //     window.timeId = setInterval(() => {
-  //       tomatoDispatch({type: 'play', afterFinishCallback: createTomato});
-  //     }, 1000);
-  //   } else {
-  //     window.timeId = setInterval(() => {
-  //       tomatoDispatch({type: 'break'});
-  //     }, 1000);
-  //   }
-  //   return () => window.timeId = clearInterval(window.timeId)
-  // }, [tomatoState.isPlaying, tomatoState.id, tomatoDispatch, createTomato]);
+  const handleComplete = useCallback(() => {
+    if (tomatoState.id) {
+      handleTomatoComplete(tomatoState.id)
+    } else {
+      handleRestComplete()
+    }
+  }, [handleRestComplete, handleTomatoComplete, tomatoState.id]);
 
   return useMemo(() => {
     return (
@@ -153,29 +146,17 @@ function RightHeader(props) {
               onClick={() => {
                 if (tomatoState.id)
                   window.ttnote.goto('/note' + window.ttnote.objectToUrl(window.ttnote.currentTomatoUrl))
-            }}>
-              <Countdown
-                ref={countdownRef}
-                date={Date.now() + tomatoState.minutes * 60 * 1000}
-                renderer={({minutes, seconds}) => {
-                  document.title = `${zeroPad(minutes)}:${zeroPad(seconds)}`;
-                  return(
-                    <span>{zeroPad(minutes)}:{zeroPad(seconds)}</span>
-                  );
-                }}
-                onComplete={() => {
-                  if (tomatoState.id) {
-                    handleTomatoComplete(tomatoState.id)
-                  } else {
-                    handleRestComplete()
-                  }
-                }}
+              }}>
+              <CountdownTimer
+                key={tomatoState.id}
+                tomatoMinutes={tomatoState.minutes}
+                onComplete={handleComplete}
               />
             </TomatoCountCell>
             {tomatoState.id ? <TomatoInfoCell>蕃茄中...</TomatoInfoCell> : <TomatoInfoCell>休息中...</TomatoInfoCell>}
             <CancelCell
               onClick={() => {
-                document.title = "🍅 蕃茄时光 | Tomato Time";
+                document.title = "蕃茄时光 | Tomato Time";
                 tomatoDispatch({type: 'cancel'});
               }}
             >
@@ -185,7 +166,8 @@ function RightHeader(props) {
           <TimerActionRow>
             <ShortBreakCell
               onClick={() => {
-                window.beginAudio.play();
+                initSound();
+                window.ttnoteSound.play('begin', true);
                 tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.userSetting.shortRestMinutes}})
               }}
             >
@@ -194,7 +176,8 @@ function RightHeader(props) {
             </ShortBreakCell>
             <LongBreakCell
               onClick={() => {
-                window.beginAudio.play();
+                initSound();
+                window.ttnoteSound.play('begin', true);
                 tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.userSetting.longRestMinutes}})
               }}
             >
@@ -210,16 +193,7 @@ function RightHeader(props) {
         }
       </HeaderRow>
     )
-  }, [
-    handleTomatoComplete,
-    tomatoState.id,
-    tomatoState.isPlaying,
-    tomatoState.minutes,
-    handleRestComplete,
-    isMobileView,
-    tomatoDispatch,
-    todayTomatoSize,
-  ]);
+  }, [isMobileView, tomatoState.isPlaying, tomatoState.id, tomatoState.minutes, handleComplete, todayTomatoSize, tomatoDispatch]);
 }
 
 export default RightHeader;

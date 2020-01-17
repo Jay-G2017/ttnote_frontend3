@@ -4,12 +4,12 @@ import {IoIosPlayCircle, IoIosMore} from 'react-icons/io';
 import {PaddingRow, TTextArea} from '../common/style';
 import {TomatoContext} from '../reducers/tomatoReducer';
 import Tomato from "./Tomato";
-import Circle from 'react-circle';
 import TCheckbox from "./TCheckbox";
-import Countdown from "react-countdown-now";
 import Overlay from 'react-bootstrap/Overlay';
 import OverlayComp from "./OverlayComp";
 import {Badge} from "react-bootstrap";
+import {initSound} from "../utils/helper";
+import CountdownCircle from "./CountdownCircle";
 
 const TodoRowGroup = styled.div`
   margin-bottom: 0.5rem;
@@ -263,29 +263,16 @@ function Todo(props) {
           {/*</CountCell>*/}
           <PlayAndStatus>
             {tomatoState.id === todo.id ?
-              <Countdown
-                date={Date.now() + tomatoState.minutes * 60 * 1000}
-                renderer={({total}) => {
-                  const tomatoTime = tomatoState.minutes * 60 * 1000;
-                  const progress = Math.round((tomatoTime - total) / tomatoTime * 100);
-                  return (
-                    <Circle
-                      size={21}
-                      lineWidth={40}
-                      progress={progress || 1}
-                      roundedStroke={true}
-                      progressColor={window.ttnoteThemeLight.colorPrimary}
-                      showPercentage={false}
-                    />
-                  )
-                }}
-              />
+             <CountdownCircle tomatoMinutes={tomatoState.minutes}/>
               :
               <PlayCell
                 disabled={playButtonDisabled}
                 onClick={() => {
                   if (playButtonDisabled) return;
-                  window.beginAudio.play();
+                  // window.beginAudio.play();
+                  initSound();
+                  const id = window.ttnoteSound.play('begin');
+                  window.ttnoteSound.volume(0.7, id);
                   tomatoDispatch({
                     type: 'play',
                     payload: {id: todo.id, minutes: window.ttnote.userSetting.tomatoMinutes}
