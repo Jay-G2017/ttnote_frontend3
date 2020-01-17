@@ -101,17 +101,19 @@ function RightHeader(props) {
 
   const handleTomatoComplete = useCallback((todoId) => {
     document.title = "蕃茄时光 | Tomato Time";
-    window.ttnoteSound.play('complete', true);
+    window.ttnoteSound.play('complete', false);
     createTomato(todoId);
     if (window.ttnote.userSetting.autoRest) {
       tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.userSetting.shortRestMinutes}});
+    } else {
+      tomatoDispatch({type: 'cancel'});
     }
-  }, [tomatoDispatch, createTomato]);
+  }, [createTomato, tomatoDispatch]);
 
   const handleRestComplete = useCallback(() => {
     document.title = "蕃茄时光 | Tomato Time";
     tomatoDispatch({type: 'cancel'});
-    window.ttnoteSound.play('rest', true);
+    window.ttnoteSound.play('rest', false);
   }, [tomatoDispatch]);
 
   const handleComplete = useCallback(() => {
