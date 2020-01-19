@@ -1,5 +1,9 @@
 import {createBrowserHistory} from 'history';
 import {getCookie, setCookie} from './helper';
+// import BreakSound from '../audio/BreakSoundLoudAbr64.mp3'
+// import DingDingSound from '../audio/DingDingSoundAbr64.mp3';
+// import BeginSound from '../audio/BeginSoundAbr64.mp3';
+// import {Howl} from 'howler';
 
 window.browserHistory = createBrowserHistory();
 
@@ -16,6 +20,7 @@ const _ttnote = {
 
     baseUrl: SERVER_URL[process.env.NODE_ENV],
     user: JSON.parse(localStorage.getItem('ttnoteUser')),
+    userSetting: JSON.parse(localStorage.getItem('ttnoteUserSetting')),
 
     searchObject() {
         const query = decodeURIComponent(window.location.search)
@@ -67,3 +72,9 @@ const _ttnote = {
 };
 
 window.ttnote = _ttnote;
+// window.restAudio = new Howl({src: BreakSound, html5: true});
+// window.restAudio = new Howl({src: BreakSound});
+// // window.dingDingAudio = new Howl({src: DingDingSound, html5: true});
+// window.dingDingAudio = new Howl({src: DingDingSound});
+// window.beginAudio = new Howl({src: BeginSound, volume: 0.8});
+

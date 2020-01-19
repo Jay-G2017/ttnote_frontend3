@@ -1,80 +1,134 @@
-import React from "react";
+import React, {useMemo, useState} from "react";
 import styled from "styled-components";
-import {IoIosMenu} from 'react-icons/io';
-import {CSSTransition} from "react-transition-group";
-import useProjects from "../hooks/useProjects";
+import {IoIosMenu, IoIosAddCircle} from 'react-icons/io';
+import ProjectList from "./ProjectList";
 
 const MiddleContainer = styled.div`
-  flex: 1;
-  border-left: 1px solid ${window.ttnoteThemeLight.lineColorLight};
+  flex: 1.5;
+  border-left: 0.5px solid ${window.ttnoteThemeLight.lineColorDark};
   //align-items: center;
   //justify-content: center;
-  overflow: auto;
-  // background-color: ${window.ttnoteThemeLight.bgColorDefault};
-  background-color: #fff;
+  background-color: ${window.ttnoteThemeLight.bgColorGrey};
+  //color: #fff;
+  //background-color: #fff;
+  height: 100%;
+  position: relative;
+  display: ${props => props.visible ? 'block' : 'none'};
 `;
 
 const HeaderRow = styled.div`
+  padding: 0 6vw;
   display: flex;
   align-items: center;
+  height: 3.3rem;
+  border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorDark};
+  
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  //background-color: ${window.ttnoteThemeLight.bgColorGreyRgba};
+  //backdrop-filter: blur(10px);
+  @media (min-width: 768px) {
+    position: absolute;
+  }
+  z-index: 10;
 `;
 
-const ListRow = styled.div`
-  border-bottom: 1px solid ${window.ttnoteThemeLight.lineColorLight};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 1em;
-  &:hover {
-   cursor: pointer;
+const MiddleBody = styled.div`
+  :before {
+    content: '';
+    display: block;
+    height: 3.3rem;
   }
-  background: ${props => props.active ? window.ttnoteThemeLight.bgColorPrimary : '' };
-  border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
+  :after {
+    content: '';
+    display: block;
+    height: 3rem;
+  }
+  height: 100%;
+  overflow: auto;
+  & .middleList:last-child .middleListInner {
+    border-bottom: none;
+  }
+`;
+
+const MiddleFooter = styled.div`
+ display: flex;
+  align-items: center;
+  justify-content: center;
+  //background-color: ${window.ttnoteThemeLight.bgColorGreyRgba};
+  //backdrop-filter: blur(10px);
+  
+  position: fixed;
+  bottom: 0;
+  z-index: 10;
+  left: 0;
+  width: 100%;
+  height: 3rem;
+  
+  padding: 1rem 4vw;
+  @media (min-width: 768px) {
+    position: absolute;
+    //left: calc(20% + 0.5px);
+    //width: calc(20% - 0px);
+    padding: 1rem 1vw;
+  }
+  border-top: 0.5px solid ${window.ttnoteThemeLight.lineColorDark};
+  //border-right: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
+`;
+
+
+const NewProjectCell = styled.div`
+  display: flex;
+  align-items: center;
+  color: ${props => props.disabled ?
+  window.ttnoteThemeLight.btnDefaultDisabledFontColor :
+  window.ttnoteThemeLight.textColorLight};
+  cursor: pointer;
+`;
+
+const IconStyled = styled.div`
+  font-size: 1.6rem;
+  display: flex;
+`;
+
+const IconName = styled.div`
+  font-size: 1rem;
+  font-weight: 600;
+  margin-left: 0.4rem;
+  line-height: 1.2;
 `;
 
 function Middle(props) {
-  const {isMobileView, mobileShowingArea} = props;
-  const iconStyle = {fontSize: '24px', marginBottom: '20px'};
+  const {
+    isMobileView,
+    mobileShowingArea,
+    projects,
+    projectCreating,
+    handleNewProject,
+    handleProjectDelete,
+  } = props;
+  const [showOverlayId, setShowOverlayId] = useState(null);
+
+  const iconStyle = {fontSize: '24px', color: window.ttnoteThemeLight.textColorLight};
   const visible = (isMobileView && mobileShowingArea === 'middle') || !isMobileView;
 
   const searchObject = window.ttnote.searchObject();
-  const enterFrom = searchObject.enterFrom || 'left';
+  // const enterFrom = searchObject.enterFrom || 'left';
+  const activeProjectId = parseInt(searchObject.projectId);
   const categoryId = parseInt(searchObject.categoryId) || -1;
-  const projectId = parseInt(searchObject.projectId);
-  const {projects} = useProjects(categoryId);
-
-  const renderList = (project) => {
-    const active = project.id === projectId;
-    return(
-      <ListRow
-        active={active}
-        key={project.id}
-        onClick={() => {
-          if (active && !isMobileView) return;
-          const params = window.ttnote.searchObject();
-          params.projectId = project.id;
-          if (isMobileView) {
-            params.mobileShowingArea = 'right';
-            delete params.enterFrom;
-          }
-          window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
-        }}
-      >
-        {project.name}
-      </ListRow>
-    )
-  };
 
   return (
-    <CSSTransition
-      in={visible}
-      timeout={200}
-      classNames={enterFrom === 'left' ? 'enter-from-left' : 'enter-from-right'}
-      unmountOnExit
-      exit={false}
-    >
-      <MiddleContainer visible={visible}>
-        <HeaderRow>
+    useMemo(() => (
+      <MiddleContainer
+        visible={visible}
+        onClick={() => {
+          if (showOverlayId)
+            setShowOverlayId(null);
+        }}
+      >
+        <HeaderRow className={'backdrop-blur-middle'}>
           {isMobileView &&
             <IoIosMenu
               onClick={() => {
@@ -87,13 +141,33 @@ function Middle(props) {
               style={iconStyle}
             />
           }
-
-        </HeaderRow>
-        <div>
-          {projects.map(row => renderList(row))}
-        </div>
+          </HeaderRow>
+        <MiddleBody>
+          {projects.map(project => <ProjectList
+            key={project.id}
+            project={project}
+            activeProjectId={activeProjectId}
+            isMobileView={isMobileView}
+            showOverlayId={showOverlayId}
+            setShowOverlayId={setShowOverlayId}
+            handleProjectDelete={handleProjectDelete}
+          /> )}
+        </MiddleBody>
+        <MiddleFooter className={'backdrop-blur-middle'}>
+          <NewProjectCell
+            onClick={() => {
+              if (!projectCreating)
+                handleNewProject(categoryId)
+            }}
+          >
+            <IconStyled>
+              <IoIosAddCircle/>
+            </IconStyled>
+            <IconName>新项目</IconName>
+          </NewProjectCell>
+        </MiddleFooter>
       </MiddleContainer>
-    </CSSTransition>
+    ), [activeProjectId, categoryId, handleNewProject, handleProjectDelete, iconStyle, isMobileView, projectCreating, projects, showOverlayId, visible])
   )
 }
 

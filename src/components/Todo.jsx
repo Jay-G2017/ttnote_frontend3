@@ -1,10 +1,15 @@
-import React, {useContext, useState} from "react";
+import React, {useCallback, useContext, useMemo, useRef, useState} from "react";
 import styled from 'styled-components';
-import {IoIosRadioButtonOff, IoIosCheckmarkCircle, IoIosPlayCircle, IoIosMore} from 'react-icons/io';
-import {PaddingRow, TTextArea, TBadge} from '../common/style';
+import {IoIosPlayCircle, IoIosMore} from 'react-icons/io';
+import {PaddingRow, TTextArea} from '../common/style';
 import {TomatoContext} from '../reducers/tomatoReducer';
 import Tomato from "./Tomato";
-import Circle from 'react-circle';
+import TCheckbox from "./TCheckbox";
+import Overlay from 'react-bootstrap/Overlay';
+import OverlayComp from "./OverlayComp";
+import {Badge} from "react-bootstrap";
+import {initSound} from "../utils/helper";
+import CountdownCircle from "./CountdownCircle";
 
 const TodoRowGroup = styled.div`
   margin-bottom: 0.5rem;
@@ -16,22 +21,20 @@ const TodoRow = styled(PaddingRow)`
 `;
 
 const TomatoGroup = styled.div`
-  margin-top: 0.5rem;
+  //margin-top: 0.5rem;
   display: ${props => props.open ? 'block' : 'none'};
 `;
 
 const CheckCell = styled.div`
   font-size: 1.4rem;
-  color: ${props => props.done ?
-  window.ttnoteThemeLight.colorPrimary :
-  window.ttnoteThemeLight.textColorDesc};
-
-  visibility: ${props => props.visible ? 'visible' : 'hidden'};
   flex: none;
   display: flex;
   align-items: center;
   
   margin-right: 0.3rem;
+  & label {
+    margin-bottom: 0;
+  }
 `;
 
 const NameCell = styled.div`
@@ -39,18 +42,30 @@ const NameCell = styled.div`
   align-items: center;
   flex: auto;
   background-color: #fff;
-  padding: 0.3rem;
+  padding: 0.3rem 0.5rem 0.3rem 0.3rem;
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
-  margin-right: 0.4rem;
+  margin-right: 0.7rem;
+  color: ${props => props.done ? window.ttnoteThemeLight.textColorDesc : 'inherit'};
+  position: relative;
 `;
 
-const CountCell = styled.div`
-  margin-right: 0.3rem;
-  display: flex;
-  align-items: center;
-  visibility: ${props => props.visible ? 'visible' : 'hidden'};
+const TomatoBadge = styled(Badge)`
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-radius: 3px;
+  visibility: ${props => props.visible === 'true' ? 'visible' : 'hidden'};
+  color: ${window.ttnoteThemeLight.colorSecondary};
   cursor: pointer;
 `;
+
+// const CountCell = styled.div`
+//   margin-right: 0.4rem;
+//   display: flex;
+//   align-items: center;
+//   visibility: ${props => props.visible ? 'visible' : 'hidden'};
+//   cursor: pointer;
+// `;
 
 const PlayAndStatus = styled.div`
   flex: none;
@@ -58,18 +73,37 @@ const PlayAndStatus = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 1.4rem;
-  margin-right: 0.3rem;
+  margin-right: 0.4rem;
 `;
 
 const PlayCell = styled(IoIosPlayCircle)`
   color: ${props => props.disabled ? window.ttnoteThemeLight.btnDefaultDisabledFontColor : window.ttnoteThemeLight.primary};
+  cursor: ${props => props.disabled ? '' : 'pointer'};
+  :hover {
+    ${props => props.disabled ? '' : "transform: scale(1.1)"};
+  }
+  :active {
+    transform: scale(1);
+  }
 `;
 
-const MoreCell = styled(IoIosMore)`
+const MoreCell = styled.div`
   font-size: 1.4rem;
-  color: ${window.ttnoteThemeLight.primaryFont};
+  // color: ${window.ttnoteThemeLight.bgColorDark};
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: ${window.ttnoteThemeLight.colorSecondary};
   
   flex: none;
+`;
+
+const OverlayContainer = styled.div`
+  background-color: ${window.ttnoteThemeLight.bgColorDark};
+  border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
+  padding: 0.2rem 0.7rem;
+  color: ${window.ttnoteThemeLight.textColorLight};
+  font-size: 0.8rem;
 `;
 
 
@@ -80,21 +114,47 @@ function Todo(props) {
     todoExpandedKeys,
     setTodoExpandedKeys,
     todoMethods,
+    showMore,
+    setShowMore,
+    handleNewTodo,
   } = props;
+  const {
+    deleteTomato,
+    handleTodoDeleteWithConfirm,
+    updateTodo,
+    createTodo,
+    cancelNewTodo,
+  } = todoMethods;
   const [done, setDone] = useState(todo.done);
+  const [todoName, setTodoName] = useState(todo.name);
   // const [collapse, setCollapse] = useState(true);
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
+  const moreButtonRef = useRef(null);
+  const showOverlay = showMore.type === 'todo' && showMore.id === todo.id;
+
+  const stopOnBlurFlag = useRef(false);
 
   const tomatoes = todo.tomatoes || [];
   const tomatoSize = tomatoes.length;
-  const tomatoSizeToMax = tomatoSize >= 9;
+  const tomatoSizeToMax = tomatoSize >= 20;
   const playButtonDisabled = tomatoState.isPlaying || tomatoSizeToMax || todo.id < 0;
 
-  // const handleTodoNameChange = (e) => {
-  //   // const value = e.currentTarget.value;
-  // };
+  const toggleTodo = useCallback((todoId, done) => {
+    const url = window.ttnote.baseUrl + '/todos/' + todoId;
+    window.ttnote.fetch(url, {
+      method: 'PATCH',
+      body: JSON.stringify({done: done}),
+    })
+      .then(res => {
+        console.log('toggle todo res:', res);
+      })
+      .catch(() => {
+        setDone(!done)
+      })
 
-  const handleTodoExpand = () => {
+  }, []);
+
+  const handleTodoExpand = useCallback(() => {
     const newTodoExpandedKeys = [...todoExpandedKeys];
     if (todoExpandedKeys.includes(todo.id)) {
       const index = newTodoExpandedKeys.indexOf(todo.id);
@@ -103,80 +163,167 @@ function Todo(props) {
       newTodoExpandedKeys.push(todo.id);
     }
     setTodoExpandedKeys(newTodoExpandedKeys);
-  };
+  }, [todoExpandedKeys, setTodoExpandedKeys, todo.id]);
 
-  return (
-    <TodoRowGroup>
-      <TodoRow>
-        <CheckCell
-          visible={todo.id > 0}
-          done={done}
-          onClick={() => {
-            setDone(!done);
-          }}
-        >
-          {done ? <IoIosCheckmarkCircle/> : <IoIosRadioButtonOff/>}
-        </CheckCell>
-        <NameCell>
-          <TTextArea
-            value={todo.name}
-            autoFocus={todo.id < 0}
-            placeholder={'输入内容'}
-            onChange={(e) => {
-              const value = e.currentTarget.value;
-              todoMethods.handleTodoNameChange(todo.id, value);
-            }}
-            onBlur={() => todoMethods.handleTodoNameOnBlur(todo.id, titleId)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                todoMethods.handleTodoNameEnterPress(e, todo.id, titleId)
-              }
-            }}
-          />
-        </NameCell>
-        <CountCell
-          visible={tomatoSize > 0}
-          onClick={handleTodoExpand}
-        >
-          <TBadge>{tomatoSize}</TBadge>
-        </CountCell>
-        <PlayAndStatus>
-          {tomatoState.id === todo.id ?
-            <Circle
-              size={21}
-              lineWidth={40}
-              progress={tomatoState.progress}
-              roundedStroke={true}
-              progressColor={window.ttnoteThemeLight.colorPrimary}
-              showPercentage={false}
-            /> :
-            <PlayCell
-              disabled={playButtonDisabled}
-              onClick={() => {
-                if (playButtonDisabled) return;
-                tomatoDispatch({
-                  type: 'init',
-                  payload: {id: todo.id, isPlaying: true, seconds: window.ttnote.tomatoTime * 60, progress: 1}
-                });
-                window.ttnote.currentTomatoUrl = window.ttnote.searchObject();
+  const handleTodoDelete = useCallback((todoId, titleId) => {
+    if (tomatoSize > 0) {
+      if (window.confirm('这会删除当前任务下的所有蕃茄，确定要删除吗？')) {
+        handleTodoDeleteWithConfirm(todoId, titleId)
+      } else {
+        setTodoName(todo.name)
+      }
+    } else {
+      handleTodoDeleteWithConfirm(todoId, titleId)
+    }
+
+  }, [tomatoSize, handleTodoDeleteWithConfirm, todo.name]);
+
+  const handleTodoNameOnEnterPress = useCallback((e, options = {}) => {
+      const value = e.currentTarget.value;
+      if (value) {
+        if (todo.id > 0) {
+          if (todo.name !== value) {
+            // update todo
+            updateTodo(todo.id, {name: value});
+          }
+        } else {
+          // create todo
+          createTodo(todo.id, titleId, {name: value});
+        }
+        if (options.newTodo) handleNewTodo(titleId)
+      } else {
+        if (todo.id > 0) {
+          // delete todo
+          handleTodoDelete(todo.id, titleId)
+        } else {
+          // cancel new todo
+          cancelNewTodo(todo.id, titleId)
+        }
+      }
+      stopOnBlurFlag.current = false;
+  }, [
+    cancelNewTodo,
+    createTodo,
+    handleNewTodo,
+    handleTodoDelete, titleId,
+    todo.id, todo.name, updateTodo,
+  ]);
+
+  const handleTodoNameOnBlur = useCallback((e, options={newTodo: false}) => {
+    if (!stopOnBlurFlag.current) {
+      handleTodoNameOnEnterPress(e, options)
+    }
+  }, [handleTodoNameOnEnterPress]);
+
+  return useMemo(() => {
+    console.log('in todo');
+    return (
+      <TodoRowGroup>
+        <TodoRow>
+          <CheckCell>
+            <TCheckbox
+              disabled={todo.id < 0}
+              checked={done}
+              onChange={value => {
+                setDone(value);
+                toggleTodo(todo.id, value);
               }}
             />
-          }
-        </PlayAndStatus>
-        <MoreCell/>
-      </TodoRow>
-      <TomatoGroup open={todoExpandedKeys.includes(todo.id)}>
-        {tomatoes.map((tomato, index) =>
-          <Tomato
-            key={tomato.id}
-            sequence={index + 1}
-            tomato={tomato}
-            deleteTomato={todoMethods.deleteTomato}
-          />)}
-      </TomatoGroup>
-    </TodoRowGroup>
-  )
+          </CheckCell>
+          <NameCell done={done}>
+            <TTextArea
+              value={todoName}
+              autoFocus={todo.id < 0}
+              placeholder={'输入内容'}
+              onChange={(e) => {
+                const value = e.currentTarget.value;
+                setTodoName(value)
+              }}
+              onBlur={handleTodoNameOnBlur}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  stopOnBlurFlag.current = true;
+                  e.currentTarget.blur();
+                  handleTodoNameOnEnterPress(e, {newTodo: true})
+                }
+              }}
+            />
+            <TomatoBadge
+              variant={'light'}
+              visible={(tomatoSize > 0).toString()}
+              onClick={handleTodoExpand}
+            >{tomatoSize}</TomatoBadge>
+          </NameCell>
+          {/*<CountCell*/}
+          {/*  visible={tomatoSize > 0}*/}
+          {/*  onClick={handleTodoExpand}*/}
+          {/*>*/}
+          {/*  <TBadge>{tomatoSize}</TBadge>*/}
+          {/*</CountCell>*/}
+          <PlayAndStatus>
+            {tomatoState.id === todo.id ?
+             <CountdownCircle tomatoMinutes={tomatoState.minutes}/>
+              :
+              <PlayCell
+                disabled={playButtonDisabled}
+                onClick={() => {
+                  if (playButtonDisabled) return;
+                  // window.beginAudio.play();
+                  initSound();
+                  const id = window.ttnoteSound.play('begin');
+                  window.ttnoteSound.volume(0.7, id);
+                  tomatoDispatch({
+                    type: 'play',
+                    payload: {id: todo.id, minutes: window.ttnote.userSetting.tomatoMinutes}
+                  });
+                  window.ttnote.currentTomatoUrl = window.ttnote.searchObject();
+                }}
+              />
+            }
+          </PlayAndStatus>
+          <MoreCell ref={moreButtonRef} onClick={e => {
+            e.stopPropagation();
+            if (showOverlay) {
+              setShowMore({type: 'todo', id: null})
+            } else {
+              setShowMore({type: 'todo', id: todo.id})
+            }
+          }}
+          >
+            <IoIosMore/>
+          </MoreCell>
+          <Overlay
+            show={showOverlay}
+            target={moreButtonRef.current}
+            placement='left'
+            transition={false}
+          >
+            {props => (
+              <OverlayComp {...props}>
+                <OverlayContainer>
+                  <div
+                    onClick={() => handleTodoDelete(todo.id, titleId)}
+                  >删除
+                  </div>
+                </OverlayContainer>
+              </OverlayComp>
+            )
+            }
+          </Overlay>
+        </TodoRow>
+        <TomatoGroup open={todoExpandedKeys.includes(todo.id)}>
+          {tomatoes.map(tomato =>
+            <Tomato
+              key={tomato.id}
+              tomato={tomato}
+              deleteTomato={deleteTomato}
+              todoDone={done}
+            />)}
+        </TomatoGroup>
+      </TodoRowGroup>
+    )
+  }, [todo.id, done, todoName, handleTodoNameOnBlur, tomatoSize, handleTodoExpand, tomatoState.id, tomatoState.minutes, playButtonDisabled, showOverlay, todoExpandedKeys, tomatoes, toggleTodo, handleTodoNameOnEnterPress, tomatoDispatch, setShowMore, handleTodoDelete, titleId, deleteTomato]);
 }
 
 export default Todo;
