@@ -132,15 +132,3 @@ code {
     backdrop-filter: blur(10px);
   }
 }
-
-.ant-notification {
-  width: auto !important;
-  min-width: 10rem;
-  margin-right: 1rem !important;
-}
-
-.t-notification .ant-notification-notice-close {
-  right: 0.8rem;
-  top: 0.6rem;
-}
-
