@@ -80,8 +80,8 @@ export const TTextArea = styled(TextareaAutosize)`
     font-size: inherit;
     font-weight: inherit;
     color: inherit;
-    height: 1.6em;
-    line-height: 1.6;
+    height: 1.5em;
+    line-height: 1.5;
     caret-color: ${window.ttnoteThemeLight.colorPrimary};
     padding-left: 0;
 `;
@@ -93,6 +93,16 @@ export const PaddingRow = styled.div`
   }
   @media (min-width: 992px) {
     padding: 0.2rem 9vw;
+  }
+`;
+
+export const MarginRow = styled.div`
+  margin: 0.5rem 4vw;
+  @media (min-width: 576px) {
+    margin: 0.5rem 6vw;
+  }
+  @media (min-width: 992px) {
+    margin: 0.5rem 9vw;
   }
 `;
 

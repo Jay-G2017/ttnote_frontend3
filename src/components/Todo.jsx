@@ -1,7 +1,7 @@
 import React, {useCallback, useContext, useMemo, useRef, useState} from "react";
 import styled from 'styled-components';
-import {IoIosPlayCircle, IoIosMore} from 'react-icons/io';
-import {PaddingRow, TTextArea} from '../common/style';
+import {IoIosPlayCircle, IoIosStar, IoIosListBox, IoIosTrash, IoIosList } from 'react-icons/io';
+import {FlexBetweenRow, FlexRow, MarginRow, TTextArea} from '../common/style';
 import {TomatoContext} from '../reducers/tomatoReducer';
 import Tomato from "./Tomato";
 import TCheckbox from "./TCheckbox";
@@ -11,11 +11,14 @@ import {Badge} from "react-bootstrap";
 import {initSound} from "../utils/helper";
 import CountdownCircle from "./CountdownCircle";
 
-const TodoRowGroup = styled.div`
-  margin-bottom: 0.5rem;
+const TodoRowGroup = styled(MarginRow)`
+  background-color: #fff;
+  border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
+  padding: 0.3rem;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
 `;
 
-const TodoRow = styled(PaddingRow)`
+const TodoRow = styled.div`
   display: flex;
   align-items: center;
 `;
@@ -42,21 +45,17 @@ const NameCell = styled.div`
   align-items: center;
   flex: auto;
   background-color: #fff;
-  padding: 0.3rem 0.5rem 0.3rem 0.3rem;
+  //padding: 0.3rem 0.5rem 0.3rem 0.3rem;
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
-  margin-right: 0.7rem;
+  margin-right: 0.5rem;
   color: ${props => props.done ? window.ttnoteThemeLight.textColorDesc : 'inherit'};
-  position: relative;
 `;
 
 const TomatoBadge = styled(Badge)`
-  position: absolute;
-  top: 0;
-  right: 0;
   border-radius: 3px;
   visibility: ${props => props.visible === 'true' ? 'visible' : 'hidden'};
   color: ${window.ttnoteThemeLight.colorSecondary};
-  cursor: pointer;
+  //cursor: pointer;
 `;
 
 // const CountCell = styled.div`
@@ -81,6 +80,46 @@ const PlayCell = styled(IoIosPlayCircle)`
   cursor: ${props => props.disabled ? '' : 'pointer'};
   :hover {
     ${props => props.disabled ? '' : "transform: scale(1.1)"};
+  }
+  :active {
+    transform: scale(1);
+  }
+`;
+
+const StarCell = styled(IoIosStar)`
+  color: ${window.ttnoteThemeLight.textColorTips};
+  cursor: pointer;
+  :hover {
+    transform: scale(1.2);
+  }
+  :active {
+    transform: scale(1);
+  }
+`;
+
+const ListTomatoCell = styled(IoIosList)`
+  color: ${window.ttnoteThemeLight.textColorDesc};
+  cursor: pointer;
+  :hover {
+    transform: scale(1.2);
+  }
+  :active {
+    transform: scale(1);
+  }
+`;
+
+const ListTomatoOpenCell = styled(IoIosListBox)`
+  color: ${window.ttnoteThemeLight.colorWarn};
+  cursor: pointer;
+`;
+
+const TrashCell = styled(IoIosTrash)`
+  margin-right: 0.2rem;
+  color: ${window.ttnoteThemeLight.textColorTips};
+  cursor: pointer;
+  :hover {
+    transform: scale(1.2);
+    color: ${window.ttnoteThemeLight.colorDanger};
   }
   :active {
     transform: scale(1);
@@ -249,12 +288,8 @@ function Todo(props) {
                 }
               }}
             />
-            <TomatoBadge
-              variant={'light'}
-              visible={(tomatoSize > 0).toString()}
-              onClick={handleTodoExpand}
-            >{tomatoSize}</TomatoBadge>
           </NameCell>
+
           {/*<CountCell*/}
           {/*  visible={tomatoSize > 0}*/}
           {/*  onClick={handleTodoExpand}*/}
@@ -282,17 +317,17 @@ function Todo(props) {
               />
             }
           </PlayAndStatus>
-          <MoreCell ref={moreButtonRef} onClick={e => {
-            e.stopPropagation();
-            if (showOverlay) {
-              setShowMore({type: 'todo', id: null})
-            } else {
-              setShowMore({type: 'todo', id: todo.id})
-            }
-          }}
-          >
-            <IoIosMore/>
-          </MoreCell>
+          {/*<MoreCell ref={moreButtonRef} onClick={e => {*/}
+          {/*  e.stopPropagation();*/}
+          {/*  if (showOverlay) {*/}
+          {/*    setShowMore({type: 'todo', id: null})*/}
+          {/*  } else {*/}
+          {/*    setShowMore({type: 'todo', id: todo.id})*/}
+          {/*  }*/}
+          {/*}}*/}
+          {/*>*/}
+          {/*  <IoIosMore/>*/}
+          {/*</MoreCell>*/}
           <Overlay
             show={showOverlay}
             target={moreButtonRef.current}
@@ -311,6 +346,30 @@ function Todo(props) {
             )
             }
           </Overlay>
+        </TodoRow>
+        <TodoRow>
+          <CheckCell style={{visibility: 'hidden'}}>
+            <TCheckbox
+            />
+          </CheckCell>
+          <FlexBetweenRow style={{flex: 'auto', marginRight: '0.4rem'}}>
+          <FlexRow style={{flex: 'none', width: '2rem'}}>
+            <TomatoBadge
+              variant={'light'}
+              visible={(tomatoSize > 0).toString()}
+            >{tomatoSize}</TomatoBadge>
+          </FlexRow>
+          {todoExpandedKeys.includes(todo.id) ?
+            <ListTomatoOpenCell
+              onClick={handleTodoExpand}
+            /> :
+            <ListTomatoCell
+              onClick={handleTodoExpand}
+            />
+          }
+          <StarCell/>
+          <TrashCell/>
+          </FlexBetweenRow>
         </TodoRow>
         <TomatoGroup open={todoExpandedKeys.includes(todo.id)}>
           {tomatoes.map(tomato =>

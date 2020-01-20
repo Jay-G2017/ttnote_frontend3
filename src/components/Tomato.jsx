@@ -4,12 +4,11 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/zh-cn'
 import dayjs from 'dayjs';
 import TextareaDebounced from '../components/TextareaDebounced';
-import {PaddingRow} from "../common/style";
 
 dayjs.extend(relativeTime);
 dayjs.locale('zh-cn');
 
-const TomatoRowGroup = styled(PaddingRow)`
+const TomatoRowGroup = styled.div`
  
 `;
 

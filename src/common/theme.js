@@ -7,6 +7,7 @@ const ttnoteThemeLight = {
   colorPrimary: '#07C160',
   colorSecondary: '#586B93',
   colorWarn: colorWarn,
+  colorDanger: '#DC3545',
 
   // active mask
   activeMaskWhite: 'rgba(0,0,0,.05)',
