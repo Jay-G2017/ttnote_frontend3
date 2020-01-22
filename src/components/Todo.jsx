@@ -178,6 +178,8 @@ function Todo(props) {
   const tomatoSizeToMax = tomatoSize >= 20;
   const playButtonDisabled = tomatoState.isPlaying || tomatoSizeToMax || todo.id < 0;
 
+  const tomatoOpen = todoExpandedKeys.includes(todo.id);
+
   const toggleTodo = useCallback((todoId, done) => {
     const url = window.ttnote.baseUrl + '/todos/' + todoId;
     window.ttnote.fetch(url, {
@@ -194,15 +196,16 @@ function Todo(props) {
   }, []);
 
   const handleTodoExpand = useCallback(() => {
-    const newTodoExpandedKeys = [...todoExpandedKeys];
-    if (todoExpandedKeys.includes(todo.id)) {
-      const index = newTodoExpandedKeys.indexOf(todo.id);
-      newTodoExpandedKeys.splice(index, 1);
+    if (tomatoOpen) {
+      setTodoExpandedKeys(keys => {
+        const index = keys.indexOf(todo.id);
+        keys.splice(index, 1);
+        return [...keys];
+      })
     } else {
-      newTodoExpandedKeys.push(todo.id);
+      setTodoExpandedKeys(keys => keys.concat(todo.id))
     }
-    setTodoExpandedKeys(newTodoExpandedKeys);
-  }, [todoExpandedKeys, setTodoExpandedKeys, todo.id]);
+  }, [tomatoOpen, setTodoExpandedKeys, todo.id]);
 
   const handleTodoDelete = useCallback((todoId, titleId) => {
     if (tomatoSize > 0) {
@@ -359,7 +362,7 @@ function Todo(props) {
               visible={(tomatoSize > 0).toString()}
             >{tomatoSize}</TomatoBadge>
           </FlexRow>
-          {todoExpandedKeys.includes(todo.id) ?
+          {tomatoOpen ?
             <ListTomatoOpenCell
               onClick={handleTodoExpand}
             /> :
@@ -371,7 +374,7 @@ function Todo(props) {
           <TrashCell/>
           </FlexBetweenRow>
         </TodoRow>
-        <TomatoGroup open={todoExpandedKeys.includes(todo.id)}>
+        <TomatoGroup open={tomatoOpen}>
           {tomatoes.map(tomato =>
             <Tomato
               key={tomato.id}
@@ -382,7 +385,7 @@ function Todo(props) {
         </TomatoGroup>
       </TodoRowGroup>
     )
-  }, [todo.id, done, todoName, handleTodoNameOnBlur, tomatoSize, handleTodoExpand, tomatoState.id, tomatoState.minutes, playButtonDisabled, showOverlay, todoExpandedKeys, tomatoes, toggleTodo, handleTodoNameOnEnterPress, tomatoDispatch, setShowMore, handleTodoDelete, titleId, deleteTomato]);
+  }, [todo.id, done, todoName, handleTodoNameOnBlur, tomatoState.id, tomatoState.minutes, playButtonDisabled, showOverlay, tomatoSize, tomatoOpen, handleTodoExpand, tomatoes, toggleTodo, handleTodoNameOnEnterPress, tomatoDispatch, handleTodoDelete, titleId, deleteTomato]);
 }
 
 export default Todo;
