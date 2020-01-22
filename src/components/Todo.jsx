@@ -1,7 +1,7 @@
 import React, {useCallback, useContext, useMemo, useRef, useState} from "react";
 import styled from 'styled-components';
-import {IoIosPlayCircle, IoIosStar, IoIosListBox, IoIosTrash, IoIosList } from 'react-icons/io';
-import {FlexBetweenRow, FlexRow, MarginRow, TTextArea} from '../common/style';
+import {IoIosPlayCircle, IoIosStar, IoIosListBox, IoIosTrash, IoIosList} from 'react-icons/io';
+import {FlexBetweenRow, FlexRow, MarginRow, TTextArea, OverlayItem, VLine} from '../common/style';
 import {TomatoContext} from '../reducers/tomatoReducer';
 import Tomato from "./Tomato";
 import TCheckbox from "./TCheckbox";
@@ -10,6 +10,8 @@ import OverlayComp from "./OverlayComp";
 import {Badge} from "react-bootstrap";
 import {initSound} from "../utils/helper";
 import CountdownCircle from "./CountdownCircle";
+import {Tooltip} from 'antd';
+import 'antd/lib/tooltip/style/index.css';
 
 const TodoRowGroup = styled(MarginRow)`
   background-color: #fff;
@@ -21,11 +23,21 @@ const TodoRowGroup = styled(MarginRow)`
 const TodoRow = styled.div`
   display: flex;
   align-items: center;
+  padding-right: 0.4rem;
+`;
+
+const TodoInfoRow = styled(FlexBetweenRow)`
+  padding-left: 1.7rem; //1.4 + 0.3
+  padding-right: 0.4rem;
+  padding-top: 0.3rem;
+  // padding-bottom: 0.2rem;
 `;
 
 const TomatoGroup = styled.div`
-  //margin-top: 0.5rem;
   display: ${props => props.open ? 'block' : 'none'};
+  margin-top: 0.3rem;
+  margin-left: 1.7rem; // 1.4 + 0.3
+  margin-right: 0.4rem;
 `;
 
 const CheckCell = styled.div`
@@ -72,7 +84,6 @@ const PlayAndStatus = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 1.4rem;
-  margin-right: 0.4rem;
 `;
 
 const PlayCell = styled(IoIosPlayCircle)`
@@ -99,6 +110,7 @@ const StarCell = styled(IoIosStar)`
 
 const ListTomatoCell = styled(IoIosList)`
   color: ${window.ttnoteThemeLight.textColorDesc};
+  visibility: ${props => props.visible ? 'visible' : 'hidden'};
   cursor: pointer;
   :hover {
     transform: scale(1.2);
@@ -111,6 +123,7 @@ const ListTomatoCell = styled(IoIosList)`
 const ListTomatoOpenCell = styled(IoIosListBox)`
   color: ${window.ttnoteThemeLight.colorWarn};
   cursor: pointer;
+  visibility: ${props => props.visible ? 'visible' : 'hidden'};
 `;
 
 const TrashCell = styled(IoIosTrash)`
@@ -221,28 +234,28 @@ function Todo(props) {
   }, [tomatoSize, handleTodoDeleteWithConfirm, todo.name]);
 
   const handleTodoNameOnEnterPress = useCallback((e, options = {}) => {
-      const value = e.currentTarget.value;
-      if (value) {
-        if (todo.id > 0) {
-          if (todo.name !== value) {
-            // update todo
-            updateTodo(todo.id, {name: value});
-          }
-        } else {
-          // create todo
-          createTodo(todo.id, titleId, {name: value});
+    const value = e.currentTarget.value;
+    if (value) {
+      if (todo.id > 0) {
+        if (todo.name !== value) {
+          // update todo
+          updateTodo(todo.id, {name: value});
         }
-        if (options.newTodo) handleNewTodo(titleId)
       } else {
-        if (todo.id > 0) {
-          // delete todo
-          handleTodoDelete(todo.id, titleId)
-        } else {
-          // cancel new todo
-          cancelNewTodo(todo.id, titleId)
-        }
+        // create todo
+        createTodo(todo.id, titleId, {name: value});
       }
-      stopOnBlurFlag.current = false;
+      if (options.newTodo) handleNewTodo(titleId)
+    } else {
+      if (todo.id > 0) {
+        // delete todo
+        handleTodoDelete(todo.id, titleId)
+      } else {
+        // cancel new todo
+        cancelNewTodo(todo.id, titleId)
+      }
+    }
+    stopOnBlurFlag.current = false;
   }, [
     cancelNewTodo,
     createTodo,
@@ -251,11 +264,28 @@ function Todo(props) {
     todo.id, todo.name, updateTodo,
   ]);
 
-  const handleTodoNameOnBlur = useCallback((e, options={newTodo: false}) => {
+  const handleTodoNameOnBlur = useCallback((e, options = {newTodo: false}) => {
     if (!stopOnBlurFlag.current) {
       handleTodoNameOnEnterPress(e, options)
     }
   }, [handleTodoNameOnEnterPress]);
+
+  const TodoDeleteOverlay = useCallback(() => (
+    <FlexRow style={{height: '100%'}}>
+      <OverlayItem
+        type='danger'
+        onClick={() => {
+          console.log('hi')
+        }}
+      >确认删除
+      </OverlayItem>
+      <VLine />
+      <OverlayItem
+        onClick={() => console.log('hi')}
+      >取消
+                  </OverlayItem>
+    </FlexRow>
+  ), []);
 
   return useMemo(() => {
     console.log('in todo');
@@ -301,7 +331,7 @@ function Todo(props) {
           {/*</CountCell>*/}
           <PlayAndStatus>
             {tomatoState.id === todo.id ?
-             <CountdownCircle tomatoMinutes={tomatoState.minutes}/>
+              <CountdownCircle tomatoMinutes={tomatoState.minutes}/>
               :
               <PlayCell
                 disabled={playButtonDisabled}
@@ -350,12 +380,7 @@ function Todo(props) {
             }
           </Overlay>
         </TodoRow>
-        <TodoRow>
-          <CheckCell style={{visibility: 'hidden'}}>
-            <TCheckbox
-            />
-          </CheckCell>
-          <FlexBetweenRow style={{flex: 'auto', marginRight: '0.4rem'}}>
+        <TodoInfoRow>
           <FlexRow style={{flex: 'none', width: '2rem'}}>
             <TomatoBadge
               variant={'light'}
@@ -364,16 +389,23 @@ function Todo(props) {
           </FlexRow>
           {tomatoOpen ?
             <ListTomatoOpenCell
+              visible={tomatoSize > 0}
               onClick={handleTodoExpand}
             /> :
             <ListTomatoCell
+              visible={tomatoSize > 0}
               onClick={handleTodoExpand}
             />
           }
           <StarCell/>
+          <Tooltip
+            placement={'left'}
+            trigger={'click'}
+            title={<TodoDeleteOverlay />}
+           >
           <TrashCell/>
-          </FlexBetweenRow>
-        </TodoRow>
+          </Tooltip>
+        </TodoInfoRow>
         <TomatoGroup open={tomatoOpen}>
           {tomatoes.map(tomato =>
             <Tomato

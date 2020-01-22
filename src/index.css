@@ -132,3 +132,9 @@ code {
     backdrop-filter: blur(10px);
   }
 }
+
+.ant-tooltip-inner {
+  padding: 0.2rem 0.7rem !important;
+  display: flex;
+  align-items: center;
+}

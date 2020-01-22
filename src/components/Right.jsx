@@ -3,6 +3,7 @@ import styled from "styled-components";
 import useProject from "../hooks/useProject";
 import RightHeader from "./RightHeader";
 import RightBody from "./RightBody";
+import {FlexRow} from "../common/style";
 
 const RightContainer = styled.div`
   flex: 3.5;

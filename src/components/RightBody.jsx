@@ -1,5 +1,5 @@
 import React, {useState, useMemo, useCallback, useRef, useEffect} from "react";
-import {PaddingRow, TTextArea} from "../common/style";
+import {FlexRow, PaddingRow, TTextArea} from "../common/style";
 import Todo from "./Todo";
 import Title from "./Title";
 import styled from "styled-components";

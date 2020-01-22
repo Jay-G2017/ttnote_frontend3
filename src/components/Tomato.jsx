@@ -4,39 +4,41 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/zh-cn'
 import dayjs from 'dayjs';
 import TextareaDebounced from '../components/TextareaDebounced';
+import {FlexBetweenRow} from "../common/style";
 
 dayjs.extend(relativeTime);
 dayjs.locale('zh-cn');
 
 const TomatoRowGroup = styled.div`
- 
+  margin-bottom: 0.5rem;
+  background-color: ${window.ttnoteThemeLight.bgColorPrimary};
 `;
 
 const TomatoRow = styled.div`
   display: flex;
   align-items: center;
+`;
+
+const TomatoInfoRow = styled(FlexBetweenRow)`
+  padding: 0.3rem;
   color: ${window.ttnoteThemeLight.textColorDesc};
   font-size: 0.7rem;
 `;
 
 const MinutesCell = styled.div`
-  flex: 0 0 2rem;
-  @media (min-width: 576px) {
-    flex: 0 0 3rem;
-  }
+  //flex: 0 0 2rem;
+  //@media (min-width: 576px) {
+  //  flex: 0 0 3rem;
+  //}
 `;
 
 const TimeCell = styled.div`
-  //margin-right: 1em;
-  //flex: 2;
-  //grid-area: 1 / 11 / 2 / 16;
-  text-align: end;
-  flex: 0 0 3rem;
-  margin-right: 0.5rem;
-  @media (min-width: 576px) {
-    flex: 0 0 4rem;
-    margin-right: 1rem;
-  }
+  //flex: 0 0 3rem;
+  //margin-right: 0.5rem;
+  //@media (min-width: 576px) {
+  //  flex: 0 0 4rem;
+  //  margin-right: 1rem;
+  //}
 `;
 
 const DeleteCell = styled.div`
@@ -51,11 +53,10 @@ const DescCell = styled.div`
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
   font-size: 0.9rem;
   color: ${props => props.todoDone ? window.ttnoteThemeLight.textColorDesc : window.ttnoteThemeLight.textColorTitle};
-  background-color: ${window.ttnoteThemeLight.bgColorPrimary};
   //display: ${props => props.visible ? 'block' : 'none'};
   display: flex;
   align-items: center;
-  margin-left: 1.7rem; //1.4 + 0.3
+  //margin-left: 1.7rem; //1.4 + 0.3
   //margin-right: 0.5rem; 
   @media (min-width: 576px) {
     //margin-right: 1rem; 
@@ -94,12 +95,14 @@ function Tomato(props) {
             saveInfo={saveInfo}
           />
         </DescCell>
+      </TomatoRow>
+      <TomatoInfoRow>
         <TimeCell>{fromNow}</TimeCell>
         <MinutesCell>{`${tomato.minutes}分钟`}</MinutesCell>
-          <DeleteCell
-            onClick={handleTomatoDelete}
-          >删除</DeleteCell>
-      </TomatoRow>
+        <DeleteCell
+          onClick={handleTomatoDelete}
+        >删除</DeleteCell>
+      </TomatoInfoRow>
     </TomatoRowGroup>
   )
 }

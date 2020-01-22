@@ -121,14 +121,45 @@ export const TBadge = styled.span`
 `;
 
 export const VLine = styled.div`
- width: 1px;
- background-color: ${window.ttnoteThemeLight.lineColorDark};
- height: 1em;
+  margin: 0 0.6em;
+  width: 1px;
+  background-color: ${window.ttnoteThemeLight.lineColorSilver};
+  height: 1.1em;
 `;
 
 export const TSmallButton = styled.div`
   font-size: 0.8rem;
+  font-weight: 600;
   padding: 0.2rem 0.6rem;
-  background-color: ${window.ttnoteThemeLight.colorPrimary};
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
+  color: ${props => (!props.type || props.type === 'default') ? window.ttnoteThemeLight.textColorDesc : '#fff'};
+  background-color: ${props => {
+    switch (props.type) {
+      case 'primary':
+        return window.ttnoteThemeLight.colorPrimary;
+        case 'danger':
+          return window.ttnoteThemeLight.colorDanger;
+          default:
+            return window.ttnoteThemeLight.btnDefaultBg;
+    }
+  }};
+`;
+
+export const OverlayItem = styled.div`
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: ${props => props.type === 'danger' ? '600' : ''};
+  color: ${props => {
+    switch (props.type) {
+      case 'primary':
+        return window.ttnoteThemeLight.colorPrimary;
+        case 'danger':
+          return window.ttnoteThemeLight.colorDanger;
+          default:
+            return window.ttnoteThemeLight.textColorLight;
+    }
+  }};
+  :hover {
+    color: ${props => (!props.type || props.type === 'default') ? '#fff' : ''};
+  }
 `;

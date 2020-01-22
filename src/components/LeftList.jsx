@@ -3,7 +3,7 @@ import Overlay from "react-bootstrap/Overlay";
 import OverlayComp from "./OverlayComp";
 import styled from "styled-components";
 import {IoIosFiling, IoIosFolder, IoIosMore} from 'react-icons/io';
-import {TInput, TSmallButton, VLine} from "../common/style";
+import {TInput, TSmallButton, VLine, OverlayItem} from "../common/style";
 
 const ListRow = styled.div`
   padding: 0 1rem;
@@ -56,14 +56,6 @@ const OverlayContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-around;
-`;
-
-const OverlayItem = styled.div`
-  padding: 0.2rem 0.7rem;
-  cursor: pointer;
-  :hover {
-    color: #fff;
-  }
 `;
 
 function LeftList(props) {
@@ -160,6 +152,7 @@ function LeftList(props) {
         {atEditMode &&
         <>
           <TSmallButton
+            type='primary'
             style={{marginLeft: '0.5rem'}}
           >确定</TSmallButton>
         </>
