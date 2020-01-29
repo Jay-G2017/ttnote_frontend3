@@ -1,17 +1,19 @@
-import React from "react";
+import React, {useCallback, useState} from "react";
 import styled from "styled-components";
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/zh-cn'
 import dayjs from 'dayjs';
 import TextareaDebounced from '../components/TextareaDebounced';
-import {FlexBetweenRow} from "../common/style";
+import {FlexBetweenRow, FlexRow, OverlayItem, VLine} from "../common/style";
+import {Tooltip} from "antd";
 
 dayjs.extend(relativeTime);
 dayjs.locale('zh-cn');
 
 const TomatoRowGroup = styled.div`
   margin-bottom: 0.5rem;
-  background-color: ${window.ttnoteThemeLight.bgColorPrimary};
+  background-color: ${window.ttnoteThemeLight.bgColorWhiteDarker};
+  border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
 `;
 
 const TomatoRow = styled.div`
@@ -65,7 +67,7 @@ const DescCell = styled.div`
 
 function Tomato(props) {
   const {tomato, todoDone} = props;
-  // const [tomatoDescShow, setTomatoDescShow] = useState(tomato.desc);
+  const [tomatoDeleteTooltipVisible, setTomatoDeleteTooltipVisible] = useState(false);
   const fromNow = dayjs(tomato.createdAt).fromNow();
 
   const saveInfo = (value) => {
@@ -79,12 +81,23 @@ function Tomato(props) {
       })
   };
 
-  const handleTomatoDelete = (e) => {
-    e.stopPropagation();
-    if (window.confirm('确定要删除吗')) {
-      props.deleteTomato(tomato.todoId, tomato.id)
-    }
-  };
+  const TomatoDeleteOverlay = useCallback(() => (
+    <FlexRow style={{height: '100%'}}>
+      <OverlayItem
+        type='danger'
+        onClick={() => {
+          props.deleteTomato(tomato.todoId, tomato.id);
+          setTomatoDeleteTooltipVisible(false);
+        }}
+      >确认删除
+      </OverlayItem>
+      <VLine />
+      <OverlayItem
+        onClick={() => setTomatoDeleteTooltipVisible(false)}
+      >取消
+      </OverlayItem>
+    </FlexRow>
+  ), [props, tomato.id, tomato.todoId]);
 
   return (
     <TomatoRowGroup>
@@ -99,9 +112,17 @@ function Tomato(props) {
       <TomatoInfoRow>
         <TimeCell>{fromNow}</TimeCell>
         <MinutesCell>{`${tomato.minutes}分钟`}</MinutesCell>
-        <DeleteCell
-          onClick={handleTomatoDelete}
-        >删除</DeleteCell>
+        <Tooltip
+          placement={'left'}
+          trigger={'click'}
+          title={<TomatoDeleteOverlay />}
+          visible={tomatoDeleteTooltipVisible}
+          onVisibleChange={(visible) => {
+            setTomatoDeleteTooltipVisible(visible)
+          }}
+        >
+        <DeleteCell>删除</DeleteCell>
+        </Tooltip>
       </TomatoInfoRow>
     </TomatoRowGroup>
   )

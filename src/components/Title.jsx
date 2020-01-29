@@ -45,12 +45,16 @@ const NameCell = styled.div`
   color: ${window.ttnoteThemeLight.colorSecondary};
   font-size: 1rem;
   font-weight: 700;
+  border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
+  margin-right: 1rem;
+  :hover {
+    background-color: ${window.ttnoteThemeLight.bgColorPrimaryDarker};
+  }
 `;
 
 // const CountCell = styled(TBadge)`
 //   flex: none;
 //   margin-right: 0.3rem;
-//   background-color: ${window.ttnoteThemeLight.bgColorDefault};
 //   color: ${window.ttnoteThemeLight.textColorTitle};
 //   visibility: ${props => props.visible ? 'visible' : 'hidden'};
 // `;
@@ -213,13 +217,11 @@ function Title(props) {
             todoExpandedKeys={props.todoExpandedKeys}
             setTodoExpandedKeys={props.setTodoExpandedKeys}
             todoMethods={todoMethods}
-            showMore={showMore}
-            setShowMore={setShowMore}
             handleNewTodo={handleNewTodo}
           />)}
       </TodoBoard>
     </TitleContainer>
-  ), [handleNewTodo, handleTitleDelete, handleTitleNameOnBlur, playStatus, props.setTodoExpandedKeys, props.todoExpandedKeys, setPlayStatus, setShowMore, showMore, showOverlay, title.id, title.todoIds, titleName, todoMethods, todos]);
+  ), [handleNewTodo, handleTitleDelete, handleTitleNameOnBlur, playStatus, props.setTodoExpandedKeys, props.todoExpandedKeys, setPlayStatus, setShowMore, showOverlay, title.id, title.todoIds, titleName, todoMethods, todos]);
 }
 
 export default Title;

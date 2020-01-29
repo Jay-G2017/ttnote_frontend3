@@ -17,7 +17,6 @@ const HeaderRow = styled.div`
     position: absolute;
     //width: calc(60% - 1px);
   }
-  //background-color: ${window.ttnoteThemeLight.bgColorDefaultRgba};
   
   display: flex;
   justify-content: space-between;

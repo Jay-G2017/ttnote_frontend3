@@ -3,14 +3,12 @@ import styled from "styled-components";
 import useProject from "../hooks/useProject";
 import RightHeader from "./RightHeader";
 import RightBody from "./RightBody";
-import {FlexRow} from "../common/style";
 
 const RightContainer = styled.div`
   flex: 3.5;
   //border-left: 1px solid #fff;
   //border-left: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
-  //background-color: ${window.ttnoteThemeLight.bgColorDefault};
-  background-color: ${window.ttnoteThemeLight.bgColorActive};
+  background-color: ${window.ttnoteThemeLight.bgColorPrimary};
   //align-items: center;
   //justify-content: center;
   height: 100%;

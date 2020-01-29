@@ -156,10 +156,7 @@ export const OverlayItem = styled.div`
         case 'danger':
           return window.ttnoteThemeLight.colorDanger;
           default:
-            return window.ttnoteThemeLight.textColorLight;
+            return '#fff';
     }
   }};
-  :hover {
-    color: ${props => (!props.type || props.type === 'default') ? '#fff' : ''};
-  }
 `;

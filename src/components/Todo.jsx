@@ -5,8 +5,6 @@ import {FlexBetweenRow, FlexRow, MarginRow, TTextArea, OverlayItem, VLine} from 
 import {TomatoContext} from '../reducers/tomatoReducer';
 import Tomato from "./Tomato";
 import TCheckbox from "./TCheckbox";
-import Overlay from 'react-bootstrap/Overlay';
-import OverlayComp from "./OverlayComp";
 import {Badge} from "react-bootstrap";
 import {initSound} from "../utils/helper";
 import CountdownCircle from "./CountdownCircle";
@@ -56,11 +54,13 @@ const NameCell = styled.div`
   display: flex;
   align-items: center;
   flex: auto;
-  background-color: #fff;
-  //padding: 0.3rem 0.5rem 0.3rem 0.3rem;
+  padding: 0.2rem;
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
-  margin-right: 0.5rem;
+  margin-right: 1rem;
   color: ${props => props.done ? window.ttnoteThemeLight.textColorDesc : 'inherit'};
+  :hover {
+    background-color: ${window.ttnoteThemeLight.bgColorWhiteDarker};
+  }
 `;
 
 const TomatoBadge = styled(Badge)`
@@ -98,32 +98,23 @@ const PlayCell = styled(IoIosPlayCircle)`
 `;
 
 const StarCell = styled(IoIosStar)`
-  color: ${window.ttnoteThemeLight.textColorTips};
+  color: ${props => props.star === 'true' ? window.ttnoteThemeLight.textColorWarn : window.ttnoteThemeLight.textColorTips};
   cursor: pointer;
-  :hover {
+  &.star-effect {
     transform: scale(1.2);
-  }
-  :active {
-    transform: scale(1);
   }
 `;
 
 const ListTomatoCell = styled(IoIosList)`
   color: ${window.ttnoteThemeLight.textColorDesc};
-  visibility: ${props => props.visible ? 'visible' : 'hidden'};
+  visibility: ${props => props.visible === 'true' ? 'visible' : 'hidden'};
   cursor: pointer;
-  :hover {
-    transform: scale(1.2);
-  }
-  :active {
-    transform: scale(1);
-  }
 `;
 
 const ListTomatoOpenCell = styled(IoIosListBox)`
   color: ${window.ttnoteThemeLight.colorWarn};
   cursor: pointer;
-  visibility: ${props => props.visible ? 'visible' : 'hidden'};
+  visibility: ${props => props.visible === 'true' ? 'visible' : 'hidden'};
 `;
 
 const TrashCell = styled(IoIosTrash)`
@@ -131,33 +122,9 @@ const TrashCell = styled(IoIosTrash)`
   color: ${window.ttnoteThemeLight.textColorTips};
   cursor: pointer;
   :hover {
-    transform: scale(1.2);
     color: ${window.ttnoteThemeLight.colorDanger};
   }
-  :active {
-    transform: scale(1);
-  }
 `;
-
-const MoreCell = styled.div`
-  font-size: 1.4rem;
-  // color: ${window.ttnoteThemeLight.bgColorDark};
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  color: ${window.ttnoteThemeLight.colorSecondary};
-  
-  flex: none;
-`;
-
-const OverlayContainer = styled.div`
-  background-color: ${window.ttnoteThemeLight.bgColorDark};
-  border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
-  padding: 0.2rem 0.7rem;
-  color: ${window.ttnoteThemeLight.textColorLight};
-  font-size: 0.8rem;
-`;
-
 
 function Todo(props) {
   const {
@@ -166,8 +133,6 @@ function Todo(props) {
     todoExpandedKeys,
     setTodoExpandedKeys,
     todoMethods,
-    showMore,
-    setShowMore,
     handleNewTodo,
   } = props;
   const {
@@ -178,11 +143,12 @@ function Todo(props) {
     cancelNewTodo,
   } = todoMethods;
   const [done, setDone] = useState(todo.done);
+  const [todayTask, setTodayTask] = useState(false);
+  const starRef = useRef(null);
   const [todoName, setTodoName] = useState(todo.name);
+  const [todoDeleteTooltipVisible, setTodoDeleteTooltipVisible] = useState(false);
   // const [collapse, setCollapse] = useState(true);
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
-  const moreButtonRef = useRef(null);
-  const showOverlay = showMore.type === 'todo' && showMore.id === todo.id;
 
   const stopOnBlurFlag = useRef(false);
 
@@ -275,17 +241,18 @@ function Todo(props) {
       <OverlayItem
         type='danger'
         onClick={() => {
-          console.log('hi')
+          handleTodoDelete(todo.id, titleId);
+          setTodoDeleteTooltipVisible(false);
         }}
       >确认删除
       </OverlayItem>
       <VLine />
       <OverlayItem
-        onClick={() => console.log('hi')}
+        onClick={() => setTodoDeleteTooltipVisible(false)}
       >取消
-                  </OverlayItem>
+      </OverlayItem>
     </FlexRow>
-  ), []);
+  ), [handleTodoDelete, titleId, todo.id]);
 
   return useMemo(() => {
     console.log('in todo');
@@ -322,13 +289,6 @@ function Todo(props) {
               }}
             />
           </NameCell>
-
-          {/*<CountCell*/}
-          {/*  visible={tomatoSize > 0}*/}
-          {/*  onClick={handleTodoExpand}*/}
-          {/*>*/}
-          {/*  <TBadge>{tomatoSize}</TBadge>*/}
-          {/*</CountCell>*/}
           <PlayAndStatus>
             {tomatoState.id === todo.id ?
               <CountdownCircle tomatoMinutes={tomatoState.minutes}/>
@@ -350,35 +310,6 @@ function Todo(props) {
               />
             }
           </PlayAndStatus>
-          {/*<MoreCell ref={moreButtonRef} onClick={e => {*/}
-          {/*  e.stopPropagation();*/}
-          {/*  if (showOverlay) {*/}
-          {/*    setShowMore({type: 'todo', id: null})*/}
-          {/*  } else {*/}
-          {/*    setShowMore({type: 'todo', id: todo.id})*/}
-          {/*  }*/}
-          {/*}}*/}
-          {/*>*/}
-          {/*  <IoIosMore/>*/}
-          {/*</MoreCell>*/}
-          <Overlay
-            show={showOverlay}
-            target={moreButtonRef.current}
-            placement='left'
-            transition={false}
-          >
-            {props => (
-              <OverlayComp {...props}>
-                <OverlayContainer>
-                  <div
-                    onClick={() => handleTodoDelete(todo.id, titleId)}
-                  >删除
-                  </div>
-                </OverlayContainer>
-              </OverlayComp>
-            )
-            }
-          </Overlay>
         </TodoRow>
         <TodoInfoRow>
           <FlexRow style={{flex: 'none', width: '2rem'}}>
@@ -389,21 +320,36 @@ function Todo(props) {
           </FlexRow>
           {tomatoOpen ?
             <ListTomatoOpenCell
-              visible={tomatoSize > 0}
+              visible={(tomatoSize > 0).toString()}
               onClick={handleTodoExpand}
             /> :
             <ListTomatoCell
-              visible={tomatoSize > 0}
+              visible={(tomatoSize > 0).toString()}
               onClick={handleTodoExpand}
             />
           }
-          <StarCell/>
+          <Tooltip
+            title={'标记为今日任务'}
+            mouseEnterDelay={0.8}
+          >
+            <StarCell
+              className={todayTask ? 'star-effect' : ''}
+              star = {todayTask.toString()}
+              onClick={() => {
+                setTodayTask(!todayTask);
+              }}
+            />
+          </Tooltip>
           <Tooltip
             placement={'left'}
             trigger={'click'}
             title={<TodoDeleteOverlay />}
+            visible={todoDeleteTooltipVisible}
+            onVisibleChange={(visible) => {
+              setTodoDeleteTooltipVisible(visible)
+            }}
            >
-          <TrashCell/>
+            <TrashCell/>
           </Tooltip>
         </TodoInfoRow>
         <TomatoGroup open={tomatoOpen}>
@@ -417,7 +363,7 @@ function Todo(props) {
         </TomatoGroup>
       </TodoRowGroup>
     )
-  }, [todo.id, done, todoName, handleTodoNameOnBlur, tomatoState.id, tomatoState.minutes, playButtonDisabled, showOverlay, tomatoSize, tomatoOpen, handleTodoExpand, tomatoes, toggleTodo, handleTodoNameOnEnterPress, tomatoDispatch, handleTodoDelete, titleId, deleteTomato]);
+  }, [todo.id, done, todoName, handleTodoNameOnBlur, tomatoState.id, tomatoState.minutes, playButtonDisabled, tomatoSize, tomatoOpen, handleTodoExpand, todayTask, todoDeleteTooltipVisible, tomatoes, toggleTodo, handleTodoNameOnEnterPress, tomatoDispatch, deleteTomato]);
 }
 
 export default Todo;

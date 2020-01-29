@@ -1,5 +1,5 @@
 import React, {useState, useMemo, useCallback, useRef, useEffect} from "react";
-import {FlexRow, PaddingRow, TTextArea} from "../common/style";
+import {PaddingRow, TTextArea} from "../common/style";
 import Todo from "./Todo";
 import Title from "./Title";
 import styled from "styled-components";
@@ -23,12 +23,17 @@ const RightContent = styled.div`
 `;
 
 const ProjectNameRow = styled(PaddingRow)`
+  margin-top: 0.3rem;
   font-size: 1.2rem;
   font-weight: 700;
 `;
 
 const ProjectNameCell = styled.div`
- padding: 0.3rem 0;
+ padding: 0 0.3rem;
+ border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
+ :hover {
+   background-color: ${window.ttnoteThemeLight.bgColorPrimaryDarker};
+ }
 `;
 
 const ProjectDescGroup = styled.div`
@@ -60,11 +65,10 @@ const TitleGroupRow = styled.div`
 `;
 
 const RightFooter = styled.div`
-  //backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  //background-color: ${window.ttnoteThemeLight.bgColorPrimaryRgba};
+  background-color: ${window.ttnoteThemeLight.bgColorPrimary};
   
   position: fixed;
   bottom: 0;
@@ -229,8 +233,6 @@ const RightBody = (props) => {
               todoExpandedKeys={todoExpandedKeys}
               setTodoExpandedKeys={setTodoExpandedKeys}
               todoMethods={todoMethods}
-              showMore={showMore}
-              setShowMore={setShowMore}
               handleNewTodo={handleNewTodo}
             />
           ))}
