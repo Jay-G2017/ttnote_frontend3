@@ -15,7 +15,7 @@ const TodoRowGroup = styled(MarginRow)`
   background-color: #fff;
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
   padding: 0.3rem;
-  box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+  //box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
 `;
 
 const TodoRow = styled.div`
@@ -98,9 +98,10 @@ const PlayCell = styled(IoIosPlayCircle)`
 `;
 
 const starEffect = keyframes`
-  0% {transform: scale(1)}
-  20% {transform: scale(1.5)}
-  100% {transform: scale(1)}
+  0% {transform: scale(1) }
+  30% {transform: scale(1.6) translate(0, -5px)}
+  80% {transform: scale(0.8) translate(0, 2px)}
+  100% {transform: scale(1) translate(0, 0)}
 `;
 
 const StarCell = styled(IoIosStar)`
@@ -111,7 +112,7 @@ const StarCell = styled(IoIosStar)`
       return props.starred === 'true' ? window.ttnoteThemeLight.textColorWarn : window.ttnoteThemeLight.textColorTips
     }
 }};
-  cursor: pointer;
+  cursor: ${props => props.disabled ? '' : 'pointer'};
   &.star-effect {
     animation: ${starEffect} 300ms ease-in-out;
   }
@@ -187,11 +188,16 @@ function Todo(props) {
   }, []);
 
   const handleStarClick = useCallback(() => {
-    const url = window.ttnote.baseUrl + '/';
-
+    const prevTodayTodo = todayTodo;
     setTodayTodo(!todayTodo);
-
-  }, [todayTodo]);
+    const url = window.ttnote.baseUrl + `/todos/${todo.id}/tag_today_todo`;
+    window.ttnote.fetch(url, {
+      method: 'PATCH',
+      body: JSON.stringify({starred: !todayTodo})
+    }).catch((res) => {
+      setTodayTodo(prevTodayTodo)
+    });
+  }, [todayTodo, todo.id]);
 
   useEffect(() => {
     if (firstMount.current) {

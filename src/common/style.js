@@ -97,12 +97,12 @@ export const PaddingRow = styled.div`
 `;
 
 export const MarginRow = styled.div`
-  margin: 0.5rem 4vw;
+  margin: 0.7rem 4vw;
   @media (min-width: 576px) {
-    margin: 0.5rem 6vw;
+    margin: 0.7rem 6vw;
   }
   @media (min-width: 992px) {
-    margin: 0.5rem 9vw;
+    margin: 0.7rem 9vw;
   }
 `;
 
