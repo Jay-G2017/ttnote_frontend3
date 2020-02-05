@@ -9,7 +9,7 @@ window.browserHistory = createBrowserHistory();
 
 const SERVER_URL = {
     development: 'https://beta.api.ttnote.cn',
-  // development: 'http://localhost:3003',
+  // development: 'http://localhost:3004',
   production: 'https://beta.api.ttnote.cn',
 };
 

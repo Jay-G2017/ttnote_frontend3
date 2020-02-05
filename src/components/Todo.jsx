@@ -1,5 +1,5 @@
-import React, {useCallback, useContext, useMemo, useRef, useState} from "react";
-import styled from 'styled-components';
+import React, {useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
+import styled, {keyframes} from 'styled-components';
 import {IoIosPlayCircle, IoIosStar, IoIosListBox, IoIosTrash, IoIosList} from 'react-icons/io';
 import {FlexBetweenRow, FlexRow, MarginRow, TTextArea, OverlayItem, VLine} from '../common/style';
 import {TomatoContext} from '../reducers/tomatoReducer';
@@ -97,11 +97,23 @@ const PlayCell = styled(IoIosPlayCircle)`
   }
 `;
 
+const starEffect = keyframes`
+  0% {transform: scale(1)}
+  20% {transform: scale(1.5)}
+  100% {transform: scale(1)}
+`;
+
 const StarCell = styled(IoIosStar)`
-  color: ${props => props.star === 'true' ? window.ttnoteThemeLight.textColorWarn : window.ttnoteThemeLight.textColorTips};
+  color: ${props => {
+    if (props.disabled) {
+      return window.ttnoteThemeLight.btnDefaultDisabledFontColor; 
+    } else {
+      return props.starred === 'true' ? window.ttnoteThemeLight.textColorWarn : window.ttnoteThemeLight.textColorTips
+    }
+}};
   cursor: pointer;
   &.star-effect {
-    transform: scale(1.2);
+    animation: ${starEffect} 300ms ease-in-out;
   }
 `;
 
@@ -143,8 +155,8 @@ function Todo(props) {
     cancelNewTodo,
   } = todoMethods;
   const [done, setDone] = useState(todo.done);
-  const [todayTask, setTodayTask] = useState(false);
-  const starRef = useRef(null);
+  const firstMount = useRef(true);
+  const [todayTodo, setTodayTodo] = useState(todo.starred || false);
   const [todoName, setTodoName] = useState(todo.name);
   const [todoDeleteTooltipVisible, setTodoDeleteTooltipVisible] = useState(false);
   // const [collapse, setCollapse] = useState(true);
@@ -173,6 +185,25 @@ function Todo(props) {
       })
 
   }, []);
+
+  const handleStarClick = useCallback(() => {
+    const url = window.ttnote.baseUrl + '/';
+
+    setTodayTodo(!todayTodo);
+
+  }, [todayTodo]);
+
+  useEffect(() => {
+    if (firstMount.current) {
+      firstMount.current = false
+    } else {
+      if (todayTodo) {
+        document.getElementById('todayTodo' + todo.id).classList.add('star-effect');
+      } else {
+        document.getElementById('todayTodo' + todo.id).classList.remove('star-effect');
+      }
+    }
+  }, [todayTodo, todo.id]);
 
   const handleTodoExpand = useCallback(() => {
     if (tomatoOpen) {
@@ -329,15 +360,14 @@ function Todo(props) {
             />
           }
           <Tooltip
-            title={'标记为今日任务'}
-            mouseEnterDelay={0.8}
+            title={todayTodo ? '取消今日任务' : '标记为今日任务'}
+            mouseEnterDelay={todayTodo ? 1.0 : 1}
           >
             <StarCell
-              className={todayTask ? 'star-effect' : ''}
-              star = {todayTask.toString()}
-              onClick={() => {
-                setTodayTask(!todayTask);
-              }}
+              id={`todayTodo${todo.id}`}
+              starred = {todayTodo.toString()}
+              disabled = {done}
+              onClick={handleStarClick}
             />
           </Tooltip>
           <Tooltip
@@ -363,7 +393,7 @@ function Todo(props) {
         </TomatoGroup>
       </TodoRowGroup>
     )
-  }, [todo.id, done, todoName, handleTodoNameOnBlur, tomatoState.id, tomatoState.minutes, playButtonDisabled, tomatoSize, tomatoOpen, handleTodoExpand, todayTask, todoDeleteTooltipVisible, tomatoes, toggleTodo, handleTodoNameOnEnterPress, tomatoDispatch, deleteTomato]);
+  }, [todo.id, done, todoName, handleTodoNameOnBlur, tomatoState.id, tomatoState.minutes, playButtonDisabled, tomatoSize, tomatoOpen, handleTodoExpand, todayTodo, handleStarClick, todoDeleteTooltipVisible, tomatoes, toggleTodo, handleTodoNameOnEnterPress, tomatoDispatch, deleteTomato]);
 }
 
 export default Todo;
