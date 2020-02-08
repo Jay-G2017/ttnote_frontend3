@@ -2,10 +2,11 @@ import React, {useCallback, useMemo, useState} from "react";
 import styled from "styled-components";
 import {IoIosAddCircle, IoIosSettings} from 'react-icons/io';
 import useCategory from "../hooks/useCategory";
-import {VLine} from "../common/style";
+import {HLine, VLine} from "../common/style";
 import {Modal} from "react-bootstrap";
 import Setting from "./Setting";
 import LeftList from "./LeftList";
+import {CATEGORY_TYPE_INBOX, CATEGORY_TYPE_TAGGED} from "../common/constants";
 
 const LeftContainer = styled.div`
   flex: 1;
@@ -106,20 +107,17 @@ const SettingCell = styled.div`
 `;
 
 function Left(props) {
-  const {isMobileView, mobileShowingArea} = props;
+  const {isMobileView, mobileShowingArea, categoryId} = props;
   const [settingModalShow, setSettingModalShow] = useState(false);
   const [showOverlayId, setShowOverlayId] = useState(null);
   const [leftListEditId, setLeftListEditId] = useState(null);
 
   const visible = !isMobileView || (isMobileView && mobileShowingArea === 'left');
 
-  const searchParams = window.ttnote.searchObject();
-  const categoryId = parseInt(searchParams.categoryId) || -1;
-
   const {
     categories,
     categoryMethods,
-  } = useCategory(categoryId);
+  } = useCategory();
 
   const hasNewId = categories.findIndex(ca => ca.id === 'new') !== -1;
 
@@ -144,14 +142,21 @@ function Left(props) {
         </HeaderRow>
         <LeftBody>
           <LeftList
-            list={{id: -1, name: '收件箱'}}
+            list={{id: CATEGORY_TYPE_INBOX, name: '收件箱'}}
+            active={categoryId === CATEGORY_TYPE_INBOX}
             categoryId={categoryId}
             isMobileView={isMobileView}
           />
+          <LeftList
+            list={{id: CATEGORY_TYPE_TAGGED, name: '标记'}}
+            active={categoryId === CATEGORY_TYPE_TAGGED}
+            isMobileView={isMobileView}
+          />
+          <div style={{height: '0.8rem'}}/>
           {categories.map(list => <LeftList
             key={list.id}
             list={list}
-            categoryId={categoryId}
+            active={list.id.toString() === categoryId}
             isMobileView={isMobileView}
             showOverlayId={showOverlayId}
             setShowOverlayId={setShowOverlayId}

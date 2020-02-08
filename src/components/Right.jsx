@@ -29,6 +29,7 @@ function Right(props) {
   const {
     isMobileView,
     mobileShowingArea,
+    isTaggedProject, // 这种特殊的项目name, desc都是不能编辑的。
     handleProjectChangeFromRight,
   } = props;
   const visible = (isMobileView && mobileShowingArea === 'right') || !isMobileView;
@@ -60,6 +61,7 @@ function Right(props) {
         return (
           <RightBody
             project={project}
+            isTaggedProject={isTaggedProject}
             projectMethods={projectMethods}
             handleProjectChangeFromRight={handleProjectChangeFromRight}
             todoExpandedKeys={todoExpandedKeys}
@@ -78,7 +80,7 @@ function Right(props) {
         <NoProjectDiv>无项目</NoProjectDiv>
       )
     }
-  }, [handleNewTitle, handleNewTodo, handleProjectChangeFromRight, isLoading, project, projectId, projectMethods, setTodoExpandedKeys, showMore, titleMethods, todoExpandedKeys, todoMethods]);
+  }, [handleNewTitle, handleNewTodo, handleProjectChangeFromRight, isLoading, isTaggedProject, project, projectId, projectMethods, setTodoExpandedKeys, showMore, titleMethods, todoExpandedKeys, todoMethods]);
 
   return (
     useMemo(() => (

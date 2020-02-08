@@ -31,6 +31,7 @@ const ttnoteThemeLight = {
   bgColorGrey: '#35322F',
   bgColorGreyRgba: 'rgba(53,50,47,0.9)',
   bgColorGreyHover: '#313E49',
+  bgColorGreyDisabled: 'hsl(30,6%,30%)',
   bgColorGreyActive: '#294372',
   bgColorGreyActive2: '#1C57C3',
 

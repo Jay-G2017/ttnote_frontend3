@@ -6,6 +6,7 @@ import Right from "./components/Right";
 import {TomatoContext, tomatoReducer, tomatoInitial} from './reducers/tomatoReducer';
 import {getCookie} from "./utils/helper";
 import useProjects from "./hooks/useProjects";
+import {CATEGORY_TYPE_INBOX, CATEGORY_TYPE_TAGGED} from "./common/constants";
 
 const NoteContainer = styled.div`
   display: flex;
@@ -22,7 +23,7 @@ function Note() {
   const [tomatoState, tomatoDispatch] = useReducer(tomatoReducer, tomatoInitial);
 
   const searchObject = window.ttnote.searchObject();
-  const categoryId = parseInt(searchObject.categoryId) || -1;
+  const categoryId = searchObject.categoryId || CATEGORY_TYPE_INBOX;
   const {
     projects,
     projectCreating,
@@ -80,6 +81,7 @@ function Note() {
   return (
     <NoteContainer>
       <Left
+        categoryId={categoryId}
         isMobileView={isMobileView}
         mobileShowingArea={mobileShowingArea}
       />
@@ -87,6 +89,7 @@ function Note() {
         isMobileView={isMobileView}
         mobileShowingArea={mobileShowingArea}
         projects={projects}
+        isTaggedCategory={categoryId === CATEGORY_TYPE_TAGGED}
         projectCreating={projectCreating}
         handleNewProject={handleNewProject}
         handleProjectDelete={handleProjectDelete}
@@ -94,6 +97,7 @@ function Note() {
       <TomatoContext.Provider value={{tomatoState, tomatoDispatch}}>
         <Right
           isMobileView={isMobileView}
+          isTaggedProject={categoryId === CATEGORY_TYPE_TAGGED}
           mobileShowingArea={mobileShowingArea}
           handleProjectChangeFromRight={handleProjectChangeFromRight}
         />

@@ -1,9 +1,10 @@
-import React, {useRef} from "react";
+import React, {useCallback, useRef, useMemo} from "react";
 import Overlay from "react-bootstrap/Overlay";
 import OverlayComp from "./OverlayComp";
 import styled from "styled-components";
-import {IoIosFiling, IoIosFolder, IoIosMore} from 'react-icons/io';
+import {IoIosFiling, IoIosFolder, IoIosMore, IoIosGrid} from 'react-icons/io';
 import {TInput, TSmallButton, VLine, OverlayItem} from "../common/style";
+import {CATEGORY_TYPE_INBOX, CATEGORY_TYPE_TAGGED} from "../common/constants";
 
 const ListRow = styled.div`
   padding: 0 1rem;
@@ -47,6 +48,13 @@ const LeftListActions = styled.div`
   flex: none;
 `;
 
+const CategoryIconDiv = styled.div`
+  margin-right: 0.3rem;
+  display: flex;
+  align-items: center;
+  padding-top: 1px;
+`;
+
 const OverlayContainer = styled.div`
   background-color: ${window.ttnoteThemeLight.bgColorGrey};
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
@@ -61,7 +69,7 @@ const OverlayContainer = styled.div`
 function LeftList(props) {
   const {
     list,
-    categoryId,
+    active,
     isMobileView,
     showOverlayId,
     setShowOverlayId,
@@ -70,9 +78,20 @@ function LeftList(props) {
     categoryMethods,
   } = props;
   const moreButtonRef = useRef(null);
-  const active = list.id === categoryId;
-  const moreCellShouldShow = list.id !== -1 && leftListEditId !== list.id;
+  const moreCellShouldShow = ![CATEGORY_TYPE_INBOX, CATEGORY_TYPE_TAGGED].includes(list.id) && leftListEditId !== list.id;
   const atEditMode = leftListEditId === list.id;
+
+  const CategoryIcon = useCallback(() => {
+    switch (list.id) {
+      case CATEGORY_TYPE_INBOX:
+        return <CategoryIconDiv><IoIosFiling/></CategoryIconDiv>;
+      case CATEGORY_TYPE_TAGGED:
+        return <CategoryIconDiv><IoIosGrid/></CategoryIconDiv>;
+      default:
+        return <CategoryIconDiv><IoIosFolder/></CategoryIconDiv>;
+    }
+  }, [list.id]);
+
   return (
     <ListRow
       active={active}
@@ -97,10 +116,7 @@ function LeftList(props) {
           window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
         }}
       >
-        {list.id === -1 ?
-          <IoIosFiling style={{flex: 'none', marginRight: '0.3rem'}}/> :
-          <IoIosFolder style={{flex: 'none', marginRight: '0.3rem'}}/>
-        }
+        <CategoryIcon/>
         {atEditMode ?
           <EditRow>
             <TInput

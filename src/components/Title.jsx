@@ -108,6 +108,8 @@ function Title(props) {
   const moreButtonRef = useRef(null);
   const showOverlay = showMore.type === 'title' && showMore.id === title.id;
 
+  const stopOnBlurFlag = useRef(false);
+
   // let tomatoCount = 0;
   // (title.todoIds || []).forEach(todoId => {
   //  const tSize = todos[todoId].tomatoes ? todos[todoId].tomatoes.length : 0;
@@ -128,7 +130,7 @@ function Title(props) {
     }
   }, [handleTitleDeleteWithConfirm, title.id, title.name, todoSize]);
 
-  const handleTitleNameOnBlur = useCallback((e, options={}) => {
+  const handleTitleNameOnEnterPress = useCallback((e, options={}) => {
     const value = e.currentTarget.value;
     if (value) {
       if (title.id > 0) {
@@ -148,7 +150,14 @@ function Title(props) {
         titleMethods.localDeleteTitle(title.id)
       }
     }
+    stopOnBlurFlag.current = false;
   }, [handleNewTodo, handleTitleDelete, title.id, title.name, titleMethods]);
+
+  const handleTitleNameOnBlur = useCallback((e, options = {newTodo: false}) => {
+    if (!stopOnBlurFlag.current) {
+      handleTitleNameOnEnterPress(e, options)
+    }
+  }, [handleTitleNameOnEnterPress]);
 
   return useMemo(() => (
     <TitleContainer>
@@ -167,7 +176,9 @@ function Title(props) {
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
-                handleTitleNameOnBlur(e, {createNewTodo: true})
+                stopOnBlurFlag.current = true;
+                e.currentTarget.blur();
+                handleTitleNameOnEnterPress(e, {createNewTodo: true})
               }
             }}
           />

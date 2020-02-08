@@ -99,8 +99,8 @@ const PlayCell = styled(IoIosPlayCircle)`
 
 const starEffect = keyframes`
   0% {transform: scale(1) }
-  30% {transform: scale(1.6) translate(0, -5px)}
-  80% {transform: scale(0.8) translate(0, 2px)}
+  10% {transform: scale(1.6) translate(0, -5px)}
+  90% {transform: scale(0.8) translate(0, 2px)}
   100% {transform: scale(1) translate(0, 0)}
 `;
 
@@ -151,6 +151,7 @@ function Todo(props) {
   const {
     deleteTomato,
     handleTodoDeleteWithConfirm,
+    handleStarRemove,
     updateTodo,
     createTodo,
     cancelNewTodo,
@@ -197,7 +198,10 @@ function Todo(props) {
     }).catch((res) => {
       setTodayTodo(prevTodayTodo)
     });
-  }, [todayTodo, todo.id]);
+
+    // star从有到无的时候，如果在`今日任务`界面下，要把那个todo移除
+    if (prevTodayTodo) handleStarRemove(todo.id, titleId);
+  }, [handleStarRemove, titleId, todayTodo, todo.id]);
 
   useEffect(() => {
     if (firstMount.current) {

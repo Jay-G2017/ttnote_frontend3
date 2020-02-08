@@ -1,7 +1,15 @@
 import {useCallback, useEffect, useState, useRef} from "react";
 import {cloneDeep} from 'lodash';
+import {CATEGORY_TYPE_INBOX} from "../common/constants";
 
-function useCategory(categoryId) {
+export const gotoInbox = () => {
+  const searchParams = window.ttnote.searchObject();
+  delete searchParams.projectId;
+  searchParams.categoryId = CATEGORY_TYPE_INBOX;
+  window.ttnote.goto('/note' + window.ttnote.objectToUrl(searchParams));
+};
+
+function useCategory() {
   const [categories, setCategories] = useState([]);
   const categoriesInitial = useRef([]);
 
@@ -15,20 +23,12 @@ function useCategory(categoryId) {
       })
   }, []);
 
-  const gotoInbox = useCallback(() => {
-    const searchParams = window.ttnote.searchObject();
-    delete searchParams.projectId;
-    searchParams.categoryId = -1;
-    window.ttnote.goto('/note' + window.ttnote.objectToUrl(searchParams));
-  }, []);
 
-  const defaultGoto = useCallback(() => {
-    const searchParams = window.ttnote.searchObject();
-    const categoryId = parseInt(searchParams.categoryId) || -1;
-    if (!categoryId) {
-      gotoInbox();
-    }
-  }, [gotoInbox]);
+  // const defaultGoto = useCallback(() => {
+  //   if (!categoryId) {
+  //     gotoInbox();
+  //   }
+  // }, [categoryId, gotoInbox]);
 
   // useEffect(() => {
   //   let didCancel = false;
@@ -40,8 +40,8 @@ function useCategory(categoryId) {
   // }, [categoryId, fetchCategories]);
 
   useEffect(() => {
-    fetchCategories(defaultGoto);
-  }, [fetchCategories, defaultGoto]);
+    fetchCategories();
+  }, [fetchCategories]);
 
   const handleCategoryNameOnChange = useCallback((id, value) => {
     const newCategories = cloneDeep(categories);
@@ -117,7 +117,7 @@ function useCategory(categoryId) {
         setCategories(categoriesInitial.current);
       })
 
-  }, [fetchCategories, gotoInbox]);
+  }, [fetchCategories]);
 
   const handleCategoryDelete = useCallback((id) => {
     // const newCategories = cloneDeep(categories);

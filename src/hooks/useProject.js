@@ -1,4 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
+import {PROJECT_TYPE_TODAY} from "../common/constants";
 
 function useProject(projectId) {
   const [project, setProject] = useState({todos: {}, titles: {}, todoIds: [], titleIds: []});
@@ -7,8 +8,11 @@ function useProject(projectId) {
   const [todayTomatoSize, setTodayTomatoSize] = useState(0);
   const projectInitial = useRef({todos: {}, titles: {}, todoIds: [], titleIds: []});
 
+  const isTaggedProject = [PROJECT_TYPE_TODAY].includes(projectId); // 今日任务还有以后的被标记的任务都是属于这种场景;
+
   const fetchProject = useCallback((afterSuccessCallback) => {
     const url = window.ttnote.baseUrl + '/projects/' + projectId + '?v1=true';
+    // const url = 'http://localhost:3004/projects/' + projectId + '?v1=true';
     window.ttnote.fetch(url)
       .then(res => {
         setProject(res);
@@ -145,17 +149,19 @@ function useProject(projectId) {
   }, [fetchProject, projectId]);
 
   const handleNewTodo = useCallback((titleId) => {
-    setProject(data => {
-      const id = -Date.now();
-      if (titleId) {
-        data.titles[titleId].todoIds.push(id);
-      } else {
-        data.todoIds.push(id);
-      }
-      data.todos[id] = {id};
-      return {...data};
-    });
-  }, []);
+    if (!isTaggedProject) {
+      setProject(data => {
+        const id = -Date.now();
+        if (titleId) {
+          data.titles[titleId].todoIds.push(id);
+        } else {
+          data.todoIds.push(id);
+        }
+        data.todos[id] = {id};
+        return {...data};
+      });
+    }
+  }, [isTaggedProject]);
 
   const handleNewTitle = useCallback(() => {
     setProject(data => {
@@ -213,12 +219,16 @@ function useProject(projectId) {
   //   stopEventFlag.current = false;
   // };
 
-  const handleTodoDeleteWithConfirm = useCallback((todoId, titleId) => {
+  const removeTodo = useCallback((todoId, titleId, options = {fromTaggedProject: false}) => {
     setProject(data => {
       let index;
       if (titleId) {
         index = data.titles[titleId].todoIds.indexOf(todoId);
         data.titles[titleId].todoIds.splice(index, 1);
+        if (options.fromTaggedProject && data.titles[titleId].todoIds.length === 0) {
+          const titleIndex = data.titleIds.indexOf(titleId);
+          data.titleIds.splice(titleIndex, 1);
+        }
       } else {
         index = data.todoIds.indexOf(todoId);
         data.todoIds.splice(index, 1);
@@ -226,8 +236,18 @@ function useProject(projectId) {
       delete data.todos[todoId];
       return {...data};
     });
-    deleteTodo(todoId);
   }, []);
+
+  const handleStarRemove = useCallback((todoId, titleId) => {
+    if (isTaggedProject) {
+      removeTodo(todoId, titleId, {fromTaggedProject: true});
+    }
+  }, [isTaggedProject, removeTodo]);
+
+  const handleTodoDeleteWithConfirm = useCallback((todoId, titleId) => {
+    removeTodo(todoId, titleId);
+    deleteTodo(todoId);
+  }, [removeTodo]);
 
   // const handleTodoDelete = useCallback((todoId, titleId) => {
   //   // 如果todo下面有蕃茄，就不删，返回原值
@@ -496,6 +516,7 @@ function useProject(projectId) {
       createTomato,
       deleteTomato,
       handleTodoDeleteWithConfirm,
+      handleStarRemove,
       updateTodo,
       createTodo,
       cancelNewTodo,
