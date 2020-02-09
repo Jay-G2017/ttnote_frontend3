@@ -83,9 +83,9 @@ const NewProjectCell = styled.div`
   display: flex;
   align-items: center;
   color: ${props => props.disabled ?
-  window.ttnoteThemeLight.btnDefaultDisabledFontColor :
+  window.ttnoteThemeLight.bgColorGreyDisabled :
   window.ttnoteThemeLight.textColorLight};
-  cursor: pointer;
+  cursor: ${props => props.disabled ? 'default' : 'pointer'};
 `;
 
 const IconStyled = styled.div`
@@ -105,6 +105,7 @@ function Middle(props) {
     isMobileView,
     mobileShowingArea,
     projects,
+    isTaggedCategory,
     projectCreating,
     handleNewProject,
     handleProjectDelete,
@@ -116,8 +117,7 @@ function Middle(props) {
 
   const searchObject = window.ttnote.searchObject();
   // const enterFrom = searchObject.enterFrom || 'left';
-  const activeProjectId = parseInt(searchObject.projectId);
-  const categoryId = parseInt(searchObject.categoryId) || -1;
+  const activeProjectId = searchObject.projectId;
 
   return (
     useMemo(() => (
@@ -146,7 +146,8 @@ function Middle(props) {
           {projects.map(project => <ProjectList
             key={project.id}
             project={project}
-            activeProjectId={activeProjectId}
+            active={project.id.toString() === activeProjectId}
+            moreActionShown={!isTaggedCategory}
             isMobileView={isMobileView}
             showOverlayId={showOverlayId}
             setShowOverlayId={setShowOverlayId}
@@ -155,9 +156,10 @@ function Middle(props) {
         </MiddleBody>
         <MiddleFooter className={'backdrop-blur-middle'}>
           <NewProjectCell
+            disabled={isTaggedCategory}
             onClick={() => {
               if (!projectCreating)
-                handleNewProject(categoryId)
+                handleNewProject()
             }}
           >
             <IconStyled>
@@ -167,7 +169,7 @@ function Middle(props) {
           </NewProjectCell>
         </MiddleFooter>
       </MiddleContainer>
-    ), [activeProjectId, categoryId, handleNewProject, handleProjectDelete, iconStyle, isMobileView, projectCreating, projects, showOverlayId, visible])
+    ), [activeProjectId, handleNewProject, handleProjectDelete, iconStyle, isMobileView, isTaggedCategory, projectCreating, projects, showOverlayId, visible])
   )
 }
 

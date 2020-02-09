@@ -17,7 +17,6 @@ const HeaderRow = styled.div`
     position: absolute;
     //width: calc(60% - 1px);
   }
-  //background-color: ${window.ttnoteThemeLight.bgColorDefaultRgba};
   
   display: flex;
   justify-content: space-between;
@@ -99,10 +98,10 @@ function RightHeader(props) {
   const {isMobileView, createTomato, todayTomatoSize} = props;
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
 
-  const handleTomatoComplete = useCallback((todoId) => {
+  const handleTomatoComplete = useCallback((todoId, minutes) => {
     document.title = "蕃茄时光 | Tomato Time";
     window.ttnoteSound.play('complete', false);
-    createTomato(todoId);
+    createTomato(todoId, minutes);
     if (window.ttnote.userSetting.autoRest) {
       tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.userSetting.shortRestMinutes}});
     } else {
@@ -118,11 +117,11 @@ function RightHeader(props) {
 
   const handleComplete = useCallback(() => {
     if (tomatoState.id) {
-      handleTomatoComplete(tomatoState.id)
+      handleTomatoComplete(tomatoState.id, tomatoState.minutes)
     } else {
       handleRestComplete()
     }
-  }, [handleRestComplete, handleTomatoComplete, tomatoState.id]);
+  }, [handleRestComplete, handleTomatoComplete, tomatoState.id, tomatoState.minutes]);
 
   return useMemo(() => {
     return (

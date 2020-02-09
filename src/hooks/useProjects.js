@@ -1,22 +1,23 @@
 import {useCallback, useEffect, useState} from "react";
 import {cloneDeep} from 'lodash';
+import {CATEGORY_TYPE_INBOX} from "../common/constants";
 
 function useProjects(categoryId) {
   const [projects, setProjects] = useState([]);
   const [projectCreating, setProjectCreating] = useState(false);
 
   const fetchProjects = useCallback((categoryId, afterSuccessCallback) => {
-    let url;
-    if (categoryId === -1) {
-      url = window.ttnote.baseUrl + `/projects`;
-    } else {
-      url = window.ttnote.baseUrl + `/categories/${categoryId}/projects`;
-    }
-    window.ttnote.fetch(url)
-      .then(res => {
-        setProjects(res);
-        if (afterSuccessCallback) afterSuccessCallback(res);
-      })
+      let url;
+      if (categoryId === CATEGORY_TYPE_INBOX) {
+        url = window.ttnote.baseUrl + `/projects`;
+      } else {
+        url = window.ttnote.baseUrl + `/categories/${categoryId}/projects`;
+      }
+      window.ttnote.fetch(url)
+        .then(res => {
+          setProjects(res);
+          if (afterSuccessCallback) afterSuccessCallback(res);
+        })
   }, []);
 
   const defaultGotoFirstProject = useCallback((res) => {
@@ -32,7 +33,7 @@ function useProjects(categoryId) {
     fetchProjects(categoryId, defaultGotoFirstProject);
   }, [categoryId, fetchProjects, defaultGotoFirstProject]);
 
-  const handleNewProject = useCallback((categoryId) => {
+  const handleNewProject = useCallback(() => {
     setProjectCreating(true);
     const url = window.ttnote.baseUrl + '/categories/' + categoryId + '/projects';
     window.ttnote.fetch(url, {
@@ -51,7 +52,7 @@ function useProjects(categoryId) {
         console.log('create failed');
       })
 
-  }, [projects]);
+  }, [categoryId, projects]);
 
   const defaultGotoUpwards = useCallback((res, projectId) => {
     const activeProjectId = window.ttnote.searchObject().projectId;
@@ -89,12 +90,25 @@ function useProjects(categoryId) {
     setProjects(newProjects);
   }, [projects]);
 
+  const syncProject = useCallback((projectId) => {
+    const url = window.ttnote.baseUrl + `/projects/${projectId}?simple=true`;
+    window.ttnote.fetch(url)
+      .then(_project => {
+        setProjects(newProjects => {
+          const targetProject = newProjects.find(project => project.id.toString() === projectId);
+          Object.assign(targetProject, _project);
+          return [...newProjects]
+        });
+      })
+  }, []);
+
   return {
     projects,
     projectCreating,
     handleNewProject,
     handleProjectDelete,
     handleProjectChangeFromRight,
+    syncProject,
   };
 }
 

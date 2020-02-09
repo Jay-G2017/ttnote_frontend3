@@ -98,10 +98,7 @@ code {
 }
 
 .backdrop-blur-right {
-  background-color: #EDEDED;
-}
-.backdrop-blur-right-footer {
-  background-color: #F7F7F7;
+  background-color: hsl(0,0%,95%); /* bgColorPrimary */
 }
 .backdrop-blur-middle {
   background-color: #35322F;
@@ -112,12 +109,7 @@ code {
 
 @supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
   .backdrop-blur-right {
-    background-color: rgba(237,237,237,0.9);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-  }
-  .backdrop-blur-right-footer {
-    background-color: rgba(247,247,247,0.9);
+    background-color: hsla(0,0%,95%,0.9); /* bgColorPrimaryRgba */
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
   }
@@ -131,4 +123,11 @@ code {
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
   }
+}
+
+.ant-tooltip-inner {
+  padding: 0.2rem 0.7rem !important;
+  display: flex;
+  align-items: center;
+  background-color: #2A2723 !important; /*bgColorDark */
 }

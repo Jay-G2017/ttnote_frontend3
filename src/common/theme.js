@@ -7,6 +7,7 @@ const ttnoteThemeLight = {
   colorPrimary: '#07C160',
   colorSecondary: '#586B93',
   colorWarn: colorWarn,
+  colorDanger: '#DC3545',
 
   // active mask
   activeMaskWhite: 'rgba(0,0,0,.05)',
@@ -17,11 +18,10 @@ const ttnoteThemeLight = {
   linkColorDefault: '#576B95',
 
   // background
-  bgColorDefault: '#EDEDED', // hsl 0 0 93
-  bgColorDefaultRgba: 'rgba(237,237,237,0.9)', // hsl 0 0 93
-  bgColorPrimary: '#F7F7F7', // hsl 0 0 97
-  bgColorPrimaryRgba: 'rgba(247,247,247,0.9)', // hsl 0 0 97
-  bgColorActive: '#ECECEC',
+  bgColorWhiteDarker: 'hsl(0,0%,95%)',
+  bgColorPrimaryDarker: 'hsl(0,0%,90%)',
+  bgColorPrimary: 'hsl(0,0%,95%)',
+  bgColorPrimaryRgba: 'hsla(0,0%,95%,0.9)', // hsl 0 0 97
   bgColorDark: '#2A2723',
   bgColorDarkRgba: 'rgba(42,39,35,0.9)',
   bgColorDarkLighter: '#4F5054',
@@ -31,6 +31,7 @@ const ttnoteThemeLight = {
   bgColorGrey: '#35322F',
   bgColorGreyRgba: 'rgba(53,50,47,0.9)',
   bgColorGreyHover: '#313E49',
+  bgColorGreyDisabled: 'hsl(30,6%,30%)',
   bgColorGreyActive: '#294372',
   bgColorGreyActive2: '#1C57C3',
 

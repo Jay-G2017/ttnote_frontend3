@@ -101,15 +101,15 @@ const MoreCell = styled.div`
 function ProjectList(props) {
   const {
     project,
-    activeProjectId,
+    active,
     isMobileView,
+    moreActionShown,
     showOverlayId,
     setShowOverlayId,
     handleProjectDelete,
   } = props;
   const moreButtonRef = useRef(null);
-  const fromNow = dayjs(project.updatedAt).fromNow();
-  const active = project.id === activeProjectId;
+  const fromNow = moreActionShown ? dayjs(project.updatedAt).fromNow() : '今天';
   return (
     <ListRow
       className={'middleList'}
@@ -147,6 +147,7 @@ function ProjectList(props) {
               </span>
             <span>{project.tomatoesCount}</span>
           </TomatoCountCell>
+          {moreActionShown &&
           <MoreCell
             ref={moreButtonRef}
             onClick={(e) => {
@@ -183,6 +184,7 @@ function ProjectList(props) {
               }
             </Overlay>
           </MoreCell>
+          }
         </ProjectInfoRow>
       </Inner>
     </ListRow>
