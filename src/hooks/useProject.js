@@ -98,11 +98,11 @@ function useProject(projectId) {
   //   // new todo
   // };
 
-  const createTomato = useCallback((todoId, seconds) => {
+  const createTomato = useCallback((todoId, minutes, afterSuccessCallback) => {
     const url = window.ttnote.baseUrl + '/todos/' + todoId + '/tomatoes';
     window.ttnote.fetch(url, {
       method: 'post',
-      body: JSON.stringify({minutes: window.ttnote.userSetting.tomatoMinutes})
+      body: JSON.stringify({minutes})
     }).then(res => {
       // fetchProject();
       setProject(data => {
@@ -116,11 +116,13 @@ function useProject(projectId) {
         return [...keys];
       });
       // update today tomato size
-      fetchTodayTomatoSize()
+      fetchTodayTomatoSize();
+      // 更新中间区域的蕃茄数
+      if (afterSuccessCallback) afterSuccessCallback()
     })
   }, [fetchTodayTomatoSize]);
 
-  const deleteTomato = useCallback((todoId, tomatoId) => {
+  const deleteTomato = useCallback((todoId, tomatoId, afterSuccessCallback) => {
     const url = window.ttnote.baseUrl + '/tomatoes/' + tomatoId;
     window.ttnote.fetch(url, {
       method: 'DELETE'
@@ -132,7 +134,9 @@ function useProject(projectId) {
           return {...data}
         });
         // update today tomato size
-        fetchTodayTomatoSize()
+        fetchTodayTomatoSize();
+        // 更新中间区域的蕃茄数
+        if (afterSuccessCallback) afterSuccessCallback()
       })
 
   }, [fetchTodayTomatoSize]);
@@ -238,15 +242,16 @@ function useProject(projectId) {
     });
   }, []);
 
-  const handleStarRemove = useCallback((todoId, titleId) => {
+  const handleStarRemove = useCallback((todoId, titleId, callback) => {
     if (isTaggedProject) {
       removeTodo(todoId, titleId, {fromTaggedProject: true});
+      if (callback) callback();
     }
   }, [isTaggedProject, removeTodo]);
 
-  const handleTodoDeleteWithConfirm = useCallback((todoId, titleId) => {
+  const handleTodoDeleteWithConfirm = useCallback((todoId, titleId, callback) => {
     removeTodo(todoId, titleId);
-    deleteTodo(todoId);
+    deleteTodo(todoId, callback);
   }, [removeTodo]);
 
   // const handleTodoDelete = useCallback((todoId, titleId) => {
@@ -262,14 +267,14 @@ function useProject(projectId) {
   //   }
   // }, [todos, handleTodoDeleteWithConfirm]);
 
-  const handleTitleDeleteWithConfirm = useCallback((titleId) => {
+  const handleTitleDeleteWithConfirm = useCallback((titleId, callback) => {
     setProject(data => {
       const index = data.titleIds.indexOf(titleId);
       data.titleIds.splice(index, 1);
       delete data.titles[titleId];
       return {...data};
     });
-    deleteTitle(titleId);
+    deleteTitle(titleId, callback);
   }, []);
 
   // const handleTitleDelete = (titleId) => {
@@ -472,23 +477,25 @@ function useProject(projectId) {
       })
   }, []);
 
-  const deleteTodo = (todoId) => {
+  const deleteTodo = (todoId, callback) => {
     const url = window.ttnote.baseUrl + '/todos/' + todoId;
     window.ttnote.fetch(url, {
       method: 'DELETE'
     })
       .then(res => {
-        console.log(res)
+        console.log(res);
+        if (callback) callback();
       })
   };
 
-  const deleteTitle = (titleId) => {
+  const deleteTitle = (titleId, callback) => {
     const url = window.ttnote.baseUrl + '/titles/' + titleId;
     window.ttnote.fetch(url, {
       method: 'DELETE'
     })
       .then(res => {
-        console.log(res)
+        console.log(res);
+        if (callback) callback();
       })
   };
 

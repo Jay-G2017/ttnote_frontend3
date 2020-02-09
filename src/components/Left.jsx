@@ -2,7 +2,7 @@ import React, {useCallback, useMemo, useState} from "react";
 import styled from "styled-components";
 import {IoIosAddCircle, IoIosSettings} from 'react-icons/io';
 import useCategory from "../hooks/useCategory";
-import {HLine, VLine} from "../common/style";
+import {VLine} from "../common/style";
 import {Modal} from "react-bootstrap";
 import Setting from "./Setting";
 import LeftList from "./LeftList";

@@ -30,6 +30,7 @@ function Note() {
     handleNewProject,
     handleProjectDelete,
     handleProjectChangeFromRight,
+    syncProject,
   } = useProjects(categoryId);
 
   useEffect(() => {
@@ -100,6 +101,7 @@ function Note() {
           isTaggedProject={categoryId === CATEGORY_TYPE_TAGGED}
           mobileShowingArea={mobileShowingArea}
           handleProjectChangeFromRight={handleProjectChangeFromRight}
+          syncMiddleZoneProject={syncProject}
         />
       </TomatoContext.Provider>
     </NoteContainer>

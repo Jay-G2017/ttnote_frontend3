@@ -257,6 +257,7 @@ const RightBody = (props) => {
               setTodoExpandedKeys={setTodoExpandedKeys}
               todoMethods={todoMethods}
               handleNewTodo={handleNewTodo}
+              handleProjectChangeFromRight={handleProjectChangeFromRight}
             />
           ))}
         </TodoGroupRow>

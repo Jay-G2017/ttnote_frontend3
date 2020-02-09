@@ -90,12 +90,25 @@ function useProjects(categoryId) {
     setProjects(newProjects);
   }, [projects]);
 
+  const syncProject = useCallback((projectId) => {
+    const url = window.ttnote.baseUrl + `/projects/${projectId}?simple=true`;
+    window.ttnote.fetch(url)
+      .then(_project => {
+        setProjects(newProjects => {
+          const targetProject = newProjects.find(project => project.id.toString() === projectId);
+          Object.assign(targetProject, _project);
+          return [...newProjects]
+        });
+      })
+  }, []);
+
   return {
     projects,
     projectCreating,
     handleNewProject,
     handleProjectDelete,
     handleProjectChangeFromRight,
+    syncProject,
   };
 }
 

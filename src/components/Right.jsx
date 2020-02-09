@@ -3,6 +3,7 @@ import styled from "styled-components";
 import useProject from "../hooks/useProject";
 import RightHeader from "./RightHeader";
 import RightBody from "./RightBody";
+import {SyncMiddleZoneProjectContext} from "../context/syncMiddleZoneProjectContext";
 
 const RightContainer = styled.div`
   flex: 3.5;
@@ -31,6 +32,7 @@ function Right(props) {
     mobileShowingArea,
     isTaggedProject, // 这种特殊的项目name, desc都是不能编辑的。
     handleProjectChangeFromRight,
+    syncMiddleZoneProject,
   } = props;
   const visible = (isMobileView && mobileShowingArea === 'right') || !isMobileView;
   const projectId = window.ttnote.searchObject().projectId;
@@ -49,6 +51,8 @@ function Right(props) {
     titleMethods,
   } = useProject(projectId);
 
+  const $syncMiddleZoneProject = useCallback(() => syncMiddleZoneProject(projectId), [projectId, syncMiddleZoneProject]);
+
   // const newMode = Object.keys(todos).some(id => id < 0) || titleIds.some(id => id < 0);
 
   const renderRightBody = useCallback(() => {
@@ -59,20 +63,22 @@ function Right(props) {
         )
       } else {
         return (
-          <RightBody
-            project={project}
-            isTaggedProject={isTaggedProject}
-            projectMethods={projectMethods}
-            handleProjectChangeFromRight={handleProjectChangeFromRight}
-            todoExpandedKeys={todoExpandedKeys}
-            setTodoExpandedKeys={setTodoExpandedKeys}
-            todoMethods={todoMethods}
-            showMore={showMore}
-            setShowMore={setShowMore}
-            titleMethods={titleMethods}
-            handleNewTodo={handleNewTodo}
-            handleNewTitle={handleNewTitle}
-          />
+          <SyncMiddleZoneProjectContext.Provider value={$syncMiddleZoneProject}>
+            <RightBody
+              project={project}
+              isTaggedProject={isTaggedProject}
+              projectMethods={projectMethods}
+              handleProjectChangeFromRight={handleProjectChangeFromRight}
+              todoExpandedKeys={todoExpandedKeys}
+              setTodoExpandedKeys={setTodoExpandedKeys}
+              todoMethods={todoMethods}
+              showMore={showMore}
+              setShowMore={setShowMore}
+              titleMethods={titleMethods}
+              handleNewTodo={handleNewTodo}
+              handleNewTitle={handleNewTitle}
+            />
+          </SyncMiddleZoneProjectContext.Provider>
         )
       }
     } else {
@@ -80,7 +86,7 @@ function Right(props) {
         <NoProjectDiv>无项目</NoProjectDiv>
       )
     }
-  }, [handleNewTitle, handleNewTodo, handleProjectChangeFromRight, isLoading, isTaggedProject, project, projectId, projectMethods, setTodoExpandedKeys, showMore, titleMethods, todoExpandedKeys, todoMethods]);
+  }, [$syncMiddleZoneProject, handleNewTitle, handleNewTodo, handleProjectChangeFromRight, isLoading, isTaggedProject, project, projectId, projectMethods, setTodoExpandedKeys, showMore, titleMethods, todoExpandedKeys, todoMethods]);
 
   return (
     useMemo(() => (
@@ -92,12 +98,12 @@ function Right(props) {
         }}>
         <RightHeader
           isMobileView={isMobileView}
-          createTomato={todoMethods.createTomato}
+          createTomato={(todoId, minutes) => todoMethods.createTomato(todoId, minutes, $syncMiddleZoneProject)}
           todayTomatoSize={todayTomatoSize}
         />
         {renderRightBody()}
       </RightContainer>
-    ), [isMobileView, renderRightBody, showMore.id, todayTomatoSize, todoMethods.createTomato, visible])
+    ), [$syncMiddleZoneProject, isMobileView, renderRightBody, showMore.id, todayTomatoSize, todoMethods, visible])
   )
 }
 

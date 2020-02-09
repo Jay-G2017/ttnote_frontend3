@@ -1,10 +1,11 @@
-import React, {useCallback, useMemo, useRef, useState} from "react";
+import React, {useCallback, useContext, useMemo, useRef, useState} from "react";
 import styled from "styled-components";
 import Todo from "./Todo";
 import {PaddingRow, TTextArea} from '../common/style';
 import {IoIosMore} from 'react-icons/io';
 import Overlay from "react-bootstrap/Overlay";
 import OverlayComp from "./OverlayComp";
+import {SyncMiddleZoneProjectContext} from "../context/syncMiddleZoneProjectContext";
 
 const TitleContainer = styled.div`
   //background-color: #fff;
@@ -47,9 +48,9 @@ const NameCell = styled.div`
   font-weight: 700;
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
   margin-right: 1rem;
-  :hover {
-    background-color: ${window.ttnoteThemeLight.bgColorPrimaryDarker};
-  }
+  // :hover {
+  //   background-color: ${window.ttnoteThemeLight.bgColorPrimaryDarker};
+  // }
 `;
 
 // const CountCell = styled(TBadge)`
@@ -104,6 +105,7 @@ function Title(props) {
   const {handleTitleDeleteWithConfirm} = titleMethods;
 
   const [titleName, setTitleName] = useState(title.name);
+  const syncMiddleZoneProject = useContext(SyncMiddleZoneProjectContext);
 
   const moreButtonRef = useRef(null);
   const showOverlay = showMore.type === 'title' && showMore.id === title.id;
@@ -121,14 +123,14 @@ function Title(props) {
   const handleTitleDelete = useCallback(() => {
     if (todoSize > 0) {
       if (window.confirm('这会删除当前组下的所有任务，确定要删除吗？')) {
-        handleTitleDeleteWithConfirm(title.id)
+        handleTitleDeleteWithConfirm(title.id, syncMiddleZoneProject)
       } else {
         setTitleName(title.name)
       }
     } else {
       handleTitleDeleteWithConfirm(title.id)
     }
-  }, [handleTitleDeleteWithConfirm, title.id, title.name, todoSize]);
+  }, [handleTitleDeleteWithConfirm, syncMiddleZoneProject, title.id, title.name, todoSize]);
 
   const handleTitleNameOnEnterPress = useCallback((e, options={}) => {
     const value = e.currentTarget.value;
@@ -163,7 +165,16 @@ function Title(props) {
     <TitleContainer>
       <TitleRow>
         <VerticalLine/>
-        <NameCell>
+        <NameCell
+          // 用js来控制背景而不是用css:hover是因为这里需要控制它的时机，
+          // 下文中有用到，当按enter键后，它新建一个todo，这时这个背景色需要让它消失。
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = window.ttnoteThemeLight.bgColorPrimaryDarker;
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.backgroundColor = 'inherit';
+          }}
+        >
           <TTextArea
             value={titleName}
             autoFocus={title.id < 0}
@@ -178,6 +189,7 @@ function Title(props) {
                 e.preventDefault();
                 stopOnBlurFlag.current = true;
                 e.currentTarget.blur();
+                e.currentTarget.parentNode.style.backgroundColor = 'inherit';
                 handleTitleNameOnEnterPress(e, {createNewTodo: true})
               }
             }}
@@ -232,7 +244,7 @@ function Title(props) {
           />)}
       </TodoBoard>
     </TitleContainer>
-  ), [handleNewTodo, handleTitleDelete, handleTitleNameOnBlur, playStatus, props.setTodoExpandedKeys, props.todoExpandedKeys, setPlayStatus, setShowMore, showOverlay, title.id, title.todoIds, titleName, todoMethods, todos]);
+  ), [handleNewTodo, handleTitleDelete, handleTitleNameOnBlur, handleTitleNameOnEnterPress, playStatus, props.setTodoExpandedKeys, props.todoExpandedKeys, setPlayStatus, setShowMore, showOverlay, title.id, title.todoIds, titleName, todoMethods, todos]);
 }
 
 export default Title;

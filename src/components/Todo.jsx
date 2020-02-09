@@ -10,6 +10,7 @@ import {initSound} from "../utils/helper";
 import CountdownCircle from "./CountdownCircle";
 import {Tooltip} from 'antd';
 import 'antd/lib/tooltip/style/index.css';
+import {SyncMiddleZoneProjectContext} from "../context/syncMiddleZoneProjectContext";
 
 const TodoRowGroup = styled(MarginRow)`
   background-color: #fff;
@@ -58,9 +59,6 @@ const NameCell = styled.div`
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
   margin-right: 1rem;
   color: ${props => props.done ? window.ttnoteThemeLight.textColorDesc : 'inherit'};
-  :hover {
-    background-color: ${window.ttnoteThemeLight.bgColorWhiteDarker};
-  }
 `;
 
 const TomatoBadge = styled(Badge)`
@@ -164,6 +162,8 @@ function Todo(props) {
   // const [collapse, setCollapse] = useState(true);
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
 
+  const syncMiddleZoneProject = useContext(SyncMiddleZoneProjectContext);
+
   const stopOnBlurFlag = useRef(false);
 
   const tomatoes = todo.tomatoes || [];
@@ -200,8 +200,8 @@ function Todo(props) {
     });
 
     // star从有到无的时候，如果在`今日任务`界面下，要把那个todo移除
-    if (prevTodayTodo) handleStarRemove(todo.id, titleId);
-  }, [handleStarRemove, titleId, todayTodo, todo.id]);
+    if (prevTodayTodo) handleStarRemove(todo.id, titleId, syncMiddleZoneProject);
+  }, [handleStarRemove, syncMiddleZoneProject, titleId, todayTodo, todo.id]);
 
   useEffect(() => {
     if (firstMount.current) {
@@ -230,7 +230,7 @@ function Todo(props) {
   const handleTodoDelete = useCallback((todoId, titleId) => {
     if (tomatoSize > 0) {
       if (window.confirm('这会删除当前任务下的所有蕃茄，确定要删除吗？')) {
-        handleTodoDeleteWithConfirm(todoId, titleId)
+        handleTodoDeleteWithConfirm(todoId, titleId, syncMiddleZoneProject)
       } else {
         setTodoName(todo.name)
       }
@@ -238,7 +238,7 @@ function Todo(props) {
       handleTodoDeleteWithConfirm(todoId, titleId)
     }
 
-  }, [tomatoSize, handleTodoDeleteWithConfirm, todo.name]);
+  }, [tomatoSize, handleTodoDeleteWithConfirm, syncMiddleZoneProject, todo.name]);
 
   const handleTodoNameOnEnterPress = useCallback((e, options = {}) => {
     const value = e.currentTarget.value;
@@ -310,7 +310,15 @@ function Todo(props) {
               }}
             />
           </CheckCell>
-          <NameCell done={done}>
+          <NameCell
+            done={done}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = window.ttnoteThemeLight.bgColorWhiteDarker;
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.backgroundColor = 'inherit';
+            }}
+          >
             <TTextArea
               value={todoName}
               autoFocus={todo.id < 0}
@@ -325,6 +333,7 @@ function Todo(props) {
                   e.preventDefault();
                   stopOnBlurFlag.current = true;
                   e.currentTarget.blur();
+                  e.currentTarget.parentNode.style.backgroundColor = 'inherit';
                   handleTodoNameOnEnterPress(e, {newTodo: true})
                 }
               }}
