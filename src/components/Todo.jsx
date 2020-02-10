@@ -362,7 +362,10 @@ function Todo(props) {
           </PlayAndStatus>
         </TodoRow>
         <TodoInfoRow>
-          <FlexRow style={{flex: 'none', width: '2rem'}}>
+          <FlexRow
+            style={{flex: 'none', width: '2rem', cursor: 'pointer'}}
+            onClick={handleTodoExpand}
+          >
             <TomatoBadge
               variant={'light'}
               visible={(tomatoSize > 0).toString()}
@@ -378,17 +381,12 @@ function Todo(props) {
               onClick={handleTodoExpand}
             />
           }
-          <Tooltip
-            title={todayTodo ? '取消今日任务' : '标记为今日任务'}
-            mouseEnterDelay={todayTodo ? 1.0 : 1}
-          >
-            <StarCell
-              id={`todayTodo${todo.id}`}
-              starred = {todayTodo.toString()}
-              disabled = {done}
-              onClick={handleStarClick}
-            />
-          </Tooltip>
+          <StarCell
+            id={`todayTodo${todo.id}`}
+            starred = {todayTodo.toString()}
+            disabled = {false}
+            onClick={handleStarClick}
+          />
           <Tooltip
             placement={'left'}
             trigger={'click'}
