@@ -121,11 +121,42 @@ function RightHeader(props) {
     } else {
       handleRestComplete()
     }
-  }, [handleRestComplete, handleTomatoComplete, tomatoState.id, tomatoState.minutes]);
+  }, [
+    handleRestComplete,
+    handleTomatoComplete,
+    tomatoState.id,
+    tomatoState.minutes]);
+
+  const TomatoPlayingRow = useCallback(() => (
+    <TimerRow>
+      <TomatoCountCell
+        tomatoOn={!!tomatoState.id}
+        onClick={() => {
+          if (tomatoState.id)
+            window.ttnote.goto('/note' + window.ttnote.objectToUrl(window.ttnote.currentTomatoUrl))
+        }}>
+        <CountdownTimer
+          key={tomatoState.id}
+          tomatoMinutes={tomatoState.minutes}
+          onComplete={handleComplete}
+        />
+      </TomatoCountCell>
+      {tomatoState.id ? <TomatoInfoCell>蕃茄中...</TomatoInfoCell> : <TomatoInfoCell>休息中...</TomatoInfoCell>}
+      <CancelCell
+        onClick={() => {
+          document.title = "蕃茄时光 | Tomato Time";
+          tomatoDispatch({type: 'cancel'});
+        }}
+      >
+        <IoIosClose/>
+      </CancelCell>
+    </TimerRow>
+  ), [handleComplete, tomatoDispatch, tomatoState.id, tomatoState.minutes]);
 
   return useMemo(() => {
     return (
       <HeaderRow className={'t-container backdrop-blur-right'}>
+        {/*mobile模式的返回按键*/}
         {isMobileView &&
         <BackCell>
           <IoIosArrowBack
@@ -139,29 +170,8 @@ function RightHeader(props) {
         </BackCell>
         }
         {tomatoState.isPlaying ?
-          <TimerRow>
-            <TomatoCountCell
-              tomatoOn={!!tomatoState.id}
-              onClick={() => {
-                if (tomatoState.id)
-                  window.ttnote.goto('/note' + window.ttnote.objectToUrl(window.ttnote.currentTomatoUrl))
-              }}>
-              <CountdownTimer
-                key={tomatoState.id}
-                tomatoMinutes={tomatoState.minutes}
-                onComplete={handleComplete}
-              />
-            </TomatoCountCell>
-            {tomatoState.id ? <TomatoInfoCell>蕃茄中...</TomatoInfoCell> : <TomatoInfoCell>休息中...</TomatoInfoCell>}
-            <CancelCell
-              onClick={() => {
-                document.title = "蕃茄时光 | Tomato Time";
-                tomatoDispatch({type: 'cancel'});
-              }}
-            >
-              <IoIosClose/>
-            </CancelCell>
-          </TimerRow> :
+          <TomatoPlayingRow/>
+           :
           <TimerActionRow>
             <ShortBreakCell
               onClick={() => {
@@ -192,7 +202,7 @@ function RightHeader(props) {
         }
       </HeaderRow>
     )
-  }, [isMobileView, tomatoState.isPlaying, tomatoState.id, tomatoState.minutes, handleComplete, todayTomatoSize, tomatoDispatch]);
+  }, [isMobileView, tomatoState.isPlaying, todayTomatoSize, tomatoDispatch]);
 }
 
 export default RightHeader;
