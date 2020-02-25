@@ -88,6 +88,10 @@ function Right(props) {
     }
   }, [$syncMiddleZoneProject, handleNewTitle, handleNewTodo, handleProjectChangeFromRight, isLoading, isTaggedProject, project, projectId, projectMethods, setTodoExpandedKeys, showMore, titleMethods, todoExpandedKeys, todoMethods]);
 
+  const handleCreateTomato = useCallback((todoId, minutes) => {
+    todoMethods.createTomato(todoId, minutes, $syncMiddleZoneProject)
+  }, [$syncMiddleZoneProject, todoMethods]);
+
   return (
     useMemo(() => (
       <RightContainer
@@ -98,12 +102,12 @@ function Right(props) {
         }}>
         <RightHeader
           isMobileView={isMobileView}
-          createTomato={(todoId, minutes) => todoMethods.createTomato(todoId, minutes, $syncMiddleZoneProject)}
+          createTomato={handleCreateTomato}
           todayTomatoSize={todayTomatoSize}
         />
         {renderRightBody()}
       </RightContainer>
-    ), [$syncMiddleZoneProject, isMobileView, renderRightBody, showMore.id, todayTomatoSize, todoMethods, visible])
+    ), [handleCreateTomato, isMobileView, renderRightBody, showMore.id, todayTomatoSize, visible])
   )
 }
 
