@@ -96,7 +96,8 @@ function useProjects(categoryId) {
       .then(_project => {
         setProjects(newProjects => {
           const targetProject = newProjects.find(project => project.id.toString() === projectId);
-          Object.assign(targetProject, _project);
+          if (targetProject)
+            Object.assign(targetProject, _project);
           return [...newProjects]
         });
       })
