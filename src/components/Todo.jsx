@@ -7,10 +7,10 @@ import Tomato from "./Tomato";
 import TCheckbox from "./TCheckbox";
 import {Badge} from "react-bootstrap";
 import {initSound} from "../utils/helper";
-import CountdownCircle from "./CountdownCircle";
 import {Tooltip} from 'antd';
 import 'antd/lib/tooltip/style/index.css';
 import {SyncMiddleZoneProjectContext} from "../context/syncMiddleZoneProjectContext";
+import TomatoProgressCircle from "./TomatoProgressCircle";
 
 const TodoRowGroup = styled(MarginRow)`
   background-color: #fff;
@@ -341,7 +341,7 @@ function Todo(props) {
           </NameCell>
           <PlayAndStatus>
             {tomatoState.id === todo.id ?
-              <CountdownCircle tomatoMinutes={tomatoState.minutes}/>
+              <TomatoProgressCircle/>
               :
               <PlayCell
                 disabled={playButtonDisabled}
@@ -410,7 +410,7 @@ function Todo(props) {
         </TomatoGroup>
       </TodoRowGroup>
     )
-  }, [todo.id, done, todoName, handleTodoNameOnBlur, tomatoState.id, tomatoState.minutes, playButtonDisabled, tomatoSize, tomatoOpen, handleTodoExpand, todayTodo, handleStarClick, todoDeleteTooltipVisible, tomatoes, toggleTodo, handleTodoNameOnEnterPress, tomatoDispatch, deleteTomato]);
+  }, [todo.id, done, todoName, handleTodoNameOnBlur, tomatoState.id, playButtonDisabled, tomatoSize, tomatoOpen, handleTodoExpand, todayTodo, handleStarClick, todoDeleteTooltipVisible, tomatoes, toggleTodo, handleTodoNameOnEnterPress, tomatoDispatch, deleteTomato]);
 }
 
 export default Todo;
