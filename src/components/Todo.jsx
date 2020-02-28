@@ -290,7 +290,7 @@ function Todo(props) {
       <VLine />
       <OverlayItem
         onClick={() => setTodoDeleteTooltipVisible(false)}
-      >取消
+      >
       </OverlayItem>
     </FlexRow>
   ), [handleTodoDelete, titleId, todo.id]);
