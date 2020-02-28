@@ -352,9 +352,7 @@ function useProject(projectId) {
         } else {
           localReplaceTodoAfterCreate(todoId, res)
         }
-      }).catch(res => {
-      // todo
-    })
+      })
   }, [localReplaceTodoAfterCreateWithTitle, localReplaceTodoAfterCreate, projectId]);
 
   const cancelNewTodo = useCallback((todoId, titleId) => {
@@ -455,9 +453,7 @@ function useProject(projectId) {
         //
         //   return {...data}
         // });
-      }).catch(res => {
-      // todo
-    })
+      })
   }, [fetchProject, handleNewTodo, projectId]);
 
 
@@ -483,7 +479,6 @@ function useProject(projectId) {
       method: 'DELETE'
     })
       .then(res => {
-        console.log(res);
         if (callback) callback();
       })
   };

@@ -13,6 +13,14 @@ const SERVER_URL = {
   production: 'https://beta.api.ttnote.cn',
 };
 
+const savingEvent = new CustomEvent('changeStatus', {detail: 'saving'});
+const savedEvent = new CustomEvent('changeStatus', {detail: 'saved'});
+const failedEvent = new CustomEvent('changeStatus', {detail: 'failed'});
+
+const dispatchSavedEventLater = (milliSeconds = 600) => {
+  setTimeout((() => window.dispatchEvent(savedEvent)), milliSeconds)
+};
+
 const _ttnote = {
     goto(path) {
        window.browserHistory.push(path)
@@ -53,20 +61,27 @@ const _ttnote = {
         if (getCookie('token')) headers['Authorization'] = getCookie('token');
 
       return new Promise(function(resolve, reject) {
-          window.fetch(input, {headers, ...params})
-              .then(res => {
-                  if (res.status >= 200 && res.status <= 202) {
-                    res.json()
-                      .then(res => resolve(res))
-                  }
-                  if (res.status === 204) {
-                    resolve(res)
-                  }
-                  if (res.status === 401) {
-                   setCookie('token', '', '-10');
-                    window.ttnote.goto('/login?needLogin');
-                  }
-              }).catch(err => reject(err))
+        window.dispatchEvent(savingEvent);
+        window.fetch(input, {headers, ...params})
+          .then(res => {
+            if (res.status >= 200 && res.status <= 202) {
+              dispatchSavedEventLater();
+              res.json()
+                .then(res => resolve(res))
+            }
+            if (res.status === 204) {
+              dispatchSavedEventLater();
+              resolve(res)
+            }
+            if (res.status === 401) {
+              window.dispatchEvent(savedEvent);
+              setCookie('token', '', '-10');
+              window.ttnote.goto('/login?needLogin');
+            }
+          }).catch(err => {
+            window.dispatchEvent(failedEvent);
+            reject(err)
+        })
       })
     },
 };

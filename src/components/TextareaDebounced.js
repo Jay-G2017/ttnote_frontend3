@@ -8,7 +8,7 @@ class TextareaDebounced extends React.Component {
     this.state = {
       desc: props.defaultValue || '',
     };
-    this.saveInfo = debounce(this.props.saveInfo, 1000);
+    this.saveInfo = debounce(this.props.saveInfo, 500);
   };
 
   handleOnChange = (e)  => {

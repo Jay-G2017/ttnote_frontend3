@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useMemo} from "react";
+import React, {useCallback, useContext, useEffect, useMemo, useState} from "react";
 import styled from "styled-components";
 import {IoIosArrowBack, IoIosCloseCircle, IoIosAlarm, IoIosCafe, IoIosRibbon} from 'react-icons/io';
 import {TomatoContext} from "../reducers/tomatoReducer";
@@ -108,6 +108,21 @@ const TodayCell = styled.div`
 function RightHeader(props) {
   const {isMobileView, createTomato, todayTomatoSize} = props;
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
+  const [status, setStatus] = useState(null);
+
+  // 注册一个listener, 来全局改变状态
+  useEffect(() => {
+    const handleStatusChange = (e) => {
+      setStatus(e.detail);
+    };
+
+    window.addEventListener('changeStatus', handleStatusChange, false);
+
+    return (() => {
+      window.removeEventListener('changeStatus', handleStatusChange)
+    })
+
+  }, []);
 
   const handleTomatoComplete = useCallback((todoId, minutes) => {
     document.title = "蕃茄时光 | Tomato Time";
@@ -187,7 +202,7 @@ function RightHeader(props) {
         {/*mobile模式的返回按键*/}
         {isMobileView && <BackCell/>}
 
-        <StatusBar type={''} />
+        <StatusBar type={status} />
         <TimerActionDiv>
           {!tomatoState.isPlaying &&
           <>
@@ -221,7 +236,7 @@ function RightHeader(props) {
         </TodayCell>
       </HeaderRow>
     )
-  }, [isMobileView, todayTomatoSize, tomatoDispatch, tomatoState.isPlaying]);
+  }, [isMobileView, status, todayTomatoSize, tomatoDispatch, tomatoState.isPlaying]);
 }
 
 export default RightHeader;

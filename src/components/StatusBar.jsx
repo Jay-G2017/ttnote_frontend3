@@ -4,8 +4,6 @@ import {IoIosCheckmarkCircleOutline, IoIosSync, IoIosAlert} from 'react-icons/io
 
 const StatusRow = styled.div`
   color: ${window.ttnoteThemeLight.textColorTips};
-  display: flex;
-  align-items: center;
   font-size: 0.9rem;
 `;
 
