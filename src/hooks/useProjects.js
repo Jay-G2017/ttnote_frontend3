@@ -13,7 +13,7 @@ function useProjects(categoryId) {
       } else {
         url = window.ttnote.baseUrl + `/categories/${categoryId}/projects`;
       }
-      window.ttnote.fetch(url)
+      window.ttnote.fetch(url, null, false)
         .then(res => {
           setProjects(res);
           if (afterSuccessCallback) afterSuccessCallback(res);

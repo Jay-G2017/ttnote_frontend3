@@ -30,7 +30,7 @@ const TomatoCountBoardDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 8rem;
+  flex: 0 1 9rem;
 `;
 
 const TomatoCountBoardLeftDiv = styled.div`

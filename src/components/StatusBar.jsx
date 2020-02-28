@@ -3,12 +3,12 @@ import styled, {keyframes} from 'styled-components';
 import {IoIosCheckmarkCircleOutline, IoIosSync, IoIosAlert} from 'react-icons/io';
 
 const StatusRow = styled.div`
-  color: ${window.ttnoteThemeLight.textColorTips};
+  color: ${window.ttnoteThemeLight.textColorDesc};
   font-size: 0.9rem;
 `;
 
 const StatusText = styled.span`
-  margin-left: 3px;
+  margin-left: 4px;
 `;
 
 const spinEffect = keyframes`

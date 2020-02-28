@@ -56,31 +56,36 @@ const _ttnote = {
         .replace(/&$/, '');
     },
 
-    fetch(input, params = {method: 'get'}) {
+    fetch(input, params = {method: 'get'}, syncStatus=true) {
         let headers = {'Content-Type': 'application/json'};
         if (getCookie('token')) headers['Authorization'] = getCookie('token');
 
       return new Promise(function(resolve, reject) {
-        window.dispatchEvent(savingEvent);
+        if (syncStatus)
+          window.dispatchEvent(savingEvent);
         window.fetch(input, {headers, ...params})
           .then(res => {
             if (res.status >= 200 && res.status <= 202) {
-              dispatchSavedEventLater();
+              if (syncStatus)
+                dispatchSavedEventLater();
               res.json()
                 .then(res => resolve(res))
             }
             if (res.status === 204) {
-              dispatchSavedEventLater();
+              if (syncStatus)
+                dispatchSavedEventLater();
               resolve(res)
             }
             if (res.status === 401) {
-              window.dispatchEvent(savedEvent);
+              if (syncStatus)
+                window.dispatchEvent(savedEvent);
               setCookie('token', '', '-10');
               window.ttnote.goto('/login?needLogin');
             }
           }).catch(err => {
+          if (syncStatus)
             window.dispatchEvent(failedEvent);
-            reject(err)
+          reject(err)
         })
       })
     },

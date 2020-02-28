@@ -13,7 +13,7 @@ function useProject(projectId) {
   const fetchProject = useCallback((afterSuccessCallback) => {
     const url = window.ttnote.baseUrl + '/projects/' + projectId + '?v1=true';
     // const url = 'http://localhost:3004/projects/' + projectId + '?v1=true';
-    window.ttnote.fetch(url)
+    window.ttnote.fetch(url, null, false)
       .then(res => {
         setProject(res);
         setIsLoading(false);
@@ -31,7 +31,7 @@ function useProject(projectId) {
 
   const fetchTodayTomatoSize = useCallback(() => {
     const url = window.ttnote.baseUrl + '/today_tomato_count';
-    window.ttnote.fetch(url)
+    window.ttnote.fetch(url, null, false)
       .then(res => {
         setTodayTomatoSize(res.size)
       })
