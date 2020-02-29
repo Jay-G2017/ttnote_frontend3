@@ -42,14 +42,6 @@ function useProject(projectId) {
     fetchTodayTomatoSize()
   }, [fetchTodayTomatoSize]);
 
-  // const handleProjectChange = useCallback((params) => {
-  //   setProject({...project, ...params});
-  // }, [project]);
-
-  const projectNameChangeCancel = useCallback(() => {
-    setProject({...project, name: projectInitial.current.name})
-  }, [project]);
-
   // const handleProjectNameEnterPress = (e) => {
   //   stopEventFlag.current = true;
   //   e.currentTarget.blur();
@@ -505,13 +497,8 @@ function useProject(projectId) {
     setTodoExpandedKeys,
     todayTomatoSize,
     createTomato,
-    projectMethods: {
-      // handleProjectChange,
-      // handleProjectDescOnBlur,
-      // handleProjectDescEnterPress,
-      projectNameChangeCancel,
-      updateProject,
-    },
+    updateProject,
+    // todo类
     todoMethods: {
       // handleTodoNameChange,
       // handleTodoNameOnBlur,

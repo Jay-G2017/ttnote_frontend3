@@ -108,7 +108,8 @@ function Tomato(props) {
         <DescCell todoDone={todoDone}>
           <TextareaDebounced
             defaultValue={tomato.desc}
-            saveInfo={saveInfo}
+            placeholder={'添加一些描述'}
+            onKeyUp={saveInfo}
           />
         </DescCell>
       </TomatoRow>
