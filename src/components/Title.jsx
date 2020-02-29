@@ -5,7 +5,7 @@ import {PaddingRow, TTextArea} from '../common/style';
 import {IoIosMore} from 'react-icons/io';
 import Overlay from "react-bootstrap/Overlay";
 import OverlayComp from "./OverlayComp";
-import {SyncMiddleZoneProjectContext} from "../context/syncMiddleZoneProjectContext";
+import {ProjectsContext} from "../context/ProjectsContext";
 
 const TitleContainer = styled.div`
   //background-color: #fff;
@@ -105,7 +105,7 @@ function Title(props) {
   const {handleTitleDeleteWithConfirm} = titleMethods;
 
   const [titleName, setTitleName] = useState(title.name);
-  const syncMiddleZoneProject = useContext(SyncMiddleZoneProjectContext);
+  const syncMiddleZoneProject = useContext(ProjectsContext);
 
   const moreButtonRef = useRef(null);
   const showOverlay = showMore.type === 'title' && showMore.id === title.id;

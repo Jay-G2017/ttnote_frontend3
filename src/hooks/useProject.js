@@ -13,7 +13,7 @@ function useProject(projectId) {
   const fetchProject = useCallback((afterSuccessCallback) => {
     const url = window.ttnote.baseUrl + '/projects/' + projectId + '?v1=true';
     // const url = 'http://localhost:3004/projects/' + projectId + '?v1=true';
-    window.ttnote.fetch(url)
+    window.ttnote.fetch(url, null, false)
       .then(res => {
         setProject(res);
         setIsLoading(false);
@@ -31,7 +31,7 @@ function useProject(projectId) {
 
   const fetchTodayTomatoSize = useCallback(() => {
     const url = window.ttnote.baseUrl + '/today_tomato_count';
-    window.ttnote.fetch(url)
+    window.ttnote.fetch(url, null, false)
       .then(res => {
         setTodayTomatoSize(res.size)
       })
@@ -352,9 +352,7 @@ function useProject(projectId) {
         } else {
           localReplaceTodoAfterCreate(todoId, res)
         }
-      }).catch(res => {
-      // todo
-    })
+      })
   }, [localReplaceTodoAfterCreateWithTitle, localReplaceTodoAfterCreate, projectId]);
 
   const cancelNewTodo = useCallback((todoId, titleId) => {
@@ -455,9 +453,7 @@ function useProject(projectId) {
         //
         //   return {...data}
         // });
-      }).catch(res => {
-      // todo
-    })
+      })
   }, [fetchProject, handleNewTodo, projectId]);
 
 
@@ -483,7 +479,6 @@ function useProject(projectId) {
       method: 'DELETE'
     })
       .then(res => {
-        console.log(res);
         if (callback) callback();
       })
   };
@@ -509,6 +504,7 @@ function useProject(projectId) {
     todoExpandedKeys,
     setTodoExpandedKeys,
     todayTomatoSize,
+    createTomato,
     projectMethods: {
       // handleProjectChange,
       // handleProjectDescOnBlur,
@@ -520,7 +516,6 @@ function useProject(projectId) {
       // handleTodoNameChange,
       // handleTodoNameOnBlur,
       // handleTodoNameEnterPress,
-      createTomato,
       deleteTomato,
       handleTodoDeleteWithConfirm,
       handleStarRemove,

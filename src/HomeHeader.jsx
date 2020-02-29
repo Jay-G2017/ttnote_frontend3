@@ -13,6 +13,7 @@ const Header = styled.div`
   left: 0;
   width: 100%;
   top: 0;
+  z-index: 10;
 `;
 
 const BrandDiv = styled(TButton)`

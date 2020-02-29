@@ -15,7 +15,7 @@ function useCategory() {
 
   const fetchCategories = useCallback((afterSuccessCallback) => {
     const url = window.ttnote.baseUrl + '/categories';
-    window.ttnote.fetch(url)
+    window.ttnote.fetch(url, null, false)
       .then(res => {
         setCategories(res);
         categoriesInitial.current = cloneDeep(res);

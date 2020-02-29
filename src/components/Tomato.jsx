@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import TextareaDebounced from '../components/TextareaDebounced';
 import {FlexBetweenRow, FlexRow, OverlayItem, VLine} from "../common/style";
 import {Tooltip} from "antd";
-import {SyncMiddleZoneProjectContext} from "../context/syncMiddleZoneProjectContext";
+import {ProjectsContext} from "../context/ProjectsContext";
 
 dayjs.extend(relativeTime);
 dayjs.locale('zh-cn');
@@ -71,7 +71,7 @@ function Tomato(props) {
   const [tomatoDeleteTooltipVisible, setTomatoDeleteTooltipVisible] = useState(false);
   const fromNow = dayjs(tomato.createdAt).fromNow();
 
-  const syncMiddleZoneProject = useContext(SyncMiddleZoneProjectContext);
+  const {syncProject} = useContext(ProjectsContext);
 
   const saveInfo = (value) => {
     const url = window.ttnote.baseUrl + '/tomatoes/' + tomato.id;
@@ -89,7 +89,7 @@ function Tomato(props) {
       <OverlayItem
         type='danger'
         onClick={() => {
-          deleteTomato(tomato.todoId, tomato.id, syncMiddleZoneProject);
+          deleteTomato(tomato.todoId, tomato.id, syncProject);
           setTomatoDeleteTooltipVisible(false);
         }}
       >确认删除
@@ -100,7 +100,7 @@ function Tomato(props) {
       >取消
       </OverlayItem>
     </FlexRow>
-  ), [deleteTomato, syncMiddleZoneProject, tomato.id, tomato.todoId]);
+  ), [deleteTomato, syncProject, tomato.id, tomato.todoId]);
 
   return (
     <TomatoRowGroup>
