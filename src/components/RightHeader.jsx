@@ -1,11 +1,13 @@
 import React, {useCallback, useContext, useEffect, useMemo, useState} from "react";
 import styled from "styled-components";
-import {IoIosArrowBack, IoIosCloseCircle, IoIosAlarm, IoIosCafe, IoIosRibbon} from 'react-icons/io';
+import {IoIosArrowBack, IoIosAlarm, IoIosCafe, IoIosRibbon} from 'react-icons/io';
 import {TomatoContext} from "../reducers/tomatoReducer";
 import {initSound} from "../utils/helper";
-import CountdownTimer from "./CountdownTimer";
 import StatusBar from "./StatusBar";
-import {PaddingRow, VLine} from "../common/style";
+import {PaddingRow} from "../common/style";
+import TomatoCountBoard from "./TomatoCountBoard";
+import {ProjectContext} from "../context/projectContext";
+import {ProjectsContext} from "../context/ProjectsContext";
 
 const HeaderRow = styled(PaddingRow)`
   //backdrop-filter: blur(10px);
@@ -24,37 +26,6 @@ const HeaderRow = styled(PaddingRow)`
   justify-content: space-between;
   align-items: center;
   z-index: 10;
-`;
-
-const TomatoCountBoardDiv = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex: 0 1 9rem;
-`;
-
-const TomatoCountBoardLeftDiv = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
-`;
-
-const TomatoCountCell = styled.div`
-  font-size: 1.2rem;
-  width: 4rem;
-  text-align: center;
-  cursor: ${props => props.tomatoOn ? 'pointer' : 'auto'};
-`;
-
-const TomatoInfoCell = styled.div`
-  font-size: 0.8rem;
-`;
-
-const CancelCell = styled.div`
-  font-size: 1.8rem;
-  display: contents;
-  color: ${props => props.type === 'danger' ? window.ttnoteThemeLight.colorDanger : 'inherit'};
 `;
 
 const BackCellDiv = styled.div`
@@ -106,9 +77,12 @@ const TodayCell = styled.div`
 `;
 
 function RightHeader(props) {
-  const {isMobileView, createTomato, todayTomatoSize} = props;
+  const {isMobileView} = props;
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
+  const {todayTomatoSize, createTomato} = useContext(ProjectContext);
+  const {syncProject} = useContext(ProjectsContext);
   const [status, setStatus] = useState(null);
+
 
   // 注册一个listener, 来全局改变状态
   useEffect(() => {
@@ -124,65 +98,6 @@ function RightHeader(props) {
 
   }, []);
 
-  const handleTomatoComplete = useCallback((todoId, minutes) => {
-    document.title = "蕃茄时光 | Tomato Time";
-    window.ttnoteSound.play('complete', false);
-    createTomato(todoId, minutes);
-    if (window.ttnote.userSetting.autoRest) {
-      tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.userSetting.shortRestMinutes}});
-    } else {
-      tomatoDispatch({type: 'cancel'});
-    }
-  }, [createTomato, tomatoDispatch]);
-
-  const handleRestComplete = useCallback(() => {
-    document.title = "蕃茄时光 | Tomato Time";
-    tomatoDispatch({type: 'cancel'});
-    window.ttnoteSound.play('rest', false);
-  }, [tomatoDispatch]);
-
-  const handleComplete = useCallback(() => {
-    if (tomatoState.id) {
-      handleTomatoComplete(tomatoState.id, tomatoState.minutes)
-    } else {
-      handleRestComplete()
-    }
-  }, [
-    handleRestComplete,
-    handleTomatoComplete,
-    tomatoState.id,
-    tomatoState.minutes]);
-
-  const TomatoCountBoard = useCallback(() => (
-    <TomatoCountBoardDiv>
-      <TomatoCountBoardLeftDiv>
-        <TomatoCountCell
-          tomatoOn={!!tomatoState.id}
-          onClick={() => {
-            if (tomatoState.id)
-              window.ttnote.goto('/note' + window.ttnote.objectToUrl(window.ttnote.currentTomatoUrl))
-          }}>
-          <CountdownTimer
-            key={tomatoState.id}
-            tomatoMinutes={tomatoState.minutes}
-            onComplete={handleComplete}
-          />
-        </TomatoCountCell>
-        <TomatoInfoCell>{tomatoState.id ? '蕃茄中...' : '休息中...'}</TomatoInfoCell>
-      </TomatoCountBoardLeftDiv>
-      <VLine/>
-      <CancelCell
-        type={tomatoState.id ? 'danger' : 'default'}
-        onClick={() => {
-          document.title = "蕃茄时光 | Tomato Time";
-          tomatoDispatch({type: 'cancel'});
-        }}
-      >
-        <IoIosCloseCircle/>
-      </CancelCell>
-    </TomatoCountBoardDiv>
-  ), [handleComplete, tomatoDispatch, tomatoState.id, tomatoState.minutes]);
-
   const BackCell = () => (
     <BackCellDiv>
       <IoIosArrowBack
@@ -195,6 +110,10 @@ function RightHeader(props) {
       />
     </BackCellDiv>
   );
+
+  const handleTomatoComplete = useCallback((todoId, minutes) => {
+    createTomato(todoId, minutes, syncProject(tomatoState.projectId))
+  }, [createTomato, syncProject, tomatoState.projectId]);
 
   return useMemo(() => {
     return (
@@ -228,7 +147,7 @@ function RightHeader(props) {
             </LongBreakCell>
           </>
           }
-          {tomatoState.isPlaying && <TomatoCountBoard/>}
+          {tomatoState.isPlaying && <TomatoCountBoard onTomatoComplete={handleTomatoComplete}/>}
         </TimerActionDiv>
         <TodayCell>
           <IoIosRibbon/>
@@ -236,7 +155,7 @@ function RightHeader(props) {
         </TodayCell>
       </HeaderRow>
     )
-  }, [isMobileView, status, todayTomatoSize, tomatoDispatch, tomatoState.isPlaying]);
+  }, [handleTomatoComplete, isMobileView, status, todayTomatoSize, tomatoDispatch, tomatoState.isPlaying]);
 }
 
 export default RightHeader;

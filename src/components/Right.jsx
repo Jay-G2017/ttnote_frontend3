@@ -1,9 +1,10 @@
-import React, {useCallback, useMemo, useState} from "react";
+import React, {useState} from "react";
 import styled from "styled-components";
 import useProject from "../hooks/useProject";
 import RightHeader from "./RightHeader";
 import RightBody from "./RightBody";
-import {SyncMiddleZoneProjectContext} from "../context/syncMiddleZoneProjectContext";
+import {ProjectContext} from "../context/projectContext";
+import LoadingComp from "./LoadingComp";
 
 const RightContainer = styled.div`
   flex: 3.5;
@@ -32,68 +33,16 @@ function Right(props) {
     mobileShowingArea,
     isTaggedProject, // 这种特殊的项目name, desc都是不能编辑的。
     handleProjectChangeFromRight,
-    syncMiddleZoneProject,
   } = props;
   const visible = (isMobileView && mobileShowingArea === 'right') || !isMobileView;
   const projectId = window.ttnote.searchObject().projectId;
   const [showMore, setShowMore] = useState({type: null, id: null});
 
-  const {
-    project,
-    isLoading,
-    handleNewTodo,
-    handleNewTitle,
-    todoExpandedKeys,
-    setTodoExpandedKeys,
-    todayTomatoSize,
-    projectMethods,
-    todoMethods,
-    titleMethods,
-  } = useProject(projectId);
-
-  const $syncMiddleZoneProject = useCallback(() => syncMiddleZoneProject(projectId), [projectId, syncMiddleZoneProject]);
-
-  // const newMode = Object.keys(todos).some(id => id < 0) || titleIds.some(id => id < 0);
-
-  const renderRightBody = useCallback(() => {
-    if (projectId) {
-      if (isLoading) {
-        return(
-        <NoProjectDiv>Loading</NoProjectDiv>
-        )
-      } else {
-        return (
-          <SyncMiddleZoneProjectContext.Provider value={$syncMiddleZoneProject}>
-            <RightBody
-              project={project}
-              isTaggedProject={isTaggedProject}
-              projectMethods={projectMethods}
-              handleProjectChangeFromRight={handleProjectChangeFromRight}
-              todoExpandedKeys={todoExpandedKeys}
-              setTodoExpandedKeys={setTodoExpandedKeys}
-              todoMethods={todoMethods}
-              showMore={showMore}
-              setShowMore={setShowMore}
-              titleMethods={titleMethods}
-              handleNewTodo={handleNewTodo}
-              handleNewTitle={handleNewTitle}
-            />
-          </SyncMiddleZoneProjectContext.Provider>
-        )
-      }
-    } else {
-      return (
-        <NoProjectDiv>无项目</NoProjectDiv>
-      )
-    }
-  }, [$syncMiddleZoneProject, handleNewTitle, handleNewTodo, handleProjectChangeFromRight, isLoading, isTaggedProject, project, projectId, projectMethods, setTodoExpandedKeys, showMore, titleMethods, todoExpandedKeys, todoMethods]);
-
-  const handleCreateTomato = useCallback((todoId, minutes) => {
-    todoMethods.createTomato(todoId, minutes, $syncMiddleZoneProject)
-  }, [$syncMiddleZoneProject, todoMethods]);
+  const projectContextValue = useProject(projectId);
+  const {isLoading} = projectContextValue;
 
   return (
-    useMemo(() => (
+    <ProjectContext.Provider value={projectContextValue}>
       <RightContainer
         visible={visible}
         onClick={() => {
@@ -102,12 +51,21 @@ function Right(props) {
         }}>
         <RightHeader
           isMobileView={isMobileView}
-          createTomato={handleCreateTomato}
-          todayTomatoSize={todayTomatoSize}
         />
-        {renderRightBody()}
+        {projectId ?
+          <LoadingComp isLoading={isLoading}>
+            <RightBody
+              isTaggedProject={isTaggedProject}
+              handleProjectChangeFromRight={handleProjectChangeFromRight}
+              showMore={showMore}
+              setShowMore={setShowMore}
+            />
+          </LoadingComp>
+          :
+          <NoProjectDiv>无项目</NoProjectDiv>
+        }
       </RightContainer>
-    ), [handleCreateTomato, isMobileView, renderRightBody, showMore.id, todayTomatoSize, visible])
+    </ProjectContext.Provider>
   )
 }
 

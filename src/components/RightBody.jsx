@@ -1,9 +1,10 @@
-import React, {useState, useMemo, useCallback, useRef, useEffect} from "react";
+import React, {useState, useMemo, useCallback, useRef, useEffect, useContext} from "react";
 import {PaddingRow, TTextArea} from "../common/style";
 import Todo from "./Todo";
 import Title from "./Title";
 import styled from "styled-components";
 import {IoIosAddCircle} from 'react-icons/io'
+import {ProjectContext} from "../context/projectContext";
 
 const RightContent = styled.div`
   //margin-top: 3.3rem;
@@ -121,19 +122,21 @@ const NoTodoDiv = styled.p`
 
 const RightBody = (props) => {
   const {
-    project,
     isTaggedProject,
-    projectMethods,
     handleProjectChangeFromRight,
+    showMore,
+    setShowMore,
+  } = props;
+
+  const {project,
+    projectMethods,
     todoExpandedKeys,
     setTodoExpandedKeys,
     todoMethods,
-    showMore,
-    setShowMore,
     titleMethods,
     handleNewTodo,
     handleNewTitle,
-  } = props;
+  } = useContext(ProjectContext);
   const {todoIds, todos, titleIds, titles} = project;
 
   const [projectName, setProjectName] = useState(project.name);
@@ -174,7 +177,6 @@ const RightBody = (props) => {
   }, [handleProjectNameOnEnterPress]);
 
   return useMemo(() => {
-    console.log('in right body');
     return (
     <>
       <RightContent>

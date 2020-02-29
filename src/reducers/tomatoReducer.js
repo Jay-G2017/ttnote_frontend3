@@ -2,7 +2,7 @@ import React from "react";
 
 export const TomatoContext = React.createContext(null);
 
-export const tomatoInitial = {isPlaying: false, id: null, minutes: 0};
+export const tomatoInitial = {isPlaying: false, id: null, minutes: 0, projectId: null}; // projectId是用来更新中间区域的信息的
 
 export const tomatoReducer = (state, action) => {
   switch (action.type) {

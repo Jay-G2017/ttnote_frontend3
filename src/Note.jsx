@@ -7,6 +7,7 @@ import {TomatoContext, tomatoReducer, tomatoInitial} from './reducers/tomatoRedu
 import {getCookie} from "./utils/helper";
 import useProjects from "./hooks/useProjects";
 import {CATEGORY_TYPE_INBOX, CATEGORY_TYPE_TAGGED} from "./common/constants";
+import {ProjectsContext} from "./context/ProjectsContext";
 
 const NoteContainer = styled.div`
   display: flex;
@@ -96,13 +97,14 @@ function Note() {
         handleProjectDelete={handleProjectDelete}
       />
       <TomatoContext.Provider value={{tomatoState, tomatoDispatch}}>
-        <Right
-          isMobileView={isMobileView}
-          isTaggedProject={categoryId === CATEGORY_TYPE_TAGGED}
-          mobileShowingArea={mobileShowingArea}
-          handleProjectChangeFromRight={handleProjectChangeFromRight}
-          syncMiddleZoneProject={syncProject}
-        />
+        <ProjectsContext.Provider value={{syncProject}}>
+          <Right
+            isMobileView={isMobileView}
+            isTaggedProject={categoryId === CATEGORY_TYPE_TAGGED}
+            mobileShowingArea={mobileShowingArea}
+            handleProjectChangeFromRight={handleProjectChangeFromRight}
+          />
+        </ProjectsContext.Provider>
       </TomatoContext.Provider>
     </NoteContainer>
   )

@@ -504,6 +504,7 @@ function useProject(projectId) {
     todoExpandedKeys,
     setTodoExpandedKeys,
     todayTomatoSize,
+    createTomato,
     projectMethods: {
       // handleProjectChange,
       // handleProjectDescOnBlur,
@@ -515,7 +516,6 @@ function useProject(projectId) {
       // handleTodoNameChange,
       // handleTodoNameOnBlur,
       // handleTodoNameEnterPress,
-      createTomato,
       deleteTomato,
       handleTodoDeleteWithConfirm,
       handleStarRemove,

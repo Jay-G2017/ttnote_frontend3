@@ -9,8 +9,9 @@ import {Badge} from "react-bootstrap";
 import {initSound} from "../utils/helper";
 import {Tooltip} from 'antd';
 import 'antd/lib/tooltip/style/index.css';
-import {SyncMiddleZoneProjectContext} from "../context/syncMiddleZoneProjectContext";
+import {ProjectsContext} from "../context/ProjectsContext";
 import TomatoProgressCircle from "./TomatoProgressCircle";
+const projectId = window.ttnote.searchObject().projectId;
 
 const TodoRowGroup = styled(MarginRow)`
   background-color: #fff;
@@ -162,7 +163,7 @@ function Todo(props) {
   // const [collapse, setCollapse] = useState(true);
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
 
-  const syncMiddleZoneProject = useContext(SyncMiddleZoneProjectContext);
+  const syncMiddleZoneProject = useContext(ProjectsContext);
 
   const stopOnBlurFlag = useRef(false);
 
@@ -353,7 +354,7 @@ function Todo(props) {
                   window.ttnoteSound.volume(0.7, id);
                   tomatoDispatch({
                     type: 'play',
-                    payload: {id: todo.id, minutes: window.ttnote.userSetting.tomatoMinutes}
+                    payload: {id: todo.id, minutes: window.ttnote.userSetting.tomatoMinutes, projectId}
                   });
                   window.ttnote.currentTomatoUrl = window.ttnote.searchObject();
                 }}
