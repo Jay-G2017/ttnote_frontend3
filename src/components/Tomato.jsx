@@ -71,7 +71,7 @@ function Tomato(props) {
   const [tomatoDeleteTooltipVisible, setTomatoDeleteTooltipVisible] = useState(false);
   const fromNow = dayjs(tomato.createdAt).fromNow();
 
-  const syncMiddleZoneProject = useContext(ProjectsContext);
+  const {syncProject} = useContext(ProjectsContext);
 
   const saveInfo = (value) => {
     const url = window.ttnote.baseUrl + '/tomatoes/' + tomato.id;
@@ -89,7 +89,7 @@ function Tomato(props) {
       <OverlayItem
         type='danger'
         onClick={() => {
-          deleteTomato(tomato.todoId, tomato.id, syncMiddleZoneProject);
+          deleteTomato(tomato.todoId, tomato.id, syncProject);
           setTomatoDeleteTooltipVisible(false);
         }}
       >确认删除
@@ -100,7 +100,7 @@ function Tomato(props) {
       >取消
       </OverlayItem>
     </FlexRow>
-  ), [deleteTomato, syncMiddleZoneProject, tomato.id, tomato.todoId]);
+  ), [deleteTomato, syncProject, tomato.id, tomato.todoId]);
 
   return (
     <TomatoRowGroup>

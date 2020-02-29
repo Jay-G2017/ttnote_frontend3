@@ -163,7 +163,7 @@ function Todo(props) {
   // const [collapse, setCollapse] = useState(true);
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
 
-  const syncMiddleZoneProject = useContext(ProjectsContext);
+  const {syncProject} = useContext(ProjectsContext);
 
   const stopOnBlurFlag = useRef(false);
 
@@ -201,8 +201,8 @@ function Todo(props) {
     });
 
     // star从有到无的时候，如果在`今日任务`界面下，要把那个todo移除
-    if (prevTodayTodo) handleStarRemove(todo.id, titleId, syncMiddleZoneProject);
-  }, [handleStarRemove, syncMiddleZoneProject, titleId, todayTodo, todo.id]);
+    if (prevTodayTodo) handleStarRemove(todo.id, titleId, syncProject);
+  }, [handleStarRemove, syncProject, titleId, todayTodo, todo.id]);
 
   useEffect(() => {
     if (firstMount.current) {
@@ -231,7 +231,7 @@ function Todo(props) {
   const handleTodoDelete = useCallback((todoId, titleId) => {
     if (tomatoSize > 0) {
       if (window.confirm('这会删除当前任务下的所有蕃茄，确定要删除吗？')) {
-        handleTodoDeleteWithConfirm(todoId, titleId, syncMiddleZoneProject)
+        handleTodoDeleteWithConfirm(todoId, titleId, syncProject)
       } else {
         setTodoName(todo.name)
       }
@@ -239,7 +239,7 @@ function Todo(props) {
       handleTodoDeleteWithConfirm(todoId, titleId)
     }
 
-  }, [tomatoSize, handleTodoDeleteWithConfirm, syncMiddleZoneProject, todo.name]);
+  }, [tomatoSize, handleTodoDeleteWithConfirm, syncProject, todo.name]);
 
   const handleTodoNameOnEnterPress = useCallback((e, options = {}) => {
     const value = e.currentTarget.value;
