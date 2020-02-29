@@ -142,7 +142,6 @@ const RightBody = (props) => {
   const {todoIds, todos, titleIds, titles} = project;
 
   const [projectName, setProjectName] = useState(project.name);
-  // const [projectDesc, setProjectDesc] = useState(project.desc);
 
   const projectDescInput = useRef(null);
   const projectTodoInputRef = useRef(null);
