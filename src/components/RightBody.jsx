@@ -5,6 +5,7 @@ import Title from "./Title";
 import styled from "styled-components";
 import {IoIosAddCircle} from 'react-icons/io'
 import {ProjectContext} from "../context/projectContext";
+import {ProjectsContext} from "../context/ProjectsContext";
 
 const RightContent = styled.div`
   //margin-top: 3.3rem;
@@ -123,7 +124,6 @@ const NoTodoDiv = styled.p`
 const RightBody = (props) => {
   const {
     isTaggedProject,
-    handleProjectChangeFromRight,
     showMore,
     setShowMore,
   } = props;
@@ -137,6 +137,7 @@ const RightBody = (props) => {
     handleNewTodo,
     handleNewTitle,
   } = useContext(ProjectContext);
+  const {handleProjectChangeFromRight} = useContext(ProjectsContext);
   const {todoIds, todos, titleIds, titles} = project;
 
   const [projectName, setProjectName] = useState(project.name);

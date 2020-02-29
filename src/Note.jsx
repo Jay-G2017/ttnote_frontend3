@@ -97,12 +97,11 @@ function Note() {
         handleProjectDelete={handleProjectDelete}
       />
       <TomatoContext.Provider value={{tomatoState, tomatoDispatch}}>
-        <ProjectsContext.Provider value={{syncProject}}>
+        <ProjectsContext.Provider value={{syncProject, handleProjectChangeFromRight}}>
           <Right
             isMobileView={isMobileView}
             isTaggedProject={categoryId === CATEGORY_TYPE_TAGGED}
             mobileShowingArea={mobileShowingArea}
-            handleProjectChangeFromRight={handleProjectChangeFromRight}
           />
         </ProjectsContext.Provider>
       </TomatoContext.Provider>

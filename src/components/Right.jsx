@@ -32,7 +32,6 @@ function Right(props) {
     isMobileView,
     mobileShowingArea,
     isTaggedProject, // 这种特殊的项目name, desc都是不能编辑的。
-    handleProjectChangeFromRight,
   } = props;
   const visible = (isMobileView && mobileShowingArea === 'right') || !isMobileView;
   const projectId = window.ttnote.searchObject().projectId;
@@ -56,7 +55,6 @@ function Right(props) {
           <LoadingComp isLoading={isLoading}>
             <RightBody
               isTaggedProject={isTaggedProject}
-              handleProjectChangeFromRight={handleProjectChangeFromRight}
               showMore={showMore}
               setShowMore={setShowMore}
             />
