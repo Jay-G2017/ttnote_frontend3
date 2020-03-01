@@ -23,9 +23,10 @@ class TextareaDebounced extends React.Component {
   };
 
   render () {
-    const {defaultValue, onChange, onKeyUp, ...otherProps} = this.props;
+    const {defaultValue, onChange, onKeyUp, forwardedRef, ...otherProps} = this.props;
     return (
       <TTextArea
+        ref={forwardedRef}
         value={this.state.value}
         placeholder={this.props.placeholder}
         onChange={this.handleOnChange}
@@ -36,5 +37,5 @@ class TextareaDebounced extends React.Component {
   }
 }
 
-export default TextareaDebounced;
+export default React.forwardRef((props, ref) => (<TextareaDebounced {...props} forwardedRef={ref}/>));
 
