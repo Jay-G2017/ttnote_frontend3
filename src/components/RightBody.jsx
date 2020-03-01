@@ -6,6 +6,7 @@ import styled from "styled-components";
 import {IoIosAddCircle} from 'react-icons/io'
 import {ProjectContext} from "../context/projectContext";
 import {ProjectsContext} from "../context/ProjectsContext";
+import TextareaDebounced from "./TextareaDebounced";
 
 const RightContent = styled.div`
   //margin-top: 3.3rem;
@@ -129,19 +130,18 @@ const RightBody = (props) => {
   } = props;
 
   const {project,
-    projectMethods,
     todoExpandedKeys,
     setTodoExpandedKeys,
     todoMethods,
     titleMethods,
     handleNewTodo,
     handleNewTitle,
+    updateProject,
   } = useContext(ProjectContext);
   const {handleProjectChangeFromRight} = useContext(ProjectsContext);
   const {todoIds, todos, titleIds, titles} = project;
 
   const [projectName, setProjectName] = useState(project.name);
-  const [projectDesc, setProjectDesc] = useState(project.desc);
 
   const projectDescInput = useRef(null);
   const projectTodoInputRef = useRef(null);
@@ -160,7 +160,7 @@ const RightBody = (props) => {
     const value = e.currentTarget.value;
     if (value) {
       if (value !== project.name) {
-        projectMethods.updateProject({name: value})
+        updateProject({name: value})
       }
     } else {
       // name不能为空
@@ -168,7 +168,7 @@ const RightBody = (props) => {
       setProjectName(project.name)
     }
     stopOnBlurFlag.current = false
-  }, [handleProjectChangeFromRight, project.id, project.name, projectMethods]);
+  }, [handleProjectChangeFromRight, project.id, project.name, updateProject]);
 
   const handleProjectNameOnBlur = useCallback((e) => {
     window.focusProjectName = false; // 取消自动激活
@@ -225,22 +225,13 @@ const RightBody = (props) => {
             <DescRow style={{color: window.ttnoteThemeLight.textColorTitle, cursor: 'default'}}>{project.desc}</DescRow> :
             <DescRow>
               <DescCell>
-                <TTextArea
+                <TextareaDebounced
+                  placeholder={'输入项目描述'}
+                  defaultValue={project.desc || ''}
                   style={{minHeight: '3rem'}}
                   ref={projectDescInput}
-                  onChange={(e) => {
-                    const value = e.currentTarget.value;
-                    setProjectDesc(value);
-                    handleProjectChangeFromRight(project.id, {desc: value});
-                  }}
-                  onBlur={(e) => {
-                    const value = e.currentTarget.value;
-                    if (value !== project.desc) {
-                      projectMethods.updateProject({desc: value})
-                    }
-                  }}
-                  value={projectDesc || ''}
-                  placeholder={'输入项目描述'}
+                  onChange={(value) => handleProjectChangeFromRight(project.id, {desc: value})}
+                  onKeyUp={(value) => updateProject({desc: value})}
                 />
               </DescCell>
             </DescRow>
@@ -315,7 +306,7 @@ const RightBody = (props) => {
       </RightFooter>
     </>
     )
-  }, [handleNewTitle, handleNewTodo, handleProjectChangeFromRight, handleProjectNameOnBlur, handleProjectNameOnEnterPress, isTaggedProject, project.desc, project.id, projectDesc, projectMethods, projectName, setShowMore, setTodoExpandedKeys, showMore, titleIds, titleMethods, titles, todoExpandedKeys, todoIds, todoMethods, todos])
+  }, [handleNewTitle, handleNewTodo, handleProjectChangeFromRight, handleProjectNameOnBlur, handleProjectNameOnEnterPress, isTaggedProject, project.desc, project.id, projectName, setShowMore, setTodoExpandedKeys, showMore, titleIds, titleMethods, titles, todoExpandedKeys, todoIds, todoMethods, todos, updateProject])
 };
 
 export default RightBody;

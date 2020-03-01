@@ -6,31 +6,36 @@ class TextareaDebounced extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      desc: props.defaultValue || '',
+      value: props.defaultValue || '',
     };
-    this.saveInfo = debounce(this.props.saveInfo, 500);
+    this.onKeyUp = debounce(this.props.onKeyUp, 500);
   };
 
   handleOnChange = (e)  => {
     const value = e.currentTarget.value;
-    this.setState({desc: value});
+    this.setState({value});
+    const {onChange} = this.props;
+    if (onChange) onChange(value)
   };
 
   handleOnKeyup = () => {
-    this.saveInfo(this.state.desc)
+    this.onKeyUp(this.state.value)
   };
 
   render () {
+    const {defaultValue, onChange, onKeyUp, forwardedRef, ...otherProps} = this.props;
     return (
       <TTextArea
-        value={this.state.desc}
-        placeholder={'添加描述'}
+        ref={forwardedRef}
+        value={this.state.value}
+        placeholder={this.props.placeholder}
         onChange={this.handleOnChange}
         onKeyUp={this.handleOnKeyup}
+        {...otherProps}
       />
     )
   }
 }
 
-export default TextareaDebounced;
+export default React.forwardRef((props, ref) => (<TextareaDebounced {...props} forwardedRef={ref}/>));
 
