@@ -122,6 +122,10 @@ const NoTodoDiv = styled.p`
   color: ${window.ttnoteThemeLight.textColorTips};
 `;
 
+const TodoBoard = styled.div`
+
+`;
+
 const RightBody = (props) => {
   const {
     isTaggedProject,
@@ -263,16 +267,25 @@ const RightBody = (props) => {
             titleIds.map(titleId =>
               <Title
                 key={titleId}
-                todos={todos}
                 title={titles[titleId]}
-                todoExpandedKeys={todoExpandedKeys}
-                setTodoExpandedKeys={setTodoExpandedKeys}
-                todoMethods={todoMethods}
                 titleMethods={titleMethods}
                 showMore={showMore}
                 setShowMore={setShowMore}
                 handleNewTodo={handleNewTodo}
-              />
+              >
+                <TodoBoard>
+                  {(titles[titleId].todoIds || []).map(todoId =>
+                    <Todo
+                      key={todoId}
+                      todo={todos[todoId]}
+                      titleId={titleId}
+                      todoExpandedKeys={todoExpandedKeys}
+                      setTodoExpandedKeys={setTodoExpandedKeys}
+                      todoMethods={todoMethods}
+                      handleNewTodo={handleNewTodo}
+                    />)}
+                </TodoBoard>
+              </Title>
             )
           }
         </TitleGroupRow>

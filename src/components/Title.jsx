@@ -1,11 +1,11 @@
 import React, {useCallback, useContext, useMemo, useRef, useState} from "react";
 import styled from "styled-components";
-import Todo from "./Todo";
 import {PaddingRow, TTextArea} from '../common/style';
-import {IoIosMore} from 'react-icons/io';
+import {IoIosMore, IoIosAdd, IoIosRemove, IoIosRemoveCircleOutline} from 'react-icons/io';
 import Overlay from "react-bootstrap/Overlay";
 import OverlayComp from "./OverlayComp";
 import {ProjectsContext} from "../context/ProjectsContext";
+import {Badge} from "react-bootstrap";
 
 const TitleContainer = styled.div`
   //background-color: #fff;
@@ -42,7 +42,7 @@ const NameCell = styled.div`
   align-items: center;
   padding: 0.3rem;
   margin-left: -0.3rem;
-  flex: auto;
+  //flex: auto;
   color: ${window.ttnoteThemeLight.colorSecondary};
   font-size: 1rem;
   font-weight: 700;
@@ -60,28 +60,40 @@ const NameCell = styled.div`
 //   visibility: ${props => props.visible ? 'visible' : 'hidden'};
 // `;
 //
-// const TomatoBadge = styled(Badge)`
-//   flex: none;
-//   margin-right: 0.6rem;
-//   visibility: ${props => props.visible ? 'visible' : 'hidden'};
-//   color: ${window.ttnoteThemeLight.colorSecondary};
-// `;
+const TomatoBadge = styled(Badge)`
+  margin-left: 3px;
+  visibility: ${props => props.visible ? 'visible' : 'hidden'};
+  color: ${window.ttnoteThemeLight.colorSecondary};
+`;
 
-const MoreCell = styled.div`
+const IconCell = styled.div`
   font-size: 1.4rem;
-  // color: ${window.ttnoteThemeLight.bgColorDark};
   display: flex;
   align-items: center;
   cursor: pointer;
   flex: none;
   color: ${window.ttnoteThemeLight.colorSecondary};
+  user-select: none;
 `;
 
-const TodoBoard = styled.div`
-
+const MoreCell = styled(IconCell)`
+  margin-left: 3px; 
 `;
 
-const OverlayContainer = styled.div`
+const OpenCell = styled(IconCell)`
+`;
+
+const CloseCell = styled(IconCell)`
+`;
+
+const TodoStatCell = styled.div`
+  color: ${window.ttnoteThemeLight.textColorDesc};
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-right: 3px;
+`;
+
+const OverlayContainer = styled(IconCell)`
   background-color: ${window.ttnoteThemeLight.bgColorDark};
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
   padding: 0.2rem 0.7rem;
@@ -92,10 +104,6 @@ const OverlayContainer = styled.div`
 function Title(props) {
   const {
     title,
-    playStatus,
-    setPlayStatus,
-    todos,
-    todoMethods,
     titleMethods,
     showMore,
     setShowMore,
@@ -106,6 +114,8 @@ function Title(props) {
 
   const [titleName, setTitleName] = useState(title.name);
   const syncMiddleZoneProject = useContext(ProjectsContext);
+
+  const [open, setOpen] = useState(false);
 
   const moreButtonRef = useRef(null);
   const showOverlay = showMore.type === 'title' && showMore.id === title.id;
@@ -161,6 +171,12 @@ function Title(props) {
     }
   }, [handleTitleNameOnEnterPress]);
 
+  const toggleOpen = useCallback((e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setOpen(!open);
+  }, [open]);
+
   return useMemo(() => (
     <TitleContainer>
       <TitleRow>
@@ -195,11 +211,17 @@ function Title(props) {
             }}
           />
         </NameCell>
+        <TodoStatCell>3/4</TodoStatCell>
         {/*<CountCell visible={tomatoCount > 0}>{tomatoCount}</CountCell>*/}
-        {/*<TomatoBadge*/}
-        {/*  variant={'light'}*/}
-        {/*  visible={tomatoCount > 0}*/}
+        <TomatoBadge
+          variant={'light'}
+          visible={true}
+        >3</TomatoBadge>
         {/*>{tomatoCount}</TomatoBadge>*/}
+        {open ?
+          <CloseCell onClick={toggleOpen}><IoIosRemove/></CloseCell>
+          :
+          <OpenCell onClick={toggleOpen}><IoIosAdd/></OpenCell>}
         <MoreCell ref={moreButtonRef} onClick={e => {
           e.stopPropagation();
           if (showOverlay) {
@@ -229,22 +251,9 @@ function Title(props) {
           }
         </Overlay>
       </TitleRow>
-      <TodoBoard>
-        {(title.todoIds || []).map(todoId =>
-          <Todo
-            key={todoId}
-            todo={todos[todoId]}
-            playStatus={playStatus}
-            setPlayStatus={setPlayStatus}
-            titleId={title.id}
-            todoExpandedKeys={props.todoExpandedKeys}
-            setTodoExpandedKeys={props.setTodoExpandedKeys}
-            todoMethods={todoMethods}
-            handleNewTodo={handleNewTodo}
-          />)}
-      </TodoBoard>
+      {open && props.children}
     </TitleContainer>
-  ), [handleNewTodo, handleTitleDelete, handleTitleNameOnBlur, handleTitleNameOnEnterPress, playStatus, props.setTodoExpandedKeys, props.todoExpandedKeys, setPlayStatus, setShowMore, showOverlay, title.id, title.todoIds, titleName, todoMethods, todos]);
+  ), [handleTitleDelete, handleTitleNameOnBlur, handleTitleNameOnEnterPress, open, props.children, setShowMore, showOverlay, title.id, titleName, toggleOpen]);
 }
 
 export default Title;
