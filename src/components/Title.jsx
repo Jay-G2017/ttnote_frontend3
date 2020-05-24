@@ -1,22 +1,23 @@
-import React, {useCallback, useContext, useMemo, useRef, useState} from "react";
+import React, {useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
 import styled from "styled-components";
-import {PaddingRow, TTextArea} from '../common/style';
-import {IoIosMore, IoIosAdd, IoIosRemove, IoIosRemoveCircleOutline} from 'react-icons/io';
+import { PaddingRow, TTextArea, MarginHRow } from '../common/style';
+import { IoIosMore, IoIosCheckmarkCircleOutline } from 'react-icons/io';
 import Overlay from "react-bootstrap/Overlay";
 import OverlayComp from "./OverlayComp";
-import {ProjectsContext} from "../context/ProjectsContext";
-import {Badge} from "react-bootstrap";
+import { ProjectsContext } from "../context/ProjectsContext";
+import { MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md'
 
 const TitleContainer = styled.div`
   //background-color: #fff;
-  margin-bottom: 1rem;
+  //margin-bottom: 1rem;
+  padding: 0.5rem 0;
 `;
 
 const TitleRow = styled(PaddingRow)`
   display: flex;
   position: relative;
   align-items: center;
-  justify-content: space-between;
+  //justify-content: space-between;
   //border-left: 0.2rem solid ${window.ttnoteThemeLight.colorPrimary};
 `;
 
@@ -37,12 +38,18 @@ const VerticalLine = styled.div`
   }
 `;
 
+const HLine = styled(MarginHRow)`
+  height: 1px;
+  background-color: #fff;
+  margin-top: 0.5rem;
+`;
+
 const NameCell = styled.div`
   display: flex;
   align-items: center;
   padding: 0.3rem;
   margin-left: -0.3rem;
-  //flex: auto;
+  flex: auto;
   color: ${window.ttnoteThemeLight.colorSecondary};
   font-size: 1rem;
   font-weight: 700;
@@ -60,11 +67,11 @@ const NameCell = styled.div`
 //   visibility: ${props => props.visible ? 'visible' : 'hidden'};
 // `;
 //
-const TomatoBadge = styled(Badge)`
-  margin-left: 3px;
-  visibility: ${props => props.visible ? 'visible' : 'hidden'};
-  color: ${window.ttnoteThemeLight.colorSecondary};
-`;
+// const TomatoBadge = styled(Badge)`
+//   margin-left: 3px;
+//   visibility: ${props => props.visible ? 'visible' : 'hidden'};
+//   color: ${window.ttnoteThemeLight.colorSecondary};
+// `;
 
 const IconCell = styled.div`
   font-size: 1.4rem;
@@ -77,20 +84,15 @@ const IconCell = styled.div`
 `;
 
 const MoreCell = styled(IconCell)`
-  margin-left: 3px; 
-`;
-
-const OpenCell = styled(IconCell)`
-`;
-
-const CloseCell = styled(IconCell)`
+  margin-left: 5px; 
 `;
 
 const TodoStatCell = styled.div`
   color: ${window.ttnoteThemeLight.textColorDesc};
-  font-size: 0.9rem;
-  font-weight: 500;
-  margin-right: 3px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-right: 5px;
+  cursor: pointer;
 `;
 
 const OverlayContainer = styled(IconCell)`
@@ -101,6 +103,18 @@ const OverlayContainer = styled(IconCell)`
   font-size: 0.8rem;
 `;
 
+const CollapseTry = styled.div`
+  user-select: none;
+  cursor: pointer;
+  color: ${window.ttnoteThemeLight.colorSecondary};
+  display: flex;
+  flex-direction: column;
+  > svg:first-child {
+    margin-bottom: -8px;
+  }
+
+`;
+
 function Title(props) {
   const {
     title,
@@ -108,14 +122,16 @@ function Title(props) {
     showMore,
     setShowMore,
     handleNewTodo,
+    finishedTodoCount,
   } = props;
+  const todoCount = title.todoIds ? title.todoIds.length : 0;
 
-  const {handleTitleDeleteWithConfirm} = titleMethods;
+  const { handleTitleDeleteWithConfirm } = titleMethods;
 
   const [titleName, setTitleName] = useState(title.name);
   const syncMiddleZoneProject = useContext(ProjectsContext);
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(todoCount !== finishedTodoCount);
 
   const moreButtonRef = useRef(null);
   const showOverlay = showMore.type === 'title' && showMore.id === title.id;
@@ -130,6 +146,10 @@ function Title(props) {
 
   const todoSize = title.todoIds ? title.todoIds.length : 0;
 
+  useEffect(() => {
+    setOpen(true);
+  }, [todoSize]);
+
   const handleTitleDelete = useCallback(() => {
     if (todoSize > 0) {
       if (window.confirm('这会删除当前组下的所有任务，确定要删除吗？')) {
@@ -142,17 +162,17 @@ function Title(props) {
     }
   }, [handleTitleDeleteWithConfirm, syncMiddleZoneProject, title.id, title.name, todoSize]);
 
-  const handleTitleNameOnEnterPress = useCallback((e, options={}) => {
+  const handleTitleNameOnEnterPress = useCallback((e, options = {}) => {
     const value = e.currentTarget.value;
     if (value) {
       if (title.id > 0) {
         if (value !== title.name) {
-          titleMethods.updateTitle(title.id, {name: value})
+          titleMethods.updateTitle(title.id, { name: value })
         }
         if (options.createNewTodo)
           handleNewTodo(title.id)
       } else {
-        titleMethods.createTitle(title.id, {name: value}, {createNewTodo: options.createNewTodo})
+        titleMethods.createTitle(title.id, { name: value }, { createNewTodo: options.createNewTodo })
       }
     } else {
       if (title.id > 0) {
@@ -165,7 +185,7 @@ function Title(props) {
     stopOnBlurFlag.current = false;
   }, [handleNewTodo, handleTitleDelete, title.id, title.name, titleMethods]);
 
-  const handleTitleNameOnBlur = useCallback((e, options = {newTodo: false}) => {
+  const handleTitleNameOnBlur = useCallback((e, options = { newTodo: false }) => {
     if (!stopOnBlurFlag.current) {
       handleTitleNameOnEnterPress(e, options)
     }
@@ -180,7 +200,7 @@ function Title(props) {
   return useMemo(() => (
     <TitleContainer>
       <TitleRow>
-        <VerticalLine/>
+        <VerticalLine />
         <NameCell
           // 用js来控制背景而不是用css:hover是因为这里需要控制它的时机，
           // 下文中有用到，当按enter键后，它新建一个todo，这时这个背景色需要让它消失。
@@ -206,32 +226,55 @@ function Title(props) {
                 stopOnBlurFlag.current = true;
                 e.currentTarget.blur();
                 e.currentTarget.parentNode.style.backgroundColor = 'inherit';
-                handleTitleNameOnEnterPress(e, {createNewTodo: true})
+                handleTitleNameOnEnterPress(e, { createNewTodo: true })
               }
             }}
           />
         </NameCell>
-        <TodoStatCell>3/4</TodoStatCell>
+        {todoCount > 0 &&
+          <TodoStatCell
+            onClick={toggleOpen}
+          >
+            {todoCount === finishedTodoCount &&
+              <span style={{ marginRight: '3px', fontSize: '0.9rem' }}>
+                <IoIosCheckmarkCircleOutline />
+              </span>
+            }
+            <span>
+              {`${finishedTodoCount}/${todoCount}`}
+            </span>
+          </TodoStatCell>
+        }
         {/*<CountCell visible={tomatoCount > 0}>{tomatoCount}</CountCell>*/}
-        <TomatoBadge
-          variant={'light'}
-          visible={true}
-        >3</TomatoBadge>
-        {/*>{tomatoCount}</TomatoBadge>*/}
+        {/*<TomatoBadge*/}
+        {/*  variant={'light'}*/}
+        {/*  visible={true}*/}
+        {/*>3</TomatoBadge>*/}
+        {/*{open ?*/}
+        {/*  <CloseCell onClick={toggleOpen}><IoIosRemove /></CloseCell>*/}
+        {/*  :*/}
+        {/*  <OpenCell onClick={toggleOpen}><IoIosAdd /></OpenCell>}*/}
         {open ?
-          <CloseCell onClick={toggleOpen}><IoIosRemove/></CloseCell>
+          <CollapseTry onClick={toggleOpen} >
+            <MdKeyboardArrowDown />
+            <MdKeyboardArrowUp/>
+          </CollapseTry>
           :
-          <OpenCell onClick={toggleOpen}><IoIosAdd/></OpenCell>}
+          <CollapseTry onClick={toggleOpen}>
+            <MdKeyboardArrowUp/>
+            <MdKeyboardArrowDown />
+          </CollapseTry>
+        }
         <MoreCell ref={moreButtonRef} onClick={e => {
           e.stopPropagation();
           if (showOverlay) {
-            setShowMore({type: 'title', id: null})
+            setShowMore({ type: 'title', id: null })
           } else {
-            setShowMore({type: 'title', id: title.id})
+            setShowMore({ type: 'title', id: title.id })
           }
         }}
         >
-          <IoIosMore/>
+          <IoIosMore />
         </MoreCell>
         <Overlay
           show={showOverlay}
@@ -242,18 +285,18 @@ function Title(props) {
           {props => (
             <OverlayComp {...props}>
               <OverlayContainer>
-              <div
-                onClick={handleTitleDelete}
-              >删除</div>
+                <div
+                  onClick={handleTitleDelete}
+                >删除</div>
               </OverlayContainer>
             </OverlayComp>
           )
           }
         </Overlay>
       </TitleRow>
-      {open && props.children}
+      {open ? props.children : <HLine />}
     </TitleContainer>
-  ), [handleTitleDelete, handleTitleNameOnBlur, handleTitleNameOnEnterPress, open, props.children, setShowMore, showOverlay, title.id, titleName, toggleOpen]);
+  ), [finishedTodoCount, handleTitleDelete, handleTitleNameOnBlur, handleTitleNameOnEnterPress, open, props.children, setShowMore, showOverlay, title.id, titleName, todoCount, toggleOpen]);
 }
 
 export default Title;

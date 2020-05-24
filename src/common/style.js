@@ -106,6 +106,19 @@ export const MarginRow = styled.div`
   }
 `;
 
+export const MarginHRow = styled.div`
+  margin-left: 4vw;
+  margin-right: 4vw;
+  @media (min-width: 576px) {
+    margin-left: 6vw;
+    margin-right: 6vw;
+  }
+  @media (min-width: 992px) {
+    margin-left: 9vw;
+    margin-right: 9vw;
+  }
+`;
+
 export const TBadge = styled.span`
   display:inline-block;
   box-sizing: content-box;

@@ -11,6 +11,7 @@ import {Tooltip} from 'antd';
 import 'antd/lib/tooltip/style/index.css';
 import {ProjectsContext} from "../context/ProjectsContext";
 import TomatoProgressCircle from "./TomatoProgressCircle";
+import {ProjectContext} from "../context/projectContext";
 const projectId = window.ttnote.searchObject().projectId;
 
 const TodoRowGroup = styled(MarginRow)`
@@ -121,12 +122,14 @@ const ListTomatoCell = styled(IoIosList)`
   color: ${window.ttnoteThemeLight.textColorDesc};
   visibility: ${props => props.visible === 'true' ? 'visible' : 'hidden'};
   cursor: pointer;
+  user-select: none;
 `;
 
 const ListTomatoOpenCell = styled(IoIosListBox)`
   color: ${window.ttnoteThemeLight.colorWarn};
   cursor: pointer;
   visibility: ${props => props.visible === 'true' ? 'visible' : 'hidden'};
+  user-select: none;
 `;
 
 const TrashCell = styled(IoIosTrash)`
@@ -164,6 +167,7 @@ function Todo(props) {
   const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
 
   const {syncProject} = useContext(ProjectsContext);
+  const {fetchProject} = useContext(ProjectContext);
 
   const stopOnBlurFlag = useRef(false);
 
@@ -181,13 +185,13 @@ function Todo(props) {
       body: JSON.stringify({done: done}),
     })
       .then(res => {
-        console.log('toggle todo res:', res);
+        fetchProject();
       })
       .catch(() => {
         setDone(!done)
       })
 
-  }, []);
+  }, [fetchProject]);
 
   const handleStarClick = useCallback(() => {
     const prevTodayTodo = todayTodo;
@@ -364,7 +368,7 @@ function Todo(props) {
         </TodoRow>
         <TodoInfoRow>
           <FlexRow
-            style={{flex: 'none', width: '2rem', cursor: 'pointer'}}
+            style={{flex: 'none', width: '2rem', cursor: 'pointer', userSelect: 'none'}}
             onClick={handleTodoExpand}
           >
             <TomatoBadge

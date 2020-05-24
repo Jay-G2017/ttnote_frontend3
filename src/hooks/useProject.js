@@ -490,6 +490,7 @@ function useProject(projectId) {
   return {
     project,
     projectInitial,
+    fetchProject,
     isLoading,
     handleNewTodo,
     handleNewTitle,
@@ -522,3 +523,13 @@ function useProject(projectId) {
 }
 
 export default useProject;
+
+export const getFinishedTodoCount = (todos, todoIds) => {
+  let count = 0;
+  (todoIds || []).forEach(id => {
+    if (todos[id].done) {
+      count += 1;
+    }
+  });
+  return count;
+};
