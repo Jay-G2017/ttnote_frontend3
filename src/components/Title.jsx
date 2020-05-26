@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { PaddingRow, TTextArea, MarginHRow } from '../common/style';
 import { IoIosMore, IoIosCheckmarkCircleOutline } from 'react-icons/io';
@@ -124,14 +124,14 @@ function Title(props) {
     handleNewTodo,
     finishedTodoCount,
   } = props;
-  const todoCount = title.todoIds ? title.todoIds.length : 0;
 
   const { handleTitleDeleteWithConfirm } = titleMethods;
 
   const [titleName, setTitleName] = useState(title.name);
   const syncMiddleZoneProject = useContext(ProjectsContext);
+  const todoSize = title.todoIds ? title.todoIds.length : 0;
 
-  const [open, setOpen] = useState(todoCount !== finishedTodoCount);
+  const [open, setOpen] = useState(todoSize !== finishedTodoCount);
 
   const moreButtonRef = useRef(null);
   const showOverlay = showMore.type === 'title' && showMore.id === title.id;
@@ -144,11 +144,14 @@ function Title(props) {
   //   tomatoCount += tSize;
   // });
 
-  const todoSize = title.todoIds ? title.todoIds.length : 0;
 
   useEffect(() => {
-    setOpen(true);
-  }, [todoSize]);
+    if (todoSize === finishedTodoCount) {
+      setOpen(false);
+    } else {
+      setOpen(true);
+    }
+  }, [todoSize, finishedTodoCount]);
 
   const handleTitleDelete = useCallback(() => {
     if (todoSize > 0) {
@@ -231,17 +234,17 @@ function Title(props) {
             }}
           />
         </NameCell>
-        {todoCount > 0 &&
+        {todoSize > 0 &&
           <TodoStatCell
             onClick={toggleOpen}
           >
-            {todoCount === finishedTodoCount &&
+            {todoSize === finishedTodoCount &&
               <span style={{ marginRight: '3px', fontSize: '0.9rem' }}>
                 <IoIosCheckmarkCircleOutline />
               </span>
             }
             <span>
-              {`${finishedTodoCount}/${todoCount}`}
+              {`${finishedTodoCount}/${todoSize}`}
             </span>
           </TodoStatCell>
         }
@@ -257,11 +260,11 @@ function Title(props) {
         {open ?
           <CollapseTry onClick={toggleOpen} >
             <MdKeyboardArrowDown />
-            <MdKeyboardArrowUp/>
+            <MdKeyboardArrowUp />
           </CollapseTry>
           :
           <CollapseTry onClick={toggleOpen}>
-            <MdKeyboardArrowUp/>
+            <MdKeyboardArrowUp />
             <MdKeyboardArrowDown />
           </CollapseTry>
         }
@@ -296,7 +299,7 @@ function Title(props) {
       </TitleRow>
       {open ? props.children : <HLine />}
     </TitleContainer>
-  ), [finishedTodoCount, handleTitleDelete, handleTitleNameOnBlur, handleTitleNameOnEnterPress, open, props.children, setShowMore, showOverlay, title.id, titleName, todoCount, toggleOpen]);
+  ), [finishedTodoCount, handleTitleDelete, handleTitleNameOnBlur, handleTitleNameOnEnterPress, open, props.children, setShowMore, showOverlay, title.id, titleName, todoSize, toggleOpen]);
 }
 
 export default Title;
