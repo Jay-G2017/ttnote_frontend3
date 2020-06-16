@@ -1,13 +1,26 @@
-import React, {useCallback, useContext, useEffect, useMemo, useState} from "react";
-import styled from "styled-components";
-import {IoIosArrowBack, IoIosAlarm, IoIosCafe, IoIosRibbon} from 'react-icons/io';
-import {TomatoContext} from "../reducers/tomatoReducer";
-import {initSound} from "../utils/helper";
-import StatusBar from "./StatusBar";
-import {PaddingRow} from "../common/style";
-import TomatoCountBoard from "./TomatoCountBoard";
-import {ProjectContext} from "../context/projectContext";
-import {ProjectsContext} from "../context/ProjectsContext";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import styled from 'styled-components';
+import { Modal } from 'react-bootstrap';
+import {
+  IoIosArrowBack,
+  IoIosAlarm,
+  IoIosCafe,
+  IoIosRibbon,
+} from 'react-icons/io';
+import { TomatoContext } from '../reducers/tomatoReducer';
+import { initSound } from '../utils/helper';
+import StatusBar from './StatusBar';
+import { PaddingRow } from '../common/style';
+import TomatoCountBoard from './TomatoCountBoard';
+import { ProjectContext } from '../context/projectContext';
+import { ProjectsContext } from '../context/ProjectsContext';
+import TodayTomato from './todayTomato';
 
 const HeaderRow = styled(PaddingRow)`
   //backdrop-filter: blur(10px);
@@ -21,7 +34,7 @@ const HeaderRow = styled(PaddingRow)`
     position: absolute;
     //width: calc(60% - 1px);
   }
-  
+
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -77,12 +90,12 @@ const TodayCell = styled.div`
 `;
 
 function RightHeader(props) {
-  const {isMobileView} = props;
-  const {tomatoState, tomatoDispatch} = useContext(TomatoContext);
-  const {todayTomatoSize, createTomato} = useContext(ProjectContext);
-  const {syncProject} = useContext(ProjectsContext);
+  const { isMobileView } = props;
+  const { tomatoState, tomatoDispatch } = useContext(TomatoContext);
+  const { todayTomatoSize, createTomato } = useContext(ProjectContext);
+  const { syncProject } = useContext(ProjectsContext);
   const [status, setStatus] = useState(null);
-
+  const [todayModalShow, setTodayModalShow] = useState(false);
 
   // 注册一个listener, 来全局改变状态
   useEffect(() => {
@@ -92,10 +105,9 @@ function RightHeader(props) {
 
     window.addEventListener('changeStatus', handleStatusChange, false);
 
-    return (() => {
-      window.removeEventListener('changeStatus', handleStatusChange)
-    })
-
+    return () => {
+      window.removeEventListener('changeStatus', handleStatusChange);
+    };
   }, []);
 
   const BackCell = () => (
@@ -111,51 +123,82 @@ function RightHeader(props) {
     </BackCellDiv>
   );
 
-  const handleTomatoComplete = useCallback((todoId, minutes) => {
-    createTomato(todoId, minutes, syncProject(tomatoState.projectId))
-  }, [createTomato, syncProject, tomatoState.projectId]);
+  const handleTomatoComplete = useCallback(
+    (todoId, minutes) => {
+      createTomato(todoId, minutes, syncProject(tomatoState.projectId));
+    },
+    [createTomato, syncProject, tomatoState.projectId]
+  );
 
   return useMemo(() => {
     return (
       <HeaderRow className={'backdrop-blur-right'}>
         {/*mobile模式的返回按键*/}
-        {isMobileView && <BackCell/>}
+        {isMobileView && <BackCell />}
 
         <StatusBar type={status} />
         <TimerActionDiv>
-          {!tomatoState.isPlaying &&
-          <>
-            <ShortBreakCell
-              onClick={() => {
-                initSound();
-                window.ttnoteSound.play('begin', true);
-                tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.userSetting.shortRestMinutes}})
-              }}
-            >
-              <IoIosAlarm/>
-              <IconName>短休息</IconName>
-            </ShortBreakCell>
-            <LongBreakCell
-              onClick={() => {
-                initSound();
-                window.ttnoteSound.play('begin', true);
-                tomatoDispatch({type: 'takeRest', payload: {minutes: window.ttnote.userSetting.longRestMinutes}})
-              }}
-            >
-              <IoIosCafe/>
-              <IconName>长休息</IconName>
-            </LongBreakCell>
-          </>
-          }
-          {tomatoState.isPlaying && <TomatoCountBoard onTomatoComplete={handleTomatoComplete}/>}
+          {!tomatoState.isPlaying && (
+            <>
+              <ShortBreakCell
+                onClick={() => {
+                  initSound();
+                  window.ttnoteSound.play('begin', true);
+                  tomatoDispatch({
+                    type: 'takeRest',
+                    payload: {
+                      minutes: window.ttnote.userSetting.shortRestMinutes,
+                    },
+                  });
+                }}
+              >
+                <IoIosAlarm />
+                <IconName>短休息</IconName>
+              </ShortBreakCell>
+              <LongBreakCell
+                onClick={() => {
+                  initSound();
+                  window.ttnoteSound.play('begin', true);
+                  tomatoDispatch({
+                    type: 'takeRest',
+                    payload: {
+                      minutes: window.ttnote.userSetting.longRestMinutes,
+                    },
+                  });
+                }}
+              >
+                <IoIosCafe />
+                <IconName>长休息</IconName>
+              </LongBreakCell>
+            </>
+          )}
+          {tomatoState.isPlaying && (
+            <TomatoCountBoard onTomatoComplete={handleTomatoComplete} />
+          )}
         </TimerActionDiv>
-        <TodayCell>
-          <IoIosRibbon/>
+        <TodayCell onClick={() => setTodayModalShow(true)}>
+          <IoIosRibbon />
           <IconName>{`今日(${todayTomatoSize})`}</IconName>
         </TodayCell>
+        <Modal
+          centered={true}
+          animation={true}
+          show={todayModalShow}
+          onHide={() => setTodayModalShow(false)}
+        >
+          <TodayTomato />
+        </Modal>
       </HeaderRow>
-    )
-  }, [handleTomatoComplete, isMobileView, status, todayTomatoSize, tomatoDispatch, tomatoState.isPlaying]);
+    );
+  }, [
+    handleTomatoComplete,
+    isMobileView,
+    status,
+    todayModalShow,
+    todayTomatoSize,
+    tomatoDispatch,
+    tomatoState.isPlaying,
+  ]);
 }
 
 export default RightHeader;
