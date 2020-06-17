@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "antd": "^4.3.4",
+    "antd": "^3.26.18",
     "bootstrap": "^4.3.1",
     "dayjs": "^1.8.17",
     "history": "^4.10.1",
@@ -20,6 +20,7 @@
     "react-router-dom": "^5.1.0",
     "react-scripts": "3.1.2",
     "react-transition-group": "^4.3.0",
+    "react-truncate": "^2.4.0",
     "react-weui": "^1.2.2",
     "styled-components": "^4.4.0",
     "weui": "^1.1.0"

@@ -1,11 +1,11 @@
-import React, {useRef} from "react";
-import {IoIosMore} from 'react-icons/io';
-import Dotdotdot from "react-dotdotdot";
-import styled from "styled-components";
-import Overlay from "react-bootstrap/Overlay";
-import OverlayComp from "./OverlayComp";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
+import React, { useRef, useEffect, useState } from 'react';
+import { IoIosMore } from 'react-icons/io';
+import Dotdotdot from 'react-dotdotdot';
+import styled from 'styled-components';
+import Overlay from 'react-bootstrap/Overlay';
+import OverlayComp from './OverlayComp';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 dayjs.locale('zh-cn');
 
@@ -25,7 +25,8 @@ const ListRow = styled.div`
   &:hover .project-info-row {
    color: ${window.ttnoteThemeLight.textColorLight};
   }
-  color: ${props => props.active ? '#fff' : window.ttnoteThemeLight.textColorLight };
+  color: ${(props) =>
+    props.active ? '#fff' : window.ttnoteThemeLight.textColorLight};
   position: relative;
   :before {
     content: '';
@@ -34,7 +35,8 @@ const ListRow = styled.div`
     left: 0;
     bottom: 0;
     width: 0.3rem;
-    background-color: ${props => props.active ? window.ttnoteThemeLight.bgColorGreyActive2: ''};
+    background-color: ${(props) =>
+      props.active ? window.ttnoteThemeLight.bgColorGreyActive2 : ''};
   }
 `;
 
@@ -58,7 +60,7 @@ const OverlayItem = styled.div`
 `;
 
 const Inner = styled.div`
-  padding: 0.6rem 1rem 0.1rem 0 ;
+  padding: 0.6rem 1rem 0.1rem 0;
   border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorDark};
 `;
 
@@ -68,7 +70,10 @@ const ProjectNameRow = styled.div`
 
 const ProjectDescRow = styled.div`
   padding: 0.5rem 0;
-  color: ${props => props.active ? window.ttnoteThemeLight.textColorLight : window.ttnoteThemeLight.textColorDarkDesc };
+  color: ${(props) =>
+    props.active
+      ? window.ttnoteThemeLight.textColorLight
+      : window.ttnoteThemeLight.textColorDarkDesc};
   font-size: 0.9rem;
 `;
 
@@ -76,7 +81,10 @@ const ProjectInfoRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: ${props => props.active ? window.ttnoteThemeLight.textColorLight : window.ttnoteThemeLight.textColorDarkDesc };
+  color: ${(props) =>
+    props.active
+      ? window.ttnoteThemeLight.textColorLight
+      : window.ttnoteThemeLight.textColorDarkDesc};
   font-size: 0.9rem;
 `;
 
@@ -109,7 +117,15 @@ function ProjectList(props) {
     handleProjectDelete,
   } = props;
   const moreButtonRef = useRef(null);
+  const truncate = useRef(null);
   const fromNow = moreActionShown ? dayjs(project.updatedAt).fromNow() : '今天';
+
+  const [line, setLine] = useState(1);
+
+  useEffect(() => {
+    if (project.desc) setLine(2);
+  }, [project.desc]);
+
   return (
     <ListRow
       className={'middleList'}
@@ -128,67 +144,76 @@ function ProjectList(props) {
     >
       <Inner className={'middleListInner'}>
         <ProjectNameRow>{project.name}</ProjectNameRow>
-        <ProjectDescRow active={active} className={'project-desc-row'}>
-          <Dotdotdot
-            clamp={2}
-          >
-            {project.desc || ''}
-          </Dotdotdot>
+        <ProjectDescRow
+          ref={truncate}
+          active={active}
+          className={'project-desc-row'}
+        >
+          <Dotdotdot clamp={line}>{project.desc || ''}</Dotdotdot>
         </ProjectDescRow>
         <ProjectInfoRow active={active} className={'project-info-row'}>
           <TimeCell>{fromNow}</TimeCell>
           <TomatoCountCell>
-              <span
-                role='img'
-                aria-label={'tomato'}
-                style={{marginRight: '0.2rem', color: 'transparent', textShadow: `0 0 ${window.ttnoteThemeLight.colorSecondary}`}}
-              >🍅</span>
-            <span>
-              </span>
+            <span
+              role="img"
+              aria-label={'tomato'}
+              style={{
+                marginRight: '0.2rem',
+                color: 'transparent',
+                textShadow: `0 0 ${window.ttnoteThemeLight.colorSecondary}`,
+              }}
+            >
+              🍅
+            </span>
+            <span></span>
             <span>{project.tomatoesCount}</span>
           </TomatoCountCell>
-          {moreActionShown &&
-          <MoreCell
-            ref={moreButtonRef}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (showOverlayId === project.id) {
-                setShowOverlayId(null)
-              } else {
-                setShowOverlayId(project.id)
-              }
-            }}
-          >
-            <IoIosMore/>
-            <Overlay
-              show={showOverlayId === project.id}
-              target={moreButtonRef.current}
-              placement='left'
-              transition={false}
+          {moreActionShown && (
+            <MoreCell
+              ref={moreButtonRef}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (showOverlayId === project.id) {
+                  setShowOverlayId(null);
+                } else {
+                  setShowOverlayId(project.id);
+                }
+              }}
             >
-              {props => (
-                <OverlayComp {...props}>
-                  <OverlayContainer>
-                    <OverlayItem
-                      onClick={() => {
-                        if (window.confirm('这会删除当前项目下的所有信息。\n确定要删除吗？')) {
-                          handleProjectDelete(project.id)
-                        }
-                      }}
-                      style={{paddingRight: '0.7rem'}}
-                    >删除
-                    </OverlayItem>
-                  </OverlayContainer>
-                </OverlayComp>
-              )
-              }
-            </Overlay>
-          </MoreCell>
-          }
+              <IoIosMore />
+              <Overlay
+                show={showOverlayId === project.id}
+                target={moreButtonRef.current}
+                placement="left"
+                transition={false}
+              >
+                {(props) => (
+                  <OverlayComp {...props}>
+                    <OverlayContainer>
+                      <OverlayItem
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              '这会删除当前项目下的所有信息。\n确定要删除吗？'
+                            )
+                          ) {
+                            handleProjectDelete(project.id);
+                          }
+                        }}
+                        style={{ paddingRight: '0.7rem' }}
+                      >
+                        删除
+                      </OverlayItem>
+                    </OverlayContainer>
+                  </OverlayComp>
+                )}
+              </Overlay>
+            </MoreCell>
+          )}
         </ProjectInfoRow>
       </Inner>
     </ListRow>
-  )
+  );
 }
 
 export default ProjectList;

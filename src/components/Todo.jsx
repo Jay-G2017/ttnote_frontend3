@@ -5,15 +5,16 @@ import React, {
   useMemo,
   useRef,
   useState,
-} from "react";
-import styled, { keyframes } from "styled-components";
+} from 'react';
+import { Tooltip } from 'antd';
+import styled, { keyframes } from 'styled-components';
 import {
   IoIosPlayCircle,
   IoIosStar,
   IoIosListBox,
   IoIosTrash,
   IoIosList,
-} from "react-icons/io";
+} from 'react-icons/io';
 import {
   FlexBetweenRow,
   FlexRow,
@@ -21,17 +22,16 @@ import {
   TTextArea,
   OverlayItem,
   VLine,
-} from "../common/style";
-import { TomatoContext } from "../reducers/tomatoReducer";
-import Tomato from "./Tomato";
-import TCheckbox from "./TCheckbox";
-import { Badge } from "react-bootstrap";
-import { initSound } from "../utils/helper";
-import { Tooltip } from "antd";
-import "antd/lib/tooltip/style/index.css";
-import { ProjectsContext } from "../context/ProjectsContext";
-import TomatoProgressCircle from "./TomatoProgressCircle";
-import { ProjectContext } from "../context/projectContext";
+} from '../common/style';
+import { TomatoContext } from '../reducers/tomatoReducer';
+import Tomato from './Tomato';
+import TCheckbox from './TCheckbox';
+import { Badge } from 'react-bootstrap';
+import { initSound } from '../utils/helper';
+import 'antd/lib/tooltip/style/index.css';
+import { ProjectsContext } from '../context/ProjectsContext';
+import TomatoProgressCircle from './TomatoProgressCircle';
+import { ProjectContext } from '../context/projectContext';
 const projectId = window.ttnote.searchObject().projectId;
 
 const TodoRowGroup = styled(MarginRow)`
@@ -55,7 +55,7 @@ const TodoInfoRow = styled(FlexBetweenRow)`
 `;
 
 const TomatoGroup = styled.div`
-  display: ${(props) => (props.open ? "block" : "none")};
+  display: ${(props) => (props.open ? 'block' : 'none')};
   margin-top: 0.3rem;
   margin-left: 1.7rem; // 1.4 + 0.3
   margin-right: 0.4rem;
@@ -81,12 +81,12 @@ const NameCell = styled.div`
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
   margin-right: 1rem;
   color: ${(props) =>
-    props.done ? window.ttnoteThemeLight.textColorDesc : "inherit"};
+    props.done ? window.ttnoteThemeLight.textColorDesc : 'inherit'};
 `;
 
 const TomatoBadge = styled(Badge)`
   border-radius: 3px;
-  visibility: ${(props) => (props.visible === "true" ? "visible" : "hidden")};
+  visibility: ${(props) => (props.visible === 'true' ? 'visible' : 'hidden')};
   color: ${window.ttnoteThemeLight.colorSecondary};
   //cursor: pointer;
 `;
@@ -112,9 +112,9 @@ const PlayCell = styled(IoIosPlayCircle)`
     props.disabled
       ? window.ttnoteThemeLight.btnDefaultDisabledFontColor
       : window.ttnoteThemeLight.primary};
-  cursor: ${(props) => (props.disabled ? "" : "pointer")};
+  cursor: ${(props) => (props.disabled ? '' : 'pointer')};
   :hover {
-    ${(props) => (props.disabled ? "" : "transform: scale(1.1)")};
+    ${(props) => (props.disabled ? '' : 'transform: scale(1.1)')};
   }
   :active {
     transform: scale(1);
@@ -133,12 +133,12 @@ const StarCell = styled(IoIosStar)`
     if (props.disabled) {
       return window.ttnoteThemeLight.btnDefaultDisabledFontColor;
     } else {
-      return props.starred === "true"
+      return props.starred === 'true'
         ? window.ttnoteThemeLight.textColorWarn
         : window.ttnoteThemeLight.textColorTips;
     }
   }};
-  cursor: ${(props) => (props.disabled ? "" : "pointer")};
+  cursor: ${(props) => (props.disabled ? '' : 'pointer')};
   &.star-effect {
     animation: ${starEffect} 300ms ease-in-out;
   }
@@ -146,7 +146,7 @@ const StarCell = styled(IoIosStar)`
 
 const ListTomatoCell = styled(IoIosList)`
   color: ${window.ttnoteThemeLight.textColorDesc};
-  visibility: ${(props) => (props.visible === "true" ? "visible" : "hidden")};
+  visibility: ${(props) => (props.visible === 'true' ? 'visible' : 'hidden')};
   cursor: pointer;
   user-select: none;
 `;
@@ -154,7 +154,7 @@ const ListTomatoCell = styled(IoIosList)`
 const ListTomatoOpenCell = styled(IoIosListBox)`
   color: ${window.ttnoteThemeLight.colorWarn};
   cursor: pointer;
-  visibility: ${(props) => (props.visible === "true" ? "visible" : "hidden")};
+  visibility: ${(props) => (props.visible === 'true' ? 'visible' : 'hidden')};
   user-select: none;
 `;
 
@@ -207,12 +207,24 @@ function Todo(props) {
 
   const tomatoOpen = todoExpandedKeys.includes(todo.id);
 
+  const getTooltipText = useCallback(() => {
+    if (tomatoState.isPlaying && tomatoState.id) {
+      return '正在蕃茄中';
+    } else if (tomatoState.isPlaying) {
+      return '正在休息中';
+    } else if (tomatoSizeToMax) {
+      return '最多20个蕃茄';
+    } else {
+      return null;
+    }
+  }, [tomatoSizeToMax, tomatoState]);
+
   const toggleTodo = useCallback(
     (todoId, done) => {
-      const url = window.ttnote.baseUrl + "/todos/" + todoId;
+      const url = window.ttnote.baseUrl + '/todos/' + todoId;
       window.ttnote
         .fetch(url, {
-          method: "PATCH",
+          method: 'PATCH',
           body: JSON.stringify({ done: done }),
         })
         .then((res) => {
@@ -231,7 +243,7 @@ function Todo(props) {
     const url = window.ttnote.baseUrl + `/todos/${todo.id}/tag_today_todo`;
     window.ttnote
       .fetch(url, {
-        method: "PATCH",
+        method: 'PATCH',
         body: JSON.stringify({ starred: !todayTodo }),
       })
       .catch((res) => {
@@ -248,12 +260,12 @@ function Todo(props) {
     } else {
       if (todayTodo) {
         document
-          .getElementById("todayTodo" + todo.id)
-          .classList.add("star-effect");
+          .getElementById('todayTodo' + todo.id)
+          .classList.add('star-effect');
       } else {
         document
-          .getElementById("todayTodo" + todo.id)
-          .classList.remove("star-effect");
+          .getElementById('todayTodo' + todo.id)
+          .classList.remove('star-effect');
       }
     }
   }, [todayTodo, todo.id]);
@@ -272,10 +284,20 @@ function Todo(props) {
     }
   }, [tomatoOpen, setTodoExpandedKeys, todo.id]);
 
+  const handleTodoClose = useCallback(() => {
+    setTodoExpandedKeys((keys) => {
+      const result = [];
+      keys.forEach((key) => {
+        if (key !== todo.id) result.push(key);
+      });
+      return result;
+    });
+  }, [setTodoExpandedKeys, todo.id]);
+
   const handleTodoDelete = useCallback(
     (todoId, titleId) => {
       if (tomatoSize > 0) {
-        if (window.confirm("这会删除当前任务下的所有蕃茄，确定要删除吗？")) {
+        if (window.confirm('这会删除当前任务下的所有蕃茄，确定要删除吗？')) {
           handleTodoDeleteWithConfirm(todoId, titleId, syncProject);
         } else {
           setTodoName(todo.name);
@@ -335,7 +357,7 @@ function Todo(props) {
 
   const TodoDeleteOverlay = useCallback(
     () => (
-      <FlexRow style={{ height: "100%" }}>
+      <FlexRow style={{ height: '100%' }}>
         <OverlayItem
           type="danger"
           onClick={() => {
@@ -355,7 +377,7 @@ function Todo(props) {
   );
 
   return useMemo(() => {
-    console.log("in todo");
+    console.log('in todo');
     return (
       <TodoRowGroup>
         <TodoRow>
@@ -365,6 +387,7 @@ function Todo(props) {
               checked={done}
               onChange={(value) => {
                 setDone(value);
+                handleTodoClose();
                 toggleTodo(todo.id, value);
               }}
             />
@@ -376,67 +399,70 @@ function Todo(props) {
                 window.ttnoteThemeLight.bgColorWhiteDarker;
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "inherit";
+              e.currentTarget.style.backgroundColor = 'inherit';
             }}
           >
             <TTextArea
               value={todoName}
               autoFocus={todo.id < 0}
-              placeholder={"输入内容"}
+              placeholder={'输入内容'}
               onChange={(e) => {
                 const value = e.currentTarget.value;
                 setTodoName(value);
               }}
               onBlur={handleTodoNameOnBlur}
               onKeyPress={(e) => {
-                if (e.key === "Enter") {
+                if (e.key === 'Enter') {
                   e.preventDefault();
                   stopOnBlurFlag.current = true;
                   e.currentTarget.blur();
-                  e.currentTarget.parentNode.style.backgroundColor = "inherit";
+                  e.currentTarget.parentNode.style.backgroundColor = 'inherit';
                   handleTodoNameOnEnterPress(e, { newTodo: true });
                 }
               }}
             />
           </NameCell>
+
           <PlayAndStatus>
             {tomatoState.id === todo.id ? (
               <TomatoProgressCircle />
             ) : (
-              <PlayCell
-                disabled={playButtonDisabled}
-                onClick={() => {
-                  if (playButtonDisabled) return;
-                  // window.beginAudio.play();
-                  initSound();
-                  const id = window.ttnoteSound.play("begin");
-                  window.ttnoteSound.volume(0.7, id);
-                  tomatoDispatch({
-                    type: "play",
-                    payload: {
-                      id: todo.id,
-                      minutes: window.ttnote.userSetting.tomatoMinutes,
-                      projectId,
-                    },
-                  });
-                  window.ttnote.currentTomatoUrl = window.ttnote.searchObject();
-                }}
-              />
+              <Tooltip title={getTooltipText()} trigger="hover">
+                <PlayCell
+                  disabled={playButtonDisabled}
+                  onClick={() => {
+                    if (playButtonDisabled) return;
+                    // window.beginAudio.play();
+                    initSound();
+                    const id = window.ttnoteSound.play('begin');
+                    window.ttnoteSound.volume(0.7, id);
+                    tomatoDispatch({
+                      type: 'play',
+                      payload: {
+                        id: todo.id,
+                        minutes: window.ttnote.userSetting.tomatoMinutes,
+                        projectId,
+                      },
+                    });
+                    window.ttnote.currentTomatoUrl = window.ttnote.searchObject();
+                  }}
+                />
+              </Tooltip>
             )}
           </PlayAndStatus>
         </TodoRow>
         <TodoInfoRow>
           <FlexRow
             style={{
-              flex: "none",
-              width: "2rem",
-              cursor: "pointer",
-              userSelect: "none",
+              flex: 'none',
+              width: '2rem',
+              cursor: 'pointer',
+              userSelect: 'none',
             }}
             onClick={handleTodoExpand}
           >
             <TomatoBadge
-              variant={"light"}
+              variant={'light'}
               visible={(tomatoSize > 0).toString()}
             >
               {tomatoSize}
@@ -460,8 +486,8 @@ function Todo(props) {
             onClick={handleStarClick}
           />
           <Tooltip
-            placement={"left"}
-            trigger={"click"}
+            placement={'left'}
+            trigger={'click'}
             title={<TodoDeleteOverlay />}
             visible={todoDeleteTooltipVisible}
             onVisibleChange={(visible) => {
@@ -489,14 +515,16 @@ function Todo(props) {
     todoName,
     handleTodoNameOnBlur,
     tomatoState.id,
+    getTooltipText,
     playButtonDisabled,
+    handleTodoExpand,
     tomatoSize,
     tomatoOpen,
-    handleTodoExpand,
     todayTodo,
     handleStarClick,
     todoDeleteTooltipVisible,
     tomatoes,
+    handleTodoClose,
     toggleTodo,
     handleTodoNameOnEnterPress,
     tomatoDispatch,
