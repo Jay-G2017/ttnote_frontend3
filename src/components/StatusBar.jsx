@@ -1,6 +1,10 @@
-import React from "react";
-import styled, {keyframes} from 'styled-components';
-import {IoIosCheckmarkCircleOutline, IoIosSync, IoIosAlert} from 'react-icons/io';
+import React from 'react';
+import styled, { keyframes } from 'styled-components';
+import {
+  IoIosCheckmarkCircleOutline,
+  IoIosSync,
+  IoIosAlert,
+} from 'react-icons/io';
 
 const StatusRow = styled.div`
   color: ${window.ttnoteThemeLight.textColorDesc};
@@ -34,32 +38,32 @@ const AlertIcon = styled(IoIosAlert)`
 `;
 
 function StatusBar(props) {
-  const {type} = props;
+  const { type } = props;
 
   switch (type) {
     case 'saved':
       return (
         <StatusRow>
-          <CircleIcon/>
+          <CircleIcon />
           <StatusText>保存成功</StatusText>
-      </StatusRow>
+        </StatusRow>
       );
     case 'saving':
       return (
         <StatusRow>
-          <SyncIcon/>
+          <SyncIcon />
           <StatusText>正在保存...</StatusText>
         </StatusRow>
       );
     case 'failed':
       return (
         <StatusRow>
-          <AlertIcon/>
+          <AlertIcon />
           <StatusText>保存失败，请检查网络</StatusText>
         </StatusRow>
       );
     default:
-      return <StatusRow>内容将自动保存</StatusRow>
+      return <StatusRow>内容将自动保存</StatusRow>;
   }
 }
 

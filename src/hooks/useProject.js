@@ -1,26 +1,38 @@
-import {useCallback, useEffect, useRef, useState} from 'react';
-import {PROJECT_TYPE_TODAY} from "../common/constants";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { PROJECT_TYPE_TODAY } from '../common/constants';
 
 function useProject(projectId) {
-  const [project, setProject] = useState({todos: {}, titles: {}, todoIds: [], titleIds: []});
+  const [project, setProject] = useState({
+    todos: {},
+    titles: {},
+    todoIds: [],
+    titleIds: [],
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [todoExpandedKeys, setTodoExpandedKeys] = useState([]);
   const [todayTomatoSize, setTodayTomatoSize] = useState(0);
-  const projectInitial = useRef({todos: {}, titles: {}, todoIds: [], titleIds: []});
+  const projectInitial = useRef({
+    todos: {},
+    titles: {},
+    todoIds: [],
+    titleIds: [],
+  });
 
   const isTaggedProject = [PROJECT_TYPE_TODAY].includes(projectId); // 今日任务还有以后的被标记的任务都是属于这种场景;
 
-  const fetchProject = useCallback((afterSuccessCallback) => {
-    const url = window.ttnote.baseUrl + '/projects/' + projectId + '?v1=true';
-    // const url = 'http://localhost:3004/projects/' + projectId + '?v1=true';
-    window.ttnote.fetch(url, null, false)
-      .then(res => {
+  const fetchProject = useCallback(
+    (afterSuccessCallback) => {
+      const url = window.ttnote.baseUrl + '/projects/' + projectId + '?v1=true';
+      // const url = 'http://localhost:3004/projects/' + projectId + '?v1=true';
+      window.ttnote.fetch(url, null, false).then((res) => {
         setProject(res);
         setIsLoading(false);
         projectInitial.current = JSON.parse(JSON.stringify(res));
-        if (afterSuccessCallback) afterSuccessCallback()
-      })
-  }, [projectId]);
+        if (afterSuccessCallback) afterSuccessCallback();
+      });
+    },
+    [projectId]
+  );
 
   useEffect(() => {
     if (projectId) {
@@ -31,15 +43,13 @@ function useProject(projectId) {
 
   const fetchTodayTomatoSize = useCallback(() => {
     const url = window.ttnote.baseUrl + '/today_tomato_count';
-    window.ttnote.fetch(url, null, false)
-      .then(res => {
-        setTodayTomatoSize(res.size)
-      })
-
+    window.ttnote.fetch(url, null, false).then((res) => {
+      setTodayTomatoSize(res.size);
+    });
   }, []);
 
   useEffect(() => {
-    fetchTodayTomatoSize()
+    fetchTodayTomatoSize();
   }, [fetchTodayTomatoSize]);
 
   // const handleProjectNameEnterPress = (e) => {
@@ -90,81 +100,99 @@ function useProject(projectId) {
   //   // new todo
   // };
 
-  const createTomato = useCallback((todoId, minutes, afterSuccessCallback) => {
-    const url = window.ttnote.baseUrl + '/todos/' + todoId + '/tomatoes';
-    window.ttnote.fetch(url, {
-      method: 'post',
-      body: JSON.stringify({minutes})
-    }).then(res => {
-      // fetchProject();
-      setProject(data => {
-        if (data.todos[todoId]) { // 有可能已经切换成其它project的了
-          data.todos[todoId].tomatoes.push(res);
-        }
-        return {...data}
-      });
-      setTodoExpandedKeys(keys => {
-        keys.push(todoId);
-        return [...keys];
-      });
-      // update today tomato size
-      fetchTodayTomatoSize();
-      // 更新中间区域的蕃茄数
-      if (afterSuccessCallback) afterSuccessCallback()
-    })
-  }, [fetchTodayTomatoSize]);
-
-  const deleteTomato = useCallback((todoId, tomatoId, afterSuccessCallback) => {
-    const url = window.ttnote.baseUrl + '/tomatoes/' + tomatoId;
-    window.ttnote.fetch(url, {
-      method: 'DELETE'
-    })
-      .then(res => {
-        setProject(data => {
-          const index = data.todos[todoId].tomatoes.findIndex(tomato => tomato.id === tomatoId);
-          data.todos[todoId].tomatoes.splice(index, 1);
-          return {...data}
+  const createTomato = useCallback(
+    (todoId, minutes, afterSuccessCallback) => {
+      const url = window.ttnote.baseUrl + '/todos/' + todoId + '/tomatoes';
+      window.ttnote
+        .fetch(url, {
+          method: 'post',
+          body: JSON.stringify({ minutes }),
+        })
+        .then((res) => {
+          // fetchProject();
+          setProject((data) => {
+            if (data.todos[todoId]) {
+              // 有可能已经切换成其它project的了
+              data.todos[todoId].tomatoes.push(res);
+            }
+            return { ...data };
+          });
+          setTodoExpandedKeys((keys) => {
+            keys.push(todoId);
+            return [...keys];
+          });
+          // update today tomato size
+          fetchTodayTomatoSize();
+          // 更新中间区域的蕃茄数
+          if (afterSuccessCallback) afterSuccessCallback();
         });
-        // update today tomato size
-        fetchTodayTomatoSize();
-        // 更新中间区域的蕃茄数
-        if (afterSuccessCallback) afterSuccessCallback()
-      })
+    },
+    [fetchTodayTomatoSize]
+  );
 
-  }, [fetchTodayTomatoSize]);
+  const deleteTomato = useCallback(
+    (todoId, tomatoId, afterSuccessCallback) => {
+      const url = window.ttnote.baseUrl + '/tomatoes/' + tomatoId;
+      window.ttnote
+        .fetch(url, {
+          method: 'DELETE',
+        })
+        .then((res) => {
+          setProject((data) => {
+            const index = data.todos[todoId].tomatoes.findIndex(
+              (tomato) => tomato.id === tomatoId
+            );
+            data.todos[todoId].tomatoes.splice(index, 1);
+            return { ...data };
+          });
+          // update today tomato size
+          fetchTodayTomatoSize();
+          // 更新中间区域的蕃茄数
+          if (afterSuccessCallback) afterSuccessCallback();
+        });
+    },
+    [fetchTodayTomatoSize]
+  );
 
-  const updateProject = useCallback((params) => {
-    const url = window.ttnote.baseUrl + '/projects/' + projectId;
-    window.ttnote.fetch(url, {
-      method: 'PATCH',
-      body: JSON.stringify(params)
-    })
-      .then(res => {
-        fetchProject()
-      })
-  }, [fetchProject, projectId]);
+  const updateProject = useCallback(
+    (params) => {
+      const url = window.ttnote.baseUrl + '/projects/' + projectId;
+      window.ttnote
+        .fetch(url, {
+          method: 'PATCH',
+          body: JSON.stringify(params),
+        })
+        .then((res) => {
+          fetchProject();
+        });
+    },
+    [fetchProject, projectId]
+  );
 
-  const handleNewTodo = useCallback((titleId) => {
-    if (!isTaggedProject) {
-      setProject(data => {
-        const id = -Date.now();
-        if (titleId) {
-          data.titles[titleId].todoIds.push(id);
-        } else {
-          data.todoIds.push(id);
-        }
-        data.todos[id] = {id};
-        return {...data};
-      });
-    }
-  }, [isTaggedProject]);
+  const handleNewTodo = useCallback(
+    (titleId) => {
+      if (!isTaggedProject) {
+        setProject((data) => {
+          const id = -Date.now();
+          if (titleId) {
+            data.titles[titleId].todoIds.push(id);
+          } else {
+            data.todoIds.push(id);
+          }
+          data.todos[id] = { id };
+          return { ...data };
+        });
+      }
+    },
+    [isTaggedProject]
+  );
 
   const handleNewTitle = useCallback(() => {
-    setProject(data => {
+    setProject((data) => {
       const id = -Date.now();
       data.titleIds.push(id);
-      data.titles[id] = {id};
-      return {...data};
+      data.titles[id] = { id };
+      return { ...data };
     });
   }, []);
 
@@ -183,11 +211,11 @@ function useProject(projectId) {
   // };
 
   const localDeleteTitle = useCallback((titleId) => {
-    setProject(data => {
+    setProject((data) => {
       const index = data.titleIds.indexOf(titleId);
       data.titleIds.splice(index, 1);
       delete data.titles[titleId];
-      return {...data}
+      return { ...data };
     });
   }, []);
 
@@ -215,36 +243,48 @@ function useProject(projectId) {
   //   stopEventFlag.current = false;
   // };
 
-  const removeTodo = useCallback((todoId, titleId, options = {fromTaggedProject: false}) => {
-    setProject(data => {
-      let index;
-      if (titleId) {
-        index = data.titles[titleId].todoIds.indexOf(todoId);
-        data.titles[titleId].todoIds.splice(index, 1);
-        if (options.fromTaggedProject && data.titles[titleId].todoIds.length === 0) {
-          const titleIndex = data.titleIds.indexOf(titleId);
-          data.titleIds.splice(titleIndex, 1);
+  const removeTodo = useCallback(
+    (todoId, titleId, options = { fromTaggedProject: false }) => {
+      setProject((data) => {
+        let index;
+        if (titleId) {
+          index = data.titles[titleId].todoIds.indexOf(todoId);
+          data.titles[titleId].todoIds.splice(index, 1);
+          if (
+            options.fromTaggedProject &&
+            data.titles[titleId].todoIds.length === 0
+          ) {
+            const titleIndex = data.titleIds.indexOf(titleId);
+            data.titleIds.splice(titleIndex, 1);
+          }
+        } else {
+          index = data.todoIds.indexOf(todoId);
+          data.todoIds.splice(index, 1);
         }
-      } else {
-        index = data.todoIds.indexOf(todoId);
-        data.todoIds.splice(index, 1);
+        delete data.todos[todoId];
+        return { ...data };
+      });
+    },
+    []
+  );
+
+  const handleStarRemove = useCallback(
+    (todoId, titleId, callback) => {
+      if (isTaggedProject) {
+        removeTodo(todoId, titleId, { fromTaggedProject: true });
+        if (callback) callback();
       }
-      delete data.todos[todoId];
-      return {...data};
-    });
-  }, []);
+    },
+    [isTaggedProject, removeTodo]
+  );
 
-  const handleStarRemove = useCallback((todoId, titleId, callback) => {
-    if (isTaggedProject) {
-      removeTodo(todoId, titleId, {fromTaggedProject: true});
-      if (callback) callback();
-    }
-  }, [isTaggedProject, removeTodo]);
-
-  const handleTodoDeleteWithConfirm = useCallback((todoId, titleId, callback) => {
-    removeTodo(todoId, titleId);
-    deleteTodo(todoId, callback);
-  }, [removeTodo]);
+  const handleTodoDeleteWithConfirm = useCallback(
+    (todoId, titleId, callback) => {
+      removeTodo(todoId, titleId);
+      deleteTodo(todoId, callback);
+    },
+    [removeTodo]
+  );
 
   // const handleTodoDelete = useCallback((todoId, titleId) => {
   //   // 如果todo下面有蕃茄，就不删，返回原值
@@ -260,11 +300,11 @@ function useProject(projectId) {
   // }, [todos, handleTodoDeleteWithConfirm]);
 
   const handleTitleDeleteWithConfirm = useCallback((titleId, callback) => {
-    setProject(data => {
+    setProject((data) => {
       const index = data.titleIds.indexOf(titleId);
       data.titleIds.splice(index, 1);
       delete data.titles[titleId];
-      return {...data};
+      return { ...data };
     });
     deleteTitle(titleId, callback);
   }, []);
@@ -299,56 +339,73 @@ function useProject(projectId) {
       data.todoIds.splice(index, 1);
       data.todoIds.splice(index, 0, newTodoObj.id);
       delete data.todos[oldTodoId];
-      data.todos[newTodoObj.id] = {...newTodoObj};
+      data.todos[newTodoObj.id] = { ...newTodoObj };
 
       projectInitial.current.todoIds.splice(index, 0, newTodoObj.id);
-      projectInitial.current.todos[newTodoObj.id] = {...newTodoObj};
-      return {...data}
-    })
-  }, []);
-
-  const localReplaceTodoAfterCreateWithTitle = useCallback((oldTodoId, titleId, newTodoObj) => {
-    // const data = cloneDeep(project);
-    // const index = data.titles[titleId].todoIds.indexOf(oldTodoId);
-    // data.titles[titleId].todoIds.splice(index, 1);
-    // data.titles[titleId].todoIds.splice(index, 0, newTodoObj.id);
-    // delete data.todos[oldTodoId];
-    // data.todos[newTodoObj.id] = {...newTodoObj};
-    // setProject(data);
-
-    setProject((data) => {
-      const index = data.titles[titleId].todoIds.indexOf(oldTodoId);
-      data.titles[titleId].todoIds.splice(index, 1);
-      data.titles[titleId].todoIds.splice(index, 0, newTodoObj.id);
-      delete data.todos[oldTodoId];
-      data.todos[newTodoObj.id] = {...newTodoObj};
-
-      projectInitial.current.titles[titleId].todoIds.splice(index, 0, newTodoObj.id);
-      projectInitial.current.todos[newTodoObj.id] = {...newTodoObj};
-      return {...data}
+      projectInitial.current.todos[newTodoObj.id] = { ...newTodoObj };
+      return { ...data };
     });
-
-    // projectInitial.current.titles[titleId].todoIds.splice(index, 0, newTodoObj.id);
-    // projectInitial.current.todos[newTodoObj.id] = {...newTodoObj};
   }, []);
 
-  const createTodo = useCallback((todoId, titleId, params) => {
-    const url = window.ttnote.baseUrl + `/projects/${projectId}/titles/${titleId ? titleId : '-1'}/todos`;
-    window.ttnote.fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(params)
-    })
-      .then(res => {
-        if (titleId) {
-          localReplaceTodoAfterCreateWithTitle(todoId, titleId, res)
-        } else {
-          localReplaceTodoAfterCreate(todoId, res)
-        }
-      })
-  }, [localReplaceTodoAfterCreateWithTitle, localReplaceTodoAfterCreate, projectId]);
+  const localReplaceTodoAfterCreateWithTitle = useCallback(
+    (oldTodoId, titleId, newTodoObj) => {
+      // const data = cloneDeep(project);
+      // const index = data.titles[titleId].todoIds.indexOf(oldTodoId);
+      // data.titles[titleId].todoIds.splice(index, 1);
+      // data.titles[titleId].todoIds.splice(index, 0, newTodoObj.id);
+      // delete data.todos[oldTodoId];
+      // data.todos[newTodoObj.id] = {...newTodoObj};
+      // setProject(data);
+
+      setProject((data) => {
+        const index = data.titles[titleId].todoIds.indexOf(oldTodoId);
+        data.titles[titleId].todoIds.splice(index, 1);
+        data.titles[titleId].todoIds.splice(index, 0, newTodoObj.id);
+        delete data.todos[oldTodoId];
+        data.todos[newTodoObj.id] = { ...newTodoObj };
+
+        projectInitial.current.titles[titleId].todoIds.splice(
+          index,
+          0,
+          newTodoObj.id
+        );
+        projectInitial.current.todos[newTodoObj.id] = { ...newTodoObj };
+        return { ...data };
+      });
+
+      // projectInitial.current.titles[titleId].todoIds.splice(index, 0, newTodoObj.id);
+      // projectInitial.current.todos[newTodoObj.id] = {...newTodoObj};
+    },
+    []
+  );
+
+  const createTodo = useCallback(
+    (todoId, titleId, params) => {
+      const url =
+        window.ttnote.baseUrl +
+        `/projects/${projectId}/titles/${titleId ? titleId : '-1'}/todos`;
+      window.ttnote
+        .fetch(url, {
+          method: 'POST',
+          body: JSON.stringify(params),
+        })
+        .then((res) => {
+          if (titleId) {
+            localReplaceTodoAfterCreateWithTitle(todoId, titleId, res);
+          } else {
+            localReplaceTodoAfterCreate(todoId, res);
+          }
+        });
+    },
+    [
+      localReplaceTodoAfterCreateWithTitle,
+      localReplaceTodoAfterCreate,
+      projectId,
+    ]
+  );
 
   const cancelNewTodo = useCallback((todoId, titleId) => {
-    setProject(data => {
+    setProject((data) => {
       if (titleId) {
         const index = data.titles[titleId].todoIds.indexOf(todoId);
         data.titles[titleId].todoIds.splice(index, 1);
@@ -357,23 +414,24 @@ function useProject(projectId) {
         data.todoIds.splice(index, 1);
       }
       delete data.todos[todoId];
-      return {...data}
+      return { ...data };
     });
   }, []);
 
   const updateTodo = useCallback((todoId, params) => {
     const url = window.ttnote.baseUrl + '/todos/' + todoId;
-    window.ttnote.fetch(url, {
-      method: 'PATCH',
-      body: JSON.stringify(params)
-    })
-      .then(res => {
-        setProject(data => {
-          data.todos[todoId] = {...res};
-          projectInitial.current.todos[todoId] = {...res};
-          return {...data}
-        });
+    window.ttnote
+      .fetch(url, {
+        method: 'PATCH',
+        body: JSON.stringify(params),
       })
+      .then((res) => {
+        setProject((data) => {
+          data.todos[todoId] = { ...res };
+          projectInitial.current.todos[todoId] = { ...res };
+          return { ...data };
+        });
+      });
   }, []);
 
   // const handleTodoNameEnterPress = useCallback((e, todoId, titleId) => {
@@ -420,72 +478,79 @@ function useProject(projectId) {
   //   }
   // }, [cancelNewTodo, createTodo, handleTodoDelete, todos, updateTodo]);
 
-  const createTitle = useCallback((titleId, params, options) => {
-    const url = window.ttnote.baseUrl + `/projects/${projectId}/titles/`;
-    window.ttnote.fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(params)
-    })
-      .then(res => {
-        if (options.createNewTodo) {
-          fetchProject(() => handleNewTodo(res.id))
-        } else {
-          fetchProject();
-        }
-        // setProject(data => {
-        //   // 先不考虑title
-        //   const index = data.titleIds.indexOf(titleId);
-        //   data.titleIds.splice(index, 1);
-        //   data.titleIds.splice(index, 0, res.id);
-        //   delete data.titles[titleId];
-        //   data.titles[res.id] = {...res};
-        //
-        //   projectInitial.current.titleIds.splice(index, 0, res.id);
-        //   projectInitial.current.titles[res.id] = {...res};
-        //
-        //   return {...data}
-        // });
-      })
-  }, [fetchProject, handleNewTodo, projectId]);
-
-
+  const createTitle = useCallback(
+    (titleId, params, options) => {
+      const url = window.ttnote.baseUrl + `/projects/${projectId}/titles/`;
+      window.ttnote
+        .fetch(url, {
+          method: 'POST',
+          body: JSON.stringify(params),
+        })
+        .then((res) => {
+          if (options.createNewTodo) {
+            fetchProject(() => {
+              handleNewTodo(res.id);
+              if (options.callback) options.callback();
+            });
+          } else {
+            fetchProject();
+          }
+          // setProject(data => {
+          //   // 先不考虑title
+          //   const index = data.titleIds.indexOf(titleId);
+          //   data.titleIds.splice(index, 1);
+          //   data.titleIds.splice(index, 0, res.id);
+          //   delete data.titles[titleId];
+          //   data.titles[res.id] = {...res};
+          //
+          //   projectInitial.current.titleIds.splice(index, 0, res.id);
+          //   projectInitial.current.titles[res.id] = {...res};
+          //
+          //   return {...data}
+          // });
+        });
+    },
+    [fetchProject, handleNewTodo, projectId]
+  );
 
   const updateTitle = useCallback((titleId, params) => {
     const url = window.ttnote.baseUrl + '/titles/' + titleId;
-    window.ttnote.fetch(url, {
-      method: 'PATCH',
-      body: JSON.stringify(params)
-    })
-      .then(res => {
-        setProject(data => {
-          data.titles[titleId] = {...res};
-          projectInitial.current.titles[titleId] = {...res};
-          return {...data}
-        });
+    window.ttnote
+      .fetch(url, {
+        method: 'PATCH',
+        body: JSON.stringify(params),
       })
+      .then((res) => {
+        setProject((data) => {
+          data.titles[titleId] = { ...res };
+          projectInitial.current.titles[titleId] = { ...res };
+          return { ...data };
+        });
+      });
   }, []);
 
   const deleteTodo = (todoId, callback) => {
     const url = window.ttnote.baseUrl + '/todos/' + todoId;
-    window.ttnote.fetch(url, {
-      method: 'DELETE'
-    })
-      .then(res => {
-        if (callback) callback();
+    window.ttnote
+      .fetch(url, {
+        method: 'DELETE',
       })
+      .then((res) => {
+        if (callback) callback();
+      });
   };
 
   const deleteTitle = (titleId, callback) => {
     const url = window.ttnote.baseUrl + '/titles/' + titleId;
-    window.ttnote.fetch(url, {
-      method: 'DELETE'
-    })
-      .then(res => {
+    window.ttnote
+      .fetch(url, {
+        method: 'DELETE',
+      })
+      .then((res) => {
         console.log(res);
         if (callback) callback();
-      })
+      });
   };
-
 
   return {
     project,
@@ -519,14 +584,14 @@ function useProject(projectId) {
       createTitle,
       localDeleteTitle,
     },
-  }
+  };
 }
 
 export default useProject;
 
 export const getFinishedTodoCount = (todos, todoIds) => {
   let count = 0;
-  (todoIds || []).forEach(id => {
+  (todoIds || []).forEach((id) => {
     if (todos[id].done) {
       count += 1;
     }
