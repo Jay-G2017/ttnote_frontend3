@@ -55,10 +55,21 @@ const TodoInfoRow = styled(FlexBetweenRow)`
 `;
 
 const TomatoGroup = styled.div`
-  display: ${(props) => (props.open ? 'block' : 'none')};
+  // display: ${(props) => (props.open ? 'block' : 'none')};
   margin-top: 0.3rem;
   margin-left: 1.7rem; // 1.4 + 0.3
   margin-right: 0.4rem;
+  max-height: 0;
+  transition: max-height 0.4s ease-out ;
+  overflow: hidden;
+    // transform: scaleY(1);
+    // transform-origin: top;
+  // transition: transform 0.56s ease;
+  &.open {
+    // transform: scaleY(0);
+    max-height: 300px
+  overflow: auto;
+  }
 `;
 
 const CheckCell = styled.div`
@@ -198,6 +209,7 @@ function Todo(props) {
   const { fetchProject } = useContext(ProjectContext);
 
   const stopOnBlurFlag = useRef(false);
+  const tRef = useRef(null);
 
   const tomatoes = todo.tomatoes || [];
   const tomatoSize = tomatoes.length;
@@ -206,6 +218,16 @@ function Todo(props) {
     tomatoState.isPlaying || tomatoSizeToMax || todo.id < 0;
 
   const tomatoOpen = todoExpandedKeys.includes(todo.id);
+
+  // useEffect(() => {
+  //   if (tomatoOpen) {
+  //     const height = tRef.current.offsetHeight;
+  //     console.log('height', height);
+  //     tRef.current.style.height = height + 'px';
+  //   } else {
+  //     tRef.current.style.height = 0;
+  //   }
+  // }, [tomatoOpen]);
 
   const getTooltipText = useCallback(() => {
     if (tomatoState.isPlaying && tomatoState.id) {
@@ -497,7 +519,7 @@ function Todo(props) {
             <TrashCell />
           </Tooltip>
         </TodoInfoRow>
-        <TomatoGroup open={tomatoOpen}>
+        <TomatoGroup ref={tRef} className={tomatoOpen ? 'open' : ''}>
           {tomatoes.map((tomato) => (
             <Tomato
               key={tomato.id}
