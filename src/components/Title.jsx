@@ -333,7 +333,12 @@ function Title(props) {
             )}
           </Overlay>
         </TitleRow>
-        {open ? props.children : <HLine />}
+        {React.Children.map(props.children, (child) => {
+          return React.cloneElement(child, {
+            className: `${child.props.className} ${open ? 'open' : ''}`,
+          });
+        })}
+        {!open && <HLine />}
       </TitleContainer>
     ),
     [

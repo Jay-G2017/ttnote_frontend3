@@ -56,19 +56,19 @@ const TodoInfoRow = styled(FlexBetweenRow)`
 
 const TomatoGroup = styled.div`
   // display: ${(props) => (props.open ? 'block' : 'none')};
+  display: block;
   margin-top: 0.3rem;
   margin-left: 1.7rem; // 1.4 + 0.3
   margin-right: 0.4rem;
-  max-height: 0;
-  transition: max-height 0.4s ease-out ;
+  transition: height 0.8s ease ;
+  height: 0;
   overflow: hidden;
-    // transform: scaleY(1);
-    // transform-origin: top;
-  // transition: transform 0.56s ease;
   &.open {
-    // transform: scaleY(0);
-    max-height: 300px
-  overflow: auto;
+    // max-height: ${(props) => props.tomatoSize * 10 + 'px'};
+    // overflow: auto;
+  }
+  &.no-max {
+    // max-height: none;
   }
 `;
 
@@ -210,6 +210,7 @@ function Todo(props) {
 
   const stopOnBlurFlag = useRef(false);
   const tRef = useRef(null);
+  const innerRef = useRef(null);
 
   const tomatoes = todo.tomatoes || [];
   const tomatoSize = tomatoes.length;
@@ -218,6 +219,16 @@ function Todo(props) {
     tomatoState.isPlaying || tomatoSizeToMax || todo.id < 0;
 
   const tomatoOpen = todoExpandedKeys.includes(todo.id);
+
+  // useEffect(() => {
+  //   if (tomatoOpen) {
+  //     setTimeout(() => {
+  //       tRef.current.classList.add('no-max');
+  //     }, 800);
+  //   } else {
+  //     tRef.current.classList.remove('no-max');
+  //   }
+  // }, [tomatoOpen]);
 
   // useEffect(() => {
   //   if (tomatoOpen) {
@@ -293,7 +304,15 @@ function Todo(props) {
   }, [todayTodo, todo.id]);
 
   const handleTodoExpand = useCallback(() => {
+    const calHeight = innerRef.current.offsetHeight + 'px';
+    console.log('calHeight', calHeight);
     if (tomatoOpen) {
+      tRef.current.style.height = calHeight;
+      tRef.current.style.overflow = 'hidden';
+      tRef.current.style.height = 0;
+      setTimeout(() => {
+        tRef.current.style.height = 'unset';
+      }, 800);
       setTodoExpandedKeys((keys) => {
         const result = [];
         keys.forEach((key) => {
@@ -302,6 +321,12 @@ function Todo(props) {
         return result;
       });
     } else {
+      // 要展开
+      tRef.current.style.height = calHeight;
+      tRef.current.style.overflow = 'auto';
+      setTimeout(() => {
+        tRef.current.style.height = 'unset';
+      }, 800);
       setTodoExpandedKeys((keys) => keys.concat(todo.id));
     }
   }, [tomatoOpen, setTodoExpandedKeys, todo.id]);
@@ -519,15 +544,21 @@ function Todo(props) {
             <TrashCell />
           </Tooltip>
         </TodoInfoRow>
-        <TomatoGroup ref={tRef} className={tomatoOpen ? 'open' : ''}>
-          {tomatoes.map((tomato) => (
-            <Tomato
-              key={tomato.id}
-              tomato={tomato}
-              deleteTomato={deleteTomato}
-              todoDone={done}
-            />
-          ))}
+        <TomatoGroup
+          ref={tRef}
+          tomatoSize={tomatoes.length}
+          className={tomatoOpen ? 'open' : ''}
+        >
+          <div ref={innerRef}>
+            {tomatoes.map((tomato) => (
+              <Tomato
+                key={tomato.id}
+                tomato={tomato}
+                deleteTomato={deleteTomato}
+                todoDone={done}
+              />
+            ))}
+          </div>
         </TomatoGroup>
       </TodoRowGroup>
     );

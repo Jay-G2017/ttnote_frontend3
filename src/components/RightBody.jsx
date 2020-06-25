@@ -129,7 +129,15 @@ const NoTodoDiv = styled.p`
   color: ${window.ttnoteThemeLight.textColorTips};
 `;
 
-const TodoBoard = styled.div``;
+const TodoBoard = styled.div`
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s;
+  &.open {
+    max-height: ${(props) => props.todoSize * 100 + 'px'};
+    overflow: auto;
+  }
+`;
 
 const RightBody = (props) => {
   const { isTaggedProject, showMore, setShowMore } = props;
@@ -299,7 +307,7 @@ const RightBody = (props) => {
                       title.todoIds
                     )}
                   >
-                    <TodoBoard>
+                    <TodoBoard todoSize={(title.todoIds || []).length}>
                       {(title.todoIds || []).map((todoId) => (
                         <Todo
                           key={todoId}
