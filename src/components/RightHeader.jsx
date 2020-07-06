@@ -176,7 +176,7 @@ function RightHeader(props) {
             <TomatoCountBoard onTomatoComplete={handleTomatoComplete} />
           )}
         </TimerActionDiv>
-        <TodayCell onClick={() => setTodayModalShow(false)}>
+        <TodayCell onClick={() => setTodayModalShow(true)}>
           <IoIosRibbon />
           <IconName>{`今日(${todayTomatoSize})`}</IconName>
         </TodayCell>
@@ -184,6 +184,7 @@ function RightHeader(props) {
           centered={true}
           animation={true}
           show={todayModalShow}
+          size={'xl'}
           onHide={() => setTodayModalShow(false)}
         >
           <TodayTomato />
