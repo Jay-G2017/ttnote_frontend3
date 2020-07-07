@@ -102,7 +102,12 @@ function TodayTomato() {
       <CalContent>
         {open && (
           <CalDiv>
-            <Calendar fullscreen={false} value={dayjs()} />
+            <Calendar
+              fullscreen={false}
+              value={dayjs()}
+              onSelect={() => {}}
+              // onChange={}
+            />
           </CalDiv>
         )}
       </CalContent>
