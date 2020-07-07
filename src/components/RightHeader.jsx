@@ -184,7 +184,7 @@ function RightHeader(props) {
           centered={true}
           animation={true}
           show={todayModalShow}
-          size={'xl'}
+          size={'lg'}
           onHide={() => setTodayModalShow(false)}
         >
           <TodayTomato />

@@ -1,18 +1,33 @@
-import React, { useState } from 'react';
-import { Input, Calendar, DatePicker, Button } from 'antd';
+import React, { useState, useMemo } from 'react';
+import { Input, Calendar } from 'antd';
+import { Button, ButtonGroup } from 'react-bootstrap';
+import { createEditor } from 'slate';
+import { Slate, Editable, withReact } from 'slate-react';
 import styled from 'styled-components';
 import 'antd/dist/antd.css';
+import {
+  IoMdArrowDropleft,
+  IoMdArrowDropright,
+  IoIosCalendar,
+} from 'react-icons/io';
+import dayjs from 'dayjs';
 
 const Content = styled.div`
-  padding: 0 2vw
+  padding: 2rem 2rem;
+  border-radius: 3px;
   height: 95vh;
   background-color: ${window.ttnoteThemeLight.bgColorPrimary};
+`;
+
+const FlexBetweenRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 const FlexRow = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
 `;
 
 const CalContent = styled.div`
@@ -28,34 +43,76 @@ const CalDiv = styled.div`
   box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 `;
 
+const IconStyle = { fontSize: '1.1rem' };
+
 function TodayTomato() {
+  const editor = useMemo(() => withReact(createEditor()), []);
+  const [value, setValue] = useState([
+    {
+      type: 'paragraph',
+      children: [{ text: '记录下今天的点滴.' }],
+    },
+  ]);
+
   const [open, setOpen] = useState(false);
+  const [date, setDate] = useState(dayjs());
   return (
     <Content id="todayTomatoContent" onClick={() => setOpen(false)}>
-      <FlexRow>
-        <div>date</div>
+      <FlexBetweenRow style={{ marginBottom: '1rem' }}>
+        <div>{date.format('dddd, M月D日, YYYY')}</div>
         <FlexRow>
-          <Button>prev</Button>
-          <Button>today</Button>
-          <Button>next</Button>
+          <ButtonGroup>
+            <Button
+              variant="light"
+              size="lg"
+              onClick={() => setDate(date.subtract(1, 'd'))}
+            >
+              <FlexRow style={IconStyle}>
+                <IoMdArrowDropleft />
+              </FlexRow>
+            </Button>
+            <Button
+              variant="light"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpen(true);
+              }}
+            >
+              <FlexRow style={IconStyle}>
+                <IoIosCalendar />
+              </FlexRow>
+            </Button>
+            <Button variant="light" onClick={() => setDate(date.add(1, 'd'))}>
+              <FlexRow style={IconStyle}>
+                <IoMdArrowDropright />
+              </FlexRow>
+            </Button>
+          </ButtonGroup>
           <Button
+            variant="light"
+            style={{ marginLeft: '8px' }}
             onClick={(e) => {
-              e.stopPropagation();
-              setOpen(true);
+              setDate(dayjs());
             }}
           >
-            Cal
+            <FlexRow style={{ fontSize: '0.9rem' }}>今日</FlexRow>
           </Button>
         </FlexRow>
-      </FlexRow>
+      </FlexBetweenRow>
       <CalContent>
         {open && (
           <CalDiv>
-            <Calendar fullscreen={false} />
+            <Calendar fullscreen={false} value={dayjs()} />
           </CalDiv>
         )}
       </CalContent>
-      <Input.TextArea autoSize={{ minRows: 3 }} />
+      <Slate
+        editor={editor}
+        value={value}
+        onChange={(newValue) => setValue(newValue)}
+      >
+        <Editable style={{ backgroundColor: '#fff', minHeight: '7rem' }} />
+      </Slate>
     </Content>
   );
 }
