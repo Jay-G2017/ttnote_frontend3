@@ -3,7 +3,12 @@ import isHotkey from 'is-hotkey';
 import { Editable, withReact, useSlate, Slate } from 'slate-react';
 import { Editor, Transforms, createEditor } from 'slate';
 import { withHistory } from 'slate-history';
-import { MdFormatBold } from 'react-icons/md';
+import {
+  MdFormatBold,
+  MdFormatItalic,
+  MdFormatUnderlined,
+  MdCode,
+} from 'react-icons/md';
 
 import styled from 'styled-components';
 
@@ -16,6 +21,13 @@ const Toolbar = styled.div`
 
 const Button = styled.span`
   cursor: pointer;
+  padding: 0.5rem;
+  color: ${(props) => (props.active ? 'blue' : '')};
+`;
+
+const IconDiv = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 const HOTKEYS = {
@@ -38,16 +50,16 @@ const RichEditor = () => {
       <Toolbar>
         <MarkButton format="bold" icon="format_bold" />
         <MarkButton format="italic" icon="format_italic" />
-        {/* <MarkButton format="underline" icon="format_underlined" />
+        <MarkButton format="underline" icon="format_underlined" />
         <MarkButton format="code" icon="code" />
-        <BlockButton format="heading-one" icon="looks_one" />
+        {/* <BlockButton format="heading-one" icon="looks_one" />
         <BlockButton format="heading-two" icon="looks_two" />
         <BlockButton format="block-quote" icon="format_quote" />
         <BlockButton format="numbered-list" icon="format_list_numbered" />
         <BlockButton format="bulleted-list" icon="format_list_bulleted" /> */}
       </Toolbar>
       <Editable
-        style={{ backgroundColor: '#fff' }}
+        style={{ backgroundColor: '#fff', padding: '0.5rem' }}
         renderElement={renderElement}
         renderLeaf={renderLeaf}
         placeholder="Enter some rich text…"
@@ -166,7 +178,29 @@ const Leaf = ({ attributes, children, leaf }) => {
 const renderIcon = (icon) => {
   switch (icon) {
     case 'format_bold':
-      return <MdFormatBold />;
+      return (
+        <IconDiv>
+          <MdFormatBold />
+        </IconDiv>
+      );
+    case 'format_italic':
+      return (
+        <IconDiv>
+          <MdFormatItalic />
+        </IconDiv>
+      );
+    case 'format_underlined':
+      return (
+        <IconDiv>
+          <MdFormatUnderlined />
+        </IconDiv>
+      );
+    case 'code':
+      return (
+        <IconDiv>
+          <MdCode />
+        </IconDiv>
+      );
     default:
       break;
   }
