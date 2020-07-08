@@ -4,19 +4,24 @@ import { Button, ButtonGroup } from 'react-bootstrap';
 import { createEditor } from 'slate';
 import { Slate, Editable, withReact } from 'slate-react';
 import styled from 'styled-components';
-import 'antd/dist/antd.css';
+import 'antd/lib/calendar/style/index.css';
+import 'antd/lib/select/style/index.css';
+import 'antd/lib/radio/style/index.css';
+
 import {
   IoMdArrowDropleft,
   IoMdArrowDropright,
   IoIosCalendar,
 } from 'react-icons/io';
 import dayjs from 'dayjs';
+import RichEditor from '../richEditor/index';
 
 const Content = styled.div`
   padding: 2rem 2rem;
   border-radius: 3px;
   height: 95vh;
   background-color: ${window.ttnoteThemeLight.bgColorPrimary};
+  color: #000;
 `;
 
 const FlexBetweenRow = styled.div`
@@ -46,26 +51,18 @@ const CalDiv = styled.div`
 const IconStyle = { fontSize: '1.1rem' };
 
 function TodayTomato() {
-  const editor = useMemo(() => withReact(createEditor()), []);
-  const [value, setValue] = useState([
-    {
-      type: 'paragraph',
-      children: [{ text: '记录下今天的点滴.' }],
-    },
-  ]);
-
   const [open, setOpen] = useState(false);
-  const [date, setDate] = useState(dayjs());
+  const [date, setDate] = useState(dayjs().format());
   return (
     <Content id="todayTomatoContent" onClick={() => setOpen(false)}>
       <FlexBetweenRow style={{ marginBottom: '1rem' }}>
-        <div>{date.format('dddd, M月D日, YYYY')}</div>
+        <div>{dayjs(date).format('dddd, M月D日, YYYY')}</div>
         <FlexRow>
           <ButtonGroup>
             <Button
               variant="light"
               size="lg"
-              onClick={() => setDate(date.subtract(1, 'd'))}
+              onClick={() => setDate(dayjs(date).subtract(1, 'd').format())}
             >
               <FlexRow style={IconStyle}>
                 <IoMdArrowDropleft />
@@ -82,7 +79,10 @@ function TodayTomato() {
                 <IoIosCalendar />
               </FlexRow>
             </Button>
-            <Button variant="light" onClick={() => setDate(date.add(1, 'd'))}>
+            <Button
+              variant="light"
+              onClick={() => setDate(dayjs(date).add(1, 'd').format())}
+            >
               <FlexRow style={IconStyle}>
                 <IoMdArrowDropright />
               </FlexRow>
@@ -92,7 +92,7 @@ function TodayTomato() {
             variant="light"
             style={{ marginLeft: '8px' }}
             onClick={(e) => {
-              setDate(dayjs());
+              setDate(dayjs().format());
             }}
           >
             <FlexRow style={{ fontSize: '0.9rem' }}>今日</FlexRow>
@@ -101,23 +101,22 @@ function TodayTomato() {
       </FlexBetweenRow>
       <CalContent>
         {open && (
-          <CalDiv>
+          <CalDiv onClick={(e) => e.stopPropagation()}>
             <Calendar
               fullscreen={false}
-              value={dayjs()}
-              onSelect={() => {}}
-              // onChange={}
+              value={dayjs(date)}
+              onChange={(date) => {
+                setDate(date.format());
+              }}
+              onSelect={(date) => {
+                setDate(date.format());
+                setOpen(false);
+              }}
             />
           </CalDiv>
         )}
       </CalContent>
-      <Slate
-        editor={editor}
-        value={value}
-        onChange={(newValue) => setValue(newValue)}
-      >
-        <Editable style={{ backgroundColor: '#fff', minHeight: '7rem' }} />
-      </Slate>
+      <RichEditor />
     </Content>
   );
 }
