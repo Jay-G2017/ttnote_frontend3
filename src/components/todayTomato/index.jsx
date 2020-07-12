@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Input, Calendar } from 'antd';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { createEditor } from 'slate';
@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import 'antd/lib/calendar/style/index.css';
 import 'antd/lib/select/style/index.css';
 import 'antd/lib/radio/style/index.css';
+import TodayTomatoContent from './todayTomatoContent';
 
 import {
   IoMdArrowDropleft,
@@ -53,6 +54,19 @@ const IconStyle = { fontSize: '1.1rem' };
 function TodayTomato() {
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(dayjs().format());
+
+  const [todayTomatoes, setTodayTomatoes] = useState([]);
+
+  useEffect(() => {
+    const fetchTodayTomatoes = () => {
+      const url = window.ttnote.baseUrl + '/today_tomatoes';
+      window.ttnote.fetch(url, null, false).then((res) => {
+        setTodayTomatoes(res);
+      });
+    };
+    fetchTodayTomatoes();
+  }, []);
+
   return (
     <Content id="todayTomatoContent" onClick={() => setOpen(false)}>
       <FlexBetweenRow style={{ marginBottom: '1rem' }}>
@@ -117,6 +131,7 @@ function TodayTomato() {
         )}
       </CalContent>
       <RichEditor />
+      <TodayTomatoContent data={todayTomatoes} />
     </Content>
   );
 }
