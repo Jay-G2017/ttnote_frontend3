@@ -4,10 +4,15 @@ function TodayTitle(props) {
   const { title } = props;
 
   return (
-    <div>
+    <div
+      style={{
+        paddingBottom: '1rem',
+      }}
+    >
       <div
         style={{
           color: window.ttnoteThemeLight.colorSecondary,
+          fontWeight: 'bold',
         }}
       >
         {title.name}

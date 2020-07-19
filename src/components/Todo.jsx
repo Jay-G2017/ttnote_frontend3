@@ -66,6 +66,7 @@ const CheckCell = styled.div`
   flex: none;
   display: flex;
   align-items: center;
+  user-select: none;
 
   margin-right: 0.3rem;
   & label {

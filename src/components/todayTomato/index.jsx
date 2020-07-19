@@ -21,6 +21,7 @@ const Content = styled.div`
   padding: 2rem 2rem;
   border-radius: 3px;
   height: 95vh;
+  overflow: auto;
   background-color: ${window.ttnoteThemeLight.bgColorPrimary};
   color: #000;
 `;
