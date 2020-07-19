@@ -5,6 +5,8 @@ import {
   IoIosNutrition,
   IoIosBowtie,
   IoIosHeart,
+  IoMdColorWand,
+  IoIosColorWand,
 } from 'react-icons/io';
 
 import styled, { keyframes } from 'styled-components';
@@ -37,6 +39,13 @@ const Icon4 = styled(IoIosMedical)`
   font-size: 60px;
   color: #3e80d3;
 `;
+
+const Icon5 = styled(IoIosColorWand)`
+  animation: ${spinEffect} 1.2s linear infinite;
+  font-size: 60px;
+  color: orange;
+`;
+
 function TodayTomatoContent(props) {
   const { data } = props;
 
@@ -50,6 +59,7 @@ function TodayTomatoContent(props) {
             <Icon2 />
             <Icon3 />
             <Icon4 />
+            <Icon5 />
           </>
         </TCollapse>
       ))}
