@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { IoMdArrowDropright } from 'react-icons/io';
 
-const Body = styled.div``;
+const Body = styled.div`
+  padding-bottom: 1rem;
+`;
 
 const TitleRow = styled.div`
   display: flex;
@@ -38,7 +40,7 @@ function TCollapse(props) {
         <RightIcon className={open ? 'open' : 'close'} />
         <div style={{ flex: 'auto' }}>{props.title || ''}</div>
       </TitleRow>
-      {open && <div style={{ paddingLeft: '1rem' }}>{props.children}</div>}
+      {open && <div style={{ paddingLeft: '2rem' }}>{props.children}</div>}
     </Body>
   );
 }
