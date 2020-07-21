@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Input, Calendar } from 'antd';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { createEditor } from 'slate';
@@ -8,6 +8,7 @@ import 'antd/lib/calendar/style/index.css';
 import 'antd/lib/select/style/index.css';
 import 'antd/lib/radio/style/index.css';
 import TodayTomatoContent from './todayTomatoContent';
+import { debounce } from 'lodash';
 
 import {
   IoMdArrowDropleft,
@@ -57,6 +58,8 @@ function TodayTomato() {
   const [date, setDate] = useState(dayjs().format());
 
   const [todayTomatoes, setTodayTomatoes] = useState([]);
+  const [defaultValue, setDefaultValue] = useState('');
+  const [dailyNoteId, setDailyNoteId] = useState('');
 
   useEffect(() => {
     const fetchTodayTomatoes = () => {
@@ -65,8 +68,45 @@ function TodayTomato() {
         setTodayTomatoes(res);
       });
     };
+
     fetchTodayTomatoes();
   }, []);
+
+  const fetchDailyNotes = useCallback((date) => {
+    const url =
+      window.ttnote.baseUrl +
+      '/daily_notes?date=' +
+      dayjs(date).format('YYYY-MM-DD');
+    window.ttnote.fetch(url, null, false).then((res) => {
+      // setDefaultValue(res.desc || '');
+      setDailyNoteId(res.id);
+    });
+  }, []);
+
+  const delayedFetchDailyNote = useCallback(debounce(fetchDailyNotes, 300), []);
+
+  useEffect(() => {
+    delayedFetchDailyNote(date);
+  }, [date, delayedFetchDailyNote]);
+
+  const postToSaveValue = useCallback(
+    (value) => {
+      const url = window.ttnote.baseUrl + `/daily_notes/${dailyNoteId}`;
+      window.ttnote
+        .fetch(url, {
+          method: 'PUT',
+          body: JSON.stringify({ desc: value }),
+        })
+        .then((res) => {
+          console.log(res);
+        });
+    },
+    [dailyNoteId]
+  );
+
+  const delaySaveValue = useCallback(debounce(postToSaveValue, 400), [
+    dailyNoteId,
+  ]);
 
   return (
     <Content id="todayTomatoContent" onClick={() => setOpen(false)}>
@@ -131,7 +171,12 @@ function TodayTomato() {
           </CalDiv>
         )}
       </CalContent>
-      <RichEditor />
+      <RichEditor
+        // key={dailyNoteId}
+        defaultValue={defaultValue}
+        onChange={delaySaveValue}
+        placeholder={'记录下今日的心得吧...'}
+      />
       <TodayTomatoContent data={todayTomatoes} />
     </Content>
   );

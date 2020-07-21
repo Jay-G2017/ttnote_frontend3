@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import isHotkey from 'is-hotkey';
 import { Editable, withReact, useSlate, Slate } from 'slate-react';
-import { Editor, Transforms, createEditor } from 'slate';
+import { Editor, Transforms, createEditor, Node } from 'slate';
 import { withHistory } from 'slate-history';
 import {
   MdFormatBold,
@@ -39,14 +39,42 @@ const HOTKEYS = {
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 
-const RichEditor = () => {
-  const [value, setValue] = useState(initialValue);
+const serialize = (value) => {
+  return (
+    value
+      // Return the string content of each paragraph in the value's children.
+      .map((n) => Node.string(n))
+      // Join them all with line breaks denoting paragraphs.
+      .join('\n')
+  );
+};
+
+const deserialize = (string) => {
+  // Return a value array of children derived by splitting the string.
+  return string.split('\n').map((line) => {
+    return {
+      children: [{ text: line }],
+    };
+  });
+};
+
+const RichEditor = (props) => {
+  const defaultValue = props.defaultValue || '';
+  const [value, setValue] = useState(deserialize(''));
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
 
   return (
-    <Slate editor={editor} value={value} onChange={(value) => setValue(value)}>
+    <Slate
+      editor={editor}
+      value={value}
+      onChange={(value) => {
+        console.log('onChange', value);
+        setValue(value);
+        if (props.onChange) props.onChange(serialize(value));
+      }}
+    >
       <Toolbar>
         <MarkButton format="bold" icon="format_bold" />
         <MarkButton format="italic" icon="format_italic" />
@@ -62,7 +90,7 @@ const RichEditor = () => {
         style={{ backgroundColor: '#fff', padding: '0.5rem' }}
         renderElement={renderElement}
         renderLeaf={renderLeaf}
-        placeholder="Enter some rich text…"
+        placeholder={props.placeholder || '请输入文本'}
         spellCheck
         autoFocus
         onKeyDown={(event) => {
