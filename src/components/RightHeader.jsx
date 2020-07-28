@@ -87,6 +87,15 @@ const TodayCell = styled.div`
   align-items: center;
   position: relative;
   cursor: pointer;
+  ::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: -1px;
+    bottom: -5px;
+    background-color: #dc3545;
+    height: 4px;
+  }
 `;
 
 function RightHeader(props) {

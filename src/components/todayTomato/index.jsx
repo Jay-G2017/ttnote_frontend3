@@ -21,7 +21,7 @@ import RichEditor from '../richEditor/index';
 const Content = styled.div`
   padding: 2rem 2rem;
   border-radius: 3px;
-  height: 95vh;
+  height: 90vh;
   overflow: auto;
   background-color: ${window.ttnoteThemeLight.bgColorPrimary};
   color: #000;
@@ -62,6 +62,10 @@ function TodayTomato() {
   const [dailyNoteId, setDailyNoteId] = useState('');
 
   useEffect(() => {
+    document.getElementById('todayTomatoContent').scrollTo(0, 0);
+  }, [todayTomatoes.length]);
+
+  useEffect(() => {
     const fetchTodayTomatoes = () => {
       const url = window.ttnote.baseUrl + '/today_tomatoes';
       window.ttnote.fetch(url, null, false).then((res) => {
@@ -69,7 +73,7 @@ function TodayTomato() {
       });
     };
 
-    fetchTodayTomatoes();
+    // fetchTodayTomatoes();
   }, []);
 
   const fetchDailyNotes = useCallback((date) => {
@@ -171,12 +175,14 @@ function TodayTomato() {
           </CalDiv>
         )}
       </CalContent>
-      <RichEditor
-        // key={dailyNoteId}
-        defaultValue={defaultValue}
-        onChange={delaySaveValue}
-        placeholder={'记录下今日的心得吧...'}
-      />
+      {!!dailyNoteId && (
+        <RichEditor
+          key={dailyNoteId}
+          defaultValue={defaultValue}
+          onChange={delaySaveValue}
+          placeholder={'记录下今日的心得吧...'}
+        />
+      )}
       <TodayTomatoContent data={todayTomatoes} />
     </Content>
   );

@@ -58,9 +58,13 @@ const deserialize = (string) => {
   });
 };
 
+const unChanged = (oldVal, newVal) => {
+  return serialize(oldVal) === serialize(newVal);
+};
+
 const RichEditor = (props) => {
   const defaultValue = props.defaultValue || '';
-  const [value, setValue] = useState(deserialize(''));
+  const [value, setValue] = useState(deserialize(defaultValue));
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
@@ -69,10 +73,12 @@ const RichEditor = (props) => {
     <Slate
       editor={editor}
       value={value}
-      onChange={(value) => {
-        console.log('onChange', value);
-        setValue(value);
-        if (props.onChange) props.onChange(serialize(value));
+      onChange={(val) => {
+        console.log('onChange', value, val);
+        if (props.onChange) props.onChange(serialize(val));
+        if (!props.value) {
+          setValue(val);
+        }
       }}
     >
       <Toolbar>
