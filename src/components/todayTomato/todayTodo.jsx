@@ -21,7 +21,7 @@ function TodayTodo(props) {
   const [done, setDone] = useState(false);
 
   return (
-    <div>
+    <div style={{ paddingBottom: '0.6rem' }}>
       <div
         style={{
           display: 'flex',

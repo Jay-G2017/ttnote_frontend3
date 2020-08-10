@@ -3,6 +3,7 @@ import TCollapse from './tCollapse';
 import TodayTodo from './todayTodo';
 import TodayTitle from './todayTitle';
 import { Tabs } from 'antd';
+import styles from './style.module.scss';
 
 function TodayTomatoContent(props) {
   const { data } = props;
@@ -12,7 +13,7 @@ function TodayTomatoContent(props) {
       <Tabs animated={false}>
         {data.map((project) => (
           <Tabs.TabPane tab={project.name} key={project.id}>
-            <div>
+            <div className={styles.cardContent}>
               {(project.todos || []).map((todo) => (
                 <TodayTodo todo={todo} />
               ))}

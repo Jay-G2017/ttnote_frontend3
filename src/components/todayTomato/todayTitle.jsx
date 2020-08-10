@@ -17,13 +17,8 @@ function TodayTitle(props) {
       >
         {title.name}
       </div>
-      <div
-        style={{
-          paddingLeft: '1rem',
-        }}
-      >
-        {props.children}
-      </div>
+
+      {props.children}
     </div>
   );
 }
