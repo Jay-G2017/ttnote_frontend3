@@ -73,7 +73,7 @@ function TodayTomato() {
       });
     };
 
-    // fetchTodayTomatoes();
+    fetchTodayTomatoes();
   }, []);
 
   const fetchDailyNotes = useCallback((date) => {
@@ -82,7 +82,8 @@ function TodayTomato() {
       '/daily_notes?date=' +
       dayjs(date).format('YYYY-MM-DD');
     window.ttnote.fetch(url, null, false).then((res) => {
-      // setDefaultValue(res.desc || '');
+      const desc = res.desc ? JSON.parse(res.desc) : '';
+      setDefaultValue(desc);
       setDailyNoteId(res.id);
     });
   }, []);
@@ -99,7 +100,7 @@ function TodayTomato() {
       window.ttnote
         .fetch(url, {
           method: 'PUT',
-          body: JSON.stringify({ desc: value }),
+          body: JSON.stringify({ desc: JSON.stringify(value) }),
         })
         .then((res) => {
           console.log(res);
@@ -180,7 +181,7 @@ function TodayTomato() {
           key={dailyNoteId}
           defaultValue={defaultValue}
           onChange={delaySaveValue}
-          placeholder={'记录下今日的心得吧...'}
+          placeholder={''}
         />
       )}
       <TodayTomatoContent data={todayTomatoes} />

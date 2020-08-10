@@ -3,10 +3,12 @@ import ReactDOM from 'react-dom';
 import './utils/ttnote';
 import './common/theme';
 import * as serviceWorker from './serviceWorker';
+import 'antd/dist/antd.css';
 import 'bootstrap/dist/css/bootstrap-grid.min.css';
-import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
-import App from "./App";
+import './index.module.scss';
+import App from './App';
 
 ReactDOM.render(<App />, document.getElementById('root'));
 

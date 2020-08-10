@@ -63,8 +63,8 @@ const unChanged = (oldVal, newVal) => {
 };
 
 const RichEditor = (props) => {
-  const defaultValue = props.defaultValue || '';
-  const [value, setValue] = useState(deserialize(defaultValue));
+  const defaultValue = props.defaultValue || initialValue;
+  const [value, setValue] = useState(defaultValue);
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
@@ -75,7 +75,7 @@ const RichEditor = (props) => {
       value={value}
       onChange={(val) => {
         console.log('onChange', value, val);
-        if (props.onChange) props.onChange(serialize(val));
+        if (props.onChange) props.onChange(val);
         if (!props.value) {
           setValue(val);
         }
@@ -96,9 +96,8 @@ const RichEditor = (props) => {
         style={{ backgroundColor: '#fff', padding: '0.5rem' }}
         renderElement={renderElement}
         renderLeaf={renderLeaf}
-        placeholder={props.placeholder || '请输入文本'}
+        placeholder={props.placeholder}
         spellCheck
-        autoFocus
         onKeyDown={(event) => {
           for (const hotkey in HOTKEYS) {
             if (isHotkey(hotkey, event)) {
