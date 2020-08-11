@@ -6,8 +6,8 @@ import * as serviceWorker from './serviceWorker';
 import 'antd/dist/antd.css';
 import 'bootstrap/dist/css/bootstrap-grid.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './index.css';
-import './index.module.scss';
+import './index.scss';
+// import './index.module.scss';
 import App from './App';
 
 ReactDOM.render(<App />, document.getElementById('root'));

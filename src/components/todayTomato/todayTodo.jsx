@@ -1,44 +1,20 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import TCheckbox from '../TCheckbox';
 import RichEditor from '../richEditor';
 
-const CheckCell = styled.div`
-  font-size: 1.4rem;
-  flex: none;
-  display: flex;
-  align-items: center;
-  user-select: none;
-
-  margin-right: 0.3rem;
-  & label {
-    margin-bottom: 0;
-  }
-`;
+import commonStyle from '../../commonStyle.module.scss';
+import styles from './style.module.scss';
+import classNames from 'classnames/bind';
 
 function TodayTodo(props) {
   const { todo } = props;
-  const [done, setDone] = useState(false);
 
   return (
-    <div style={{ paddingBottom: '0.6rem' }}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-        }}
-      >
-        <CheckCell>
-          <TCheckbox
-            disabled={todo.id < 0}
-            checked={done}
-            onChange={(value) => {
-              setDone(value);
-              // handleTodoClose();
-              // toggleTodo(todo.id, value);
-            }}
-          />
-        </CheckCell>
+    <div style={{ padding: '0.5rem 0' }}>
+      <div className={classNames(commonStyle.flexRow, styles.todoRow)}>
+        <div className={styles.checkCell}>
+          <TCheckbox disabled={true} checked={todo.done} />
+        </div>
         <div>{todo.name}</div>
       </div>
       <RichEditor />

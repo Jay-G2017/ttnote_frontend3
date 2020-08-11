@@ -1,3 +1,22 @@
+@import '../../styles/variables';
+
 .cardContent {
-  padding: 0 0.3rem;
+  padding: 0.2rem 0.2rem;
+}
+
+.checkCell {
+  font-size: 1.3rem;
+  flex: none;
+  display: flex;
+  align-items: center;
+  user-select: none;
+
+  margin-right: 0.3rem;
+  & label {
+    margin-bottom: 0;
+  }
+}
+
+.todoRow {
+  color: $text_color_title;
 }

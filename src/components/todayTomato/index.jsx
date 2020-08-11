@@ -19,7 +19,7 @@ import dayjs from 'dayjs';
 import RichEditor from '../richEditor/index';
 
 const Content = styled.div`
-  padding: 2rem 2rem;
+  padding: 2rem 3rem;
   border-radius: 3px;
   height: 90vh;
   overflow: auto;
