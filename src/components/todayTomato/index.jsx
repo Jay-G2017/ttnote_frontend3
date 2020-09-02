@@ -67,14 +67,17 @@ function TodayTomato() {
 
   useEffect(() => {
     const fetchTodayTomatoes = () => {
-      const url = window.ttnote.baseUrl + '/today_tomatoes';
+      const url =
+        window.ttnote.baseUrl +
+        '/today_tomatoes?date=' +
+        dayjs(date).format('YYYY-MM-DD');
       window.ttnote.fetch(url, null, false).then((res) => {
         setTodayTomatoes(res);
       });
     };
 
     fetchTodayTomatoes();
-  }, []);
+  }, [date]);
 
   const fetchDailyNotes = useCallback((date) => {
     const url =
