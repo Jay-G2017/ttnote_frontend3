@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getCookie, setCookie, noSyncApi } from './helper';
+import { getCookie, noSyncApi } from './helper';
 import { message } from 'antd';
 
 import {
@@ -42,7 +42,7 @@ service.interceptors.response.use(
     const code = response.status;
     if (code < 200 || code > 300) {
       message.error(response.message);
-      dispatchEvent(failedEvent);
+      dispatchEvent(failedEvent('未知错误'));
       return Promise.reject('error');
     } else {
       dispatchSavedEventLater();
@@ -56,6 +56,7 @@ service.interceptors.response.use(
     } catch (e) {
       if (error.toString().indexOf('Error: timeout') !== -1) {
         message.error('网络请求超时', 5);
+        dispatchEvent(failedEvent('网络请求超时'));
         return Promise.reject(error);
       }
     }
@@ -69,7 +70,8 @@ service.interceptors.response.use(
         message.error(errorMsg, 5);
       }
     } else {
-      message.error('网络请求超时', 5);
+      dispatchEvent(failedEvent('网络请求失败'));
+      message.error('网络请求失败', 5);
     }
     return Promise.reject(error);
   }

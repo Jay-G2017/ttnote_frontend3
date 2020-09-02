@@ -17,6 +17,7 @@ import {
 } from 'react-icons/io';
 import dayjs from 'dayjs';
 import RichEditor from '../richEditor/index';
+import StatusBar from '../StatusBar/index';
 
 const Content = styled.div`
   padding: 2rem 3rem;
@@ -118,6 +119,7 @@ function TodayTomato() {
 
   return (
     <Content id="todayTomatoContent" onClick={() => setOpen(false)}>
+      <StatusBar />
       <FlexBetweenRow style={{ marginBottom: '1rem' }}>
         <div>{dayjs(date).format('dddd, M月D日, YYYY')}</div>
         <FlexRow>
