@@ -1,17 +1,28 @@
 import axios from 'axios';
-import { getCookie, setCookie } from './helper';
+import { getCookie, setCookie, noSyncApi } from './helper';
+import { message } from 'antd';
+
+import {
+  savingEvent,
+  failedEvent,
+  dispatchSavedEventLater,
+} from '../utils/ChangeStatusEvent';
 
 const Config = { timeout: 30000 };
 
 // 创建axios实例
 const service = axios.create({
-  baseURL: window.TextEncoderStream.basUrl,
+  baseURL: window.ttnote.baseUrl,
   timeout: Config.timeout, // 请求超时时间
 });
 
 // request拦截器
 service.interceptors.request.use(
   (config) => {
+    if (!noSyncApi(config.url)) {
+      window.dispatchEvent(savingEvent);
+    }
+
     if (getCookie('token')) {
       config.headers['Authorization'] = getCookie('token');
     }
@@ -30,58 +41,35 @@ service.interceptors.response.use(
   (response) => {
     const code = response.status;
     if (code < 200 || code > 300) {
-      Notification.error({
-        title: response.message,
-      });
+      message.error(response.message);
+      dispatchEvent(failedEvent);
       return Promise.reject('error');
     } else {
+      dispatchSavedEventLater();
       return response.data;
     }
   },
   (error) => {
     let code = 0;
     try {
-      code = error.response.data.status;
+      code = error.response.status;
     } catch (e) {
       if (error.toString().indexOf('Error: timeout') !== -1) {
-        Notification.error({
-          title: '网络请求超时',
-          duration: 5000,
-        });
+        message.error('网络请求超时', 5);
         return Promise.reject(error);
       }
     }
     if (code) {
       if (code === 401) {
-        MessageBox.confirm(
-          '登录状态已过期，您可以继续留在该页面，或者重新登录',
-          '系统提示',
-          {
-            confirmButtonText: '重新登录',
-            cancelButtonText: '取消',
-            type: 'warning',
-          }
-        ).then(() => {
-          store.dispatch('LogOut').then(() => {
-            location.reload(); // 为了重新实例化vue-router对象 避免bug
-          });
-        });
+        window.ttnote.goto('/login?needLogin');
       } else if (code === 403) {
-        router.push({ path: '/401' });
+        window.ttnote.goto('/login?needLogin');
       } else {
-        const errorMsg = error.response.data.message;
-        if (errorMsg !== undefined) {
-          Notification.error({
-            title: errorMsg,
-            duration: 5000,
-          });
-        }
+        const errorMsg = error.response.message;
+        message.error(errorMsg, 5);
       }
     } else {
-      Notification.error({
-        title: '接口请求失败',
-        duration: 5000,
-      });
+      message.error('网络请求超时', 5);
     }
     return Promise.reject(error);
   }

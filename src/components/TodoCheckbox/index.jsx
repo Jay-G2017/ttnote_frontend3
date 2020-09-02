@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { CheckCell } from './styles';
 import TCheckbox from '../TCheckbox';
+import api from '../../api/index';
 
 function TodoCheckbox(props) {
   const { defaultValue, todoId } = props;
@@ -8,13 +9,9 @@ function TodoCheckbox(props) {
   const [checked, setChecked] = useState(defaultValue);
 
   const updateTodo = useCallback((todoId, value) => {
-    const url = window.ttnote.baseUrl + '/todos/' + todoId;
-    window.ttnote
-      .fetch(url, {
-        method: 'PATCH',
-        body: JSON.stringify({ done: value }),
-      })
-      .then()
+    api
+      .editTodo(todoId, { done: value })
+      .then((res) => {})
       .catch(() => {
         setChecked(!value);
       });
