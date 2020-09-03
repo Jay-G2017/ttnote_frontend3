@@ -76,7 +76,7 @@ const ttnoteThemeLight = {
   btnWarnBg: '#F2F2F2',
   btnWarnActiveBg: '#D9D9D9',
   btnWarnDisabledBg: btnDisabledBg,
-  
+
   btnDisabledBg: btnDisabledBg,
 
   borderRadiusPrimary: '3px',
@@ -88,6 +88,17 @@ const ttnoteHomeLight = {
   bgColorLight: '#F5F5F7',
 };
 
+const LightTheme = {
+  greenLight: '#95EC69',
+
+  green: '#07C160',
+  green60: 'rgba(7,193,96,0.6)',
+  green40: 'rgba(7,193,96,0.4)',
+  green30: 'rgba(7,193,96,0.3)',
+  green20: 'rgba(7,193,96,0.2)',
+};
+
 window.ttnoteThemeLight = ttnoteThemeLight;
 window.ttnoteHomeLight = ttnoteHomeLight;
 
+window.light = LightTheme;

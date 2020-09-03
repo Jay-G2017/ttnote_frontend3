@@ -23,7 +23,7 @@ function TodayTomatoContent(props) {
                 <TodayTitle title={title}>
                   {(title.todos || []).map((todo) => (
                     // <TodayTodo todo={todo} />
-                    <Todo todo={todo} />
+                    <Todo todo={todo} style={{ marginBottom: '1rem' }} />
                   ))}
                 </TodayTitle>
               ))}

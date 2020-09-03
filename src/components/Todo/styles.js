@@ -5,10 +5,11 @@ export const TodoRow = styled.div`
   display: flex;
   align-items: center;
   color: ${window.ttnoteThemeLight.textColorTitle};
-  background-color: ${window.ttnoteThemeLight.colorPrimary};
-  border-radius: 4px;
+  background-color: ${window.light.green};
+  border-radius: ${(props) => (props.open ? '3px 3px 0 0 ' : '3px')};
   user-select: none;
   padding-right: 2rem;
+  box-shadow: ${(props) => (props.open ? '0 1px 2px #aaa' : 'none')};
 `;
 
 export const TodoCheckboxStyled = styled.div`
@@ -23,6 +24,10 @@ export const TodoInputStyled = styled.div`
 `;
 
 export const ChildrenContent = styled.div`
-  background-color: ${window.ttnoteThemeLight.bgColorPrimaryDarker};
-  min-height: 2rem;
+  background-color: ${window.light.green20};
+  min-height: 3rem;
+  border-radius: ${(props) => (props.open ? '0 0 3px 3px' : 0)};
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 `;

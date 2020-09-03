@@ -10,16 +10,16 @@ import TodoCheckbox from '../TodoCheckbox';
 import TodoInput from '../TodoInput';
 
 function Todo(props) {
-  const { todo } = props;
+  const { todo, style } = props;
 
   const [open, setOpen] = useState(false);
 
   const renderChildren = () => {
     if (open) {
       if (props.children) {
-        return <ChildrenContent>{props.children}</ChildrenContent>;
+        return <ChildrenContent open={open}>{props.children}</ChildrenContent>;
       } else {
-        return <ChildrenContent>没有蕃茄</ChildrenContent>;
+        return <ChildrenContent open={open}>没有蕃茄</ChildrenContent>;
       }
     } else {
       return null;
@@ -27,8 +27,8 @@ function Todo(props) {
   };
 
   return (
-    <TodoGroup>
-      <TodoRow>
+    <TodoGroup style={{ ...style }}>
+      <TodoRow open={open}>
         <TodoCheckboxStyled onClick={() => setOpen(!open)}>
           <TodoCheckbox defaultValue={todo.done} todoId={todo.id} />
         </TodoCheckboxStyled>
