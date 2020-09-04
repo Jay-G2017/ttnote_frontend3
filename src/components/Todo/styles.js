@@ -24,7 +24,7 @@ export const TodoInputStyled = styled.div`
 `;
 
 export const ChildrenContent = styled.div`
-  background-color: ${window.light.green20};
+  background-color: ${window.light.greenL10};
   min-height: 3rem;
   border-radius: ${(props) => (props.open ? '0 0 3px 3px' : 0)};
   display: flex;

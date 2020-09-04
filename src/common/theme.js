@@ -92,6 +92,8 @@ const LightTheme = {
   greenLight: '#95EC69',
 
   green: '#07C160',
+  greenL10: '#1FC770',
+  greenD10: '#06AE57',
   green60: 'rgba(7,193,96,0.6)',
   green40: 'rgba(7,193,96,0.4)',
   green30: 'rgba(7,193,96,0.3)',
