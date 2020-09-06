@@ -92,12 +92,13 @@ const LightTheme = {
   greenLight: '#95EC69',
 
   green: '#07C160',
+  greenR10: 'hsla(149, 93%, 39%, 0.1)',
   greenL10: '#1FC770',
+  greenL20: '#39CD80',
   greenD10: '#06AE57',
-  green60: 'rgba(7,193,96,0.6)',
-  green40: 'rgba(7,193,96,0.4)',
-  green30: 'rgba(7,193,96,0.3)',
-  green20: 'rgba(7,193,96,0.2)',
+  greenD20: '#069A4D',
+
+  borderRadius: '3px',
 };
 
 window.ttnoteThemeLight = ttnoteThemeLight;
