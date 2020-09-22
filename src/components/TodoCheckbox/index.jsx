@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { CheckCell } from './styles';
-import TCheckbox from '../TCheckbox';
 import api from '../../api/index';
 
 function TodoCheckbox(props) {
@@ -11,23 +10,26 @@ function TodoCheckbox(props) {
   const updateTodo = useCallback((todoId, value) => {
     api
       .editTodo(todoId, { done: value })
-      .then((res) => {})
+      .then((res) => { })
       .catch(() => {
         setChecked(!value);
       });
   }, []);
 
-  const handleOnChange = useCallback(
-    (value) => {
-      setChecked(value);
-      updateTodo(todoId, value);
+  const handleOnClick = useCallback(
+    () => {
+      setChecked(!checked);
+      updateTodo(todoId, !checked);
     },
-    [todoId, updateTodo]
+    [checked, todoId, updateTodo]
   );
 
   return (
-    <CheckCell>
-      <TCheckbox checked={checked} onChange={handleOnChange} />
+    <CheckCell onClick={handleOnClick}>
+      {checked ?
+        <div>checked</div> :
+        <div>not</div>
+      }
     </CheckCell>
   );
 }
