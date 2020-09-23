@@ -6,9 +6,9 @@ const br = window.light.borderRadius;
 export const TodoGroup = styled.div``;
 export const TodoRow = styled.div`
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   color: ${window.ttnoteThemeLight.textColorTitle};
-  background-color: ${window.light.green};
+  /* background-color: ${window.light.green}; */
   border-radius: ${(props) => (props.open ? `${br} ${br} 0 0 ` : br)};
   user-select: none;
   padding-right: 2rem;

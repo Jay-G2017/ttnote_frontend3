@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   TodoGroup,
   TodoRow,
@@ -8,6 +8,7 @@ import {
 } from './styles';
 import TodoCheckbox from '../TodoCheckbox';
 import TodoInput from '../TodoInput';
+import styles from './styles.module.css';
 
 function Todo(props) {
   const { todo, style } = props;
@@ -26,15 +27,19 @@ function Todo(props) {
     }
   };
 
+  const toggleOpen = useCallback(() => {
+    setOpen(!open);
+  }, [open]);
+
   return (
     <TodoGroup style={{ ...style }}>
       <TodoRow open={open}>
-        <TodoCheckboxStyled onClick={() => setOpen(!open)}>
-          <TodoCheckbox defaultValue={todo.done} todoId={todo.id} />
-        </TodoCheckboxStyled>
+        <TodoCheckbox defaultValue={todo.done} todoId={todo.id} />
+        {/* <TodoCheckboxStyled onClick={() => setOpen(!open)}></TodoCheckboxStyled> */}
         <TodoInputStyled>
           <TodoInput defaultValue={todo.name} todoId={todo.id} />
         </TodoInputStyled>
+        <div className={styles.toolbarCell} onClick={toggleOpen}></div>
       </TodoRow>
       {renderChildren()}
     </TodoGroup>
