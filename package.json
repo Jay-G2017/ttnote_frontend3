@@ -43,6 +43,8 @@
     "jest-environment-jsdom-fourteen": "0.1.0",
     "jest-resolve": "24.9.0",
     "jest-watch-typeahead": "0.4.0",
+    "less": "^3.12.2",
+    "less-loader": "^7.0.1",
     "lodash": "^4.17.15",
     "mini-css-extract-plugin": "0.8.0",
     "node-sass": "^4.14.1",

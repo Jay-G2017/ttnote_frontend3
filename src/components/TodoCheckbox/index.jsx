@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import api from '../../api/index';
-import styles from './styles.module.css';
+import styles from './styles.module.less';
 import { IoIosCheckmark } from 'react-icons/io';
 
 function TodoCheckbox(props) {

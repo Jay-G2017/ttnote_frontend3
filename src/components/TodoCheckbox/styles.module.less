@@ -1,3 +1,4 @@
+// @import '../../styles/var.less';
 .flexRowCenter {
   display: flex;
   align-items: center;
@@ -5,19 +6,18 @@
 }
 .checkCell {
   width: 36px;
-  padding: 5px;
-  background-color: #07c160;
+  background-color: @primary-color;
   border-radius: 3px 0 0 3px;
   composes: flexRowCenter;
 }
 
 .checkCell:hover {
-  background-color: #1fc770;
+  background-color: @primary-color-Sa10;
 }
 
 .circle {
   cursor: pointer;
-  background-color: #fff;
+  background-color: @white;
   border-radius: 50%;
   width: 16px;
   height: 16px;
@@ -30,5 +30,5 @@
 
 .checkIcon {
   composes: fontIcon;
-  color: #07c160;
+  color: @primary-color;
 }
