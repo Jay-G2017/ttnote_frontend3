@@ -17,7 +17,7 @@ function TodayTomatoContent(props) {
             <div className={styles.cardContent}>
               {(project.todos || []).map((todo) => (
                 // <TodayTodo todo={todo} />
-                <Todo todo={todo} />
+                <Todo todo={todo} style={{ marginBottom: '1rem' }} />
               ))}
               {(project.titles || []).map((title) => (
                 <TodayTitle title={title}>

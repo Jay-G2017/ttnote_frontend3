@@ -1,0 +1,21 @@
+@import '../../styles/var.less';
+
+.toolbarCell {
+  width: 36px;
+}
+
+.todoRow {
+  display: flex;
+  background-color: @white;
+  user-select: none;
+  border-radius: @border-radius;
+}
+
+.todoRowOpen {
+  border-radius: @border-radius @border-radius 0 0 ;
+  box-shadow: @box-shadow;
+}
+
+.toggleIcon {
+  composes: fontIcon from global;
+}

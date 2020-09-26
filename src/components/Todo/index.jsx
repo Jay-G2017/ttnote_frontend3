@@ -8,7 +8,10 @@ import {
 } from './styles';
 import TodoCheckbox from '../TodoCheckbox';
 import TodoInput from '../TodoInput';
-import styles from './styles.module.css';
+import styles from './styles.module.less';
+import classNames from 'classnames/bind';
+
+let cx = classNames.bind(styles);
 
 function Todo(props) {
   const { todo, style } = props;
@@ -32,15 +35,21 @@ function Todo(props) {
   }, [open]);
 
   return (
-    <TodoGroup style={{ ...style }}>
-      <TodoRow open={open}>
+    <TodoGroup style={{ ...style }} className={props.className}>
+      <div className={cx({ todoRow: true, todoRowOpen: open })}>
         <TodoCheckbox defaultValue={todo.done} todoId={todo.id} />
-        {/* <TodoCheckboxStyled onClick={() => setOpen(!open)}></TodoCheckboxStyled> */}
         <TodoInputStyled>
           <TodoInput defaultValue={todo.name} todoId={todo.id} />
         </TodoInputStyled>
-        <div className={styles.toolbarCell} onClick={toggleOpen}></div>
-      </TodoRow>
+        <div className={styles.toolbarCell} onClick={toggleOpen}>
+          <div className={styles.toggleIcon}>
+            {open ?
+              <ion-icon name="arrow-down-circle"></ion-icon> :
+              <ion-icon name="arrow-down-circle"></ion-icon>
+            }
+          </div>
+        </div>
+      </div>
       {renderChildren()}
     </TodoGroup>
   );

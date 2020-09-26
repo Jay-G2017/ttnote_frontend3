@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import api from '../../api/index';
 import styles from './styles.module.less';
-import { IoIosCheckmark } from 'react-icons/io';
+import { IoIosRadioButtonOff, IoIosCheckmarkCircle } from 'react-icons/io';
 
 function TodoCheckbox(props) {
   const { defaultValue, todoId } = props;
@@ -11,7 +11,7 @@ function TodoCheckbox(props) {
   const updateTodo = useCallback((todoId, value) => {
     api
       .editTodo(todoId, { done: value })
-      .then((res) => {})
+      .then((res) => { })
       .catch(() => {
         setChecked(!value);
       });
@@ -27,10 +27,11 @@ function TodoCheckbox(props) {
   );
 
   return (
-    <div className={styles.checkCell}>
-      <div className={styles.circle} onClick={handleOnClick}>
-        {checked ? <IoIosCheckmark className={styles.checkIcon} /> : null}
-      </div>
+    <div className={styles.checkCell} onClick={handleOnClick}>
+      {checked ?
+        <IoIosCheckmarkCircle className={styles.checkIcon} /> :
+        <IoIosRadioButtonOff className={styles.circleIcon} />
+      }
     </div>
   );
 }
