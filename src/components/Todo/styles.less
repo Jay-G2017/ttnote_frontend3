@@ -1,0 +1,56 @@
+@import '../../styles/var.less';
+
+.toolbarCell {
+  composes: flexRow from global;
+  // width: 36px;
+}
+
+.todoRow {
+  display: flex;
+  background-color: @white;
+  user-select: none;
+  border-radius: @border-radius;
+  position: relative;
+  padding-right: 16px;
+}
+
+.todoRowOpen {
+  border-radius: @border-radius @border-radius 0 0;
+  box-shadow: @box-shadow;
+}
+
+.marginRight {
+  margin-right: 0.4rem;
+}
+
+.toggleIcon {
+  composes: fontIcon from global;
+  composes: marginRight;
+}
+
+.toggleIconOpen {
+  color: @warn-color;
+}
+
+.playIcon {
+  composes: fontIcon from global;
+  composes: marginRight;
+}
+
+.moreIcon {
+  composes: fontIconSmall from global;
+  composes: marginRight;
+}
+
+.badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: red;
+}
+
+.badgePlan {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}

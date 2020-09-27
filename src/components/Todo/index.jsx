@@ -8,13 +8,15 @@ import {
 } from './styles';
 import TodoCheckbox from '../TodoCheckbox';
 import TodoInput from '../TodoInput';
-import styles from './styles.module.less';
+import styles from './styles.less';
 import classNames from 'classnames/bind';
+import Icon from '../icon';
+import { Badge } from 'react-bootstrap';
 
 let cx = classNames.bind(styles);
 
 function Todo(props) {
-  const { todo, style } = props;
+  const { todo, style, enableAction } = props;
 
   const [open, setOpen] = useState(false);
 
@@ -41,18 +43,44 @@ function Todo(props) {
         <TodoInputStyled>
           <TodoInput defaultValue={todo.name} todoId={todo.id} />
         </TodoInputStyled>
-        <div className={styles.toolbarCell} onClick={toggleOpen}>
-          <div className={styles.toggleIcon}>
-            {open ?
-              <ion-icon name="arrow-down-circle"></ion-icon> :
-              <ion-icon name="arrow-down-circle"></ion-icon>
-            }
+        <div className={styles.toolbarCell}>
+          <div
+            className={cx({ toggleIcon: true, toggleIconOpen: open })}
+            onClick={toggleOpen}
+          >
+            <Icon type="list-circle" />
           </div>
+          {enableAction && (
+            <>
+              <div
+                className={cx({ playIcon: true, playIconDisabled: open })}
+                onClick={toggleOpen}
+              >
+                <Icon type="play-circle" />
+              </div>
+              <div
+                className={cx({ moreIcon: true, playIconDisabled: open })}
+                onClick={toggleOpen}
+              >
+                <Icon type="ellipsis-horizontal" />
+              </div>
+            </>
+          )}
         </div>
+        <Badge variant="light" className={styles.badge}>
+          9
+        </Badge>
+        <Badge variant="light" className={styles.badgePlan}>
+          3
+        </Badge>
       </div>
       {renderChildren()}
     </TodoGroup>
   );
 }
+
+Todo.defaultValue = {
+  enableAction: false,
+};
 
 export default Todo;

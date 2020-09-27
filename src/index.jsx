@@ -9,7 +9,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.scss';
 // import './index.module.scss';
 
-import './styles/global.module.less';
+import './styles/global.less';
 import App from './App';
 
 ReactDOM.render(<App />, document.getElementById('root'));
