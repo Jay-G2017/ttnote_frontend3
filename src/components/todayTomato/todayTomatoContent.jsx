@@ -5,6 +5,7 @@ import TodayTitle from './todayTitle';
 import { Tabs } from 'antd';
 import styles from './style.module.scss';
 import Todo from '../Todo/index';
+import Tomato from '../Tomato/index';
 
 function TodayTomatoContent(props) {
   const { data } = props;
@@ -21,7 +22,11 @@ function TodayTomatoContent(props) {
                   todo={todo}
                   enableAction={true}
                   style={{ marginBottom: '1rem' }}
-                />
+                >
+                  {todo.tomatoes.map((tomato) => (
+                    <Tomato tomato={tomato} />
+                  ))}
+                </Todo>
               ))}
               {(project.titles || []).map((title) => (
                 <TodayTitle title={title}>
@@ -31,7 +36,11 @@ function TodayTomatoContent(props) {
                       todo={todo}
                       enableAction={true}
                       style={{ marginBottom: '1rem' }}
-                    />
+                    >
+                      {todo.tomatoes.map((tomato) => (
+                        <Tomato tomato={tomato} />
+                      ))}
+                    </Todo>
                   ))}
                 </TodayTitle>
               ))}

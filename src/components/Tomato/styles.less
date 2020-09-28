@@ -1,0 +1,22 @@
+@import '../../styles/var.less';
+.tomatoGroup {
+  margin: 0.3rem 0.6rem 0.6rem 0.6rem;
+  background-color: @white;
+  border-radius: @border-radius;
+}
+
+.tomatoRow {
+  composes: flexRow from global;
+}
+
+.descCell {
+  composes: flexRow from global;
+  flex: auto;
+  padding: 0.3rem;
+  font-size: 0.9rem;
+  color: @text-color-title;
+}
+
+.descCellDone {
+  color: @text-color-desc;
+}

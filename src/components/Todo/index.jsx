@@ -23,7 +23,17 @@ function Todo(props) {
   const renderChildren = () => {
     if (open) {
       if (props.children) {
-        return <ChildrenContent open={open}>{props.children}</ChildrenContent>;
+        return (
+          <div
+            className={classNames({
+              [styles.childrenContent]: true,
+              [styles.childrenContentOpen]: open,
+            })}
+            open={open}
+          >
+            {props.children}
+          </div>
+        );
       } else {
         return <ChildrenContent open={open}>没有蕃茄</ChildrenContent>;
       }
@@ -40,9 +50,9 @@ function Todo(props) {
     <TodoGroup style={{ ...style }} className={props.className}>
       <div className={cx({ todoRow: true, todoRowOpen: open })}>
         <TodoCheckbox defaultValue={todo.done} todoId={todo.id} />
-        <TodoInputStyled>
+        <div className={styles.todoInput}>
           <TodoInput defaultValue={todo.name} todoId={todo.id} />
-        </TodoInputStyled>
+        </div>
         <div className={styles.toolbarCell}>
           <div
             className={cx({ toggleIcon: true, toggleIconOpen: open })}

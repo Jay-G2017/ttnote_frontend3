@@ -8,7 +8,7 @@ import 'antd/lib/calendar/style/index.css';
 import 'antd/lib/select/style/index.css';
 import 'antd/lib/radio/style/index.css';
 import TodayTomatoContent from './todayTomatoContent';
-import { debounce } from 'lodash';
+import { debounce, throttle } from 'lodash';
 
 import {
   IoMdArrowDropleft,
@@ -66,19 +66,25 @@ function TodayTomato() {
     document.getElementById('todayTomatoContent').scrollTo(0, 0);
   }, [todayTomatoes.length]);
 
-  useEffect(() => {
-    const fetchTodayTomatoes = () => {
-      const url =
-        window.ttnote.baseUrl +
-        '/today_tomatoes?date=' +
-        dayjs(date).format('YYYY-MM-DD');
-      window.ttnote.fetch(url, null, false).then((res) => {
-        setTodayTomatoes(res);
-      });
-    };
+  // 获取每日蕃茄
+  const fetchTodayTomatoes = useCallback((date) => {
+    const url =
+      window.ttnote.baseUrl +
+      '/today_tomatoes?date=' +
+      dayjs(date).format('YYYY-MM-DD');
+    window.ttnote.fetch(url, null, false).then((res) => {
+      setTodayTomatoes(res);
+    });
+  }, []);
 
-    fetchTodayTomatoes();
-  }, [date]);
+  const throttleFetchTodayTomatoes = useCallback(
+    throttle(fetchTodayTomatoes, 500),
+    []
+  );
+
+  useEffect(() => {
+    throttleFetchTodayTomatoes(date);
+  }, [date, fetchTodayTomatoes, throttleFetchTodayTomatoes]);
 
   const fetchDailyNotes = useCallback((date) => {
     const url =
@@ -92,7 +98,7 @@ function TodayTomato() {
     });
   }, []);
 
-  const delayedFetchDailyNote = useCallback(debounce(fetchDailyNotes, 300), []);
+  const delayedFetchDailyNote = useCallback(throttle(fetchDailyNotes, 500), []);
 
   useEffect(() => {
     delayedFetchDailyNote(date);
@@ -181,14 +187,12 @@ function TodayTomato() {
           </CalDiv>
         )}
       </CalContent>
-      {!!dailyNoteId && (
-        <RichEditor
-          key={dailyNoteId}
-          defaultValue={defaultValue}
-          onChange={delaySaveValue}
-          placeholder={''}
-        />
-      )}
+      <RichEditor
+        key={dailyNoteId}
+        defaultValue={defaultValue}
+        onChange={delaySaveValue}
+        placeholder={''}
+      />
       <TodayTomatoContent data={todayTomatoes} />
     </Content>
   );
