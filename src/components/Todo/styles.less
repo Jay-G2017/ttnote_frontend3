@@ -22,6 +22,10 @@
   color: @text-color-title;
 }
 
+.todoInputDone {
+  color: @text-color-desc;
+}
+
 .todoRowOpen {
   border-radius: @border-radius @border-radius 0 0;
   box-shadow: @box-shadow;
@@ -51,16 +55,36 @@
 }
 
 .badge {
+  color: @text-color-title;
+  font-size: 75%;
+  font-weight: 700;
+  padding: 0.25em 0.4em;
+  line-height: 1;
+}
+
+.actualBadge {
+  composes: badge;
   position: absolute;
   top: 0;
   right: 0;
-  color: red;
 }
 
-.badgePlan {
+:global(.badgeWarn) {
+  color: @warn-color;
+  font-weight: 900;
+}
+
+:global(.badgeDanger) {
+  color: @danger-color;
+  font-weight: 900;
+}
+
+.planBadge {
+  composes: badge;
   position: absolute;
   bottom: 0;
   right: 0;
+  color: @text-color-tip;
 }
 
 .childrenContent {
@@ -72,4 +96,9 @@
 
 .childrenContentOpen {
   border-radius: 0 0 @border-radius @border-radius;
+}
+
+.noContent {
+  composes: flexRowCenter from global;
+  height: 3rem;
 }

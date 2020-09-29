@@ -1,42 +1,39 @@
 import React, { useCallback, useState } from 'react';
-import {
-  TodoGroup,
-  TodoRow,
-  ChildrenContent,
-  TodoInputStyled,
-  TodoCheckboxStyled,
-} from './styles';
 import TodoCheckbox from '../TodoCheckbox';
 import TodoInput from '../TodoInput';
 import styles from './styles.less';
-import classNames from 'classnames/bind';
+import classNames from 'classnames';
 import Icon from '../icon';
-import { Badge } from 'react-bootstrap';
+import { get } from 'lodash';
 
-let cx = classNames.bind(styles);
+import { TodoContext } from '@context/index';
 
 function Todo(props) {
-  const { todo, style, enableAction } = props;
+  const { todo, style, enableAction, defaultOpen } = props;
+  const actualTomatoSize = get(todo, 'tomatoes.length', 0);
+  const planTomatoSize = todo.planTomatoSize || 2;
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
+  const [done, setDone] = useState(todo.done);
 
   const renderChildren = () => {
     if (open) {
-      if (props.children) {
-        return (
-          <div
-            className={classNames({
-              [styles.childrenContent]: true,
-              [styles.childrenContentOpen]: open,
-            })}
-            open={open}
-          >
-            {props.children}
-          </div>
-        );
-      } else {
-        return <ChildrenContent open={open}>没有蕃茄</ChildrenContent>;
-      }
+      return (
+        <div
+          className={classNames({
+            [styles.childrenContent]: true,
+            [styles.childrenContentOpen]: open,
+          })}
+        >
+          {props.children ? (
+            <TodoContext.Provider value={done}>
+              {props.children}
+            </TodoContext.Provider>
+          ) : (
+            <div className={styles.noContent}>没有蕃茄</div>
+          )}
+        </div>
+      );
     } else {
       return null;
     }
@@ -47,15 +44,32 @@ function Todo(props) {
   }, [open]);
 
   return (
-    <TodoGroup style={{ ...style }} className={props.className}>
-      <div className={cx({ todoRow: true, todoRowOpen: open })}>
-        <TodoCheckbox defaultValue={todo.done} todoId={todo.id} />
-        <div className={styles.todoInput}>
+    <div style={{ ...style }} className={props.className}>
+      <div
+        className={classNames({
+          [styles.todoRow]: true,
+          [styles.todoRowOpen]: open,
+        })}
+      >
+        <TodoCheckbox
+          defaultValue={todo.done}
+          todoId={todo.id}
+          onChange={(done) => setDone(done)}
+        />
+        <div
+          className={classNames({
+            [styles.todoInput]: true,
+            [styles.todoInputDone]: done,
+          })}
+        >
           <TodoInput defaultValue={todo.name} todoId={todo.id} />
         </div>
         <div className={styles.toolbarCell}>
           <div
-            className={cx({ toggleIcon: true, toggleIconOpen: open })}
+            className={classNames({
+              [styles.toggleIcon]: true,
+              [styles.toggleIconOpen]: open,
+            })}
             onClick={toggleOpen}
           >
             <Icon type="list-circle" />
@@ -63,13 +77,19 @@ function Todo(props) {
           {enableAction && (
             <>
               <div
-                className={cx({ playIcon: true, playIconDisabled: open })}
+                className={classNames({
+                  [styles.playIcon]: true,
+                  [styles.playIconDisabled]: open,
+                })}
                 onClick={toggleOpen}
               >
                 <Icon type="play-circle" />
               </div>
               <div
-                className={cx({ moreIcon: true, playIconDisabled: open })}
+                className={classNames({
+                  [styles.moreIcon]: true,
+                  [styles.playIconDisabled]: open,
+                })}
                 onClick={toggleOpen}
               >
                 <Icon type="ellipsis-horizontal" />
@@ -77,20 +97,27 @@ function Todo(props) {
             </>
           )}
         </div>
-        <Badge variant="light" className={styles.badge}>
-          9
-        </Badge>
-        <Badge variant="light" className={styles.badgePlan}>
-          3
-        </Badge>
+        <div
+          className={classNames({
+            [styles.actualBadge]: true,
+            badgeWarn: enableAction && actualTomatoSize === planTomatoSize,
+            badgeDanger: enableAction && actualTomatoSize > planTomatoSize,
+          })}
+        >
+          {actualTomatoSize}
+        </div>
+        {enableAction && (
+          <div className={styles.planBadge}>{planTomatoSize}</div>
+        )}
       </div>
       {renderChildren()}
-    </TodoGroup>
+    </div>
   );
 }
 
 Todo.defaultValue = {
   enableAction: false,
+  defaultOpen: false,
 };
 
 export default Todo;

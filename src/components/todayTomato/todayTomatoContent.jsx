@@ -20,7 +20,7 @@ function TodayTomatoContent(props) {
                 // <TodayTodo todo={todo} />
                 <Todo
                   todo={todo}
-                  enableAction={true}
+                  enableAction={false}
                   style={{ marginBottom: '1rem' }}
                 >
                   {todo.tomatoes.map((tomato) => (
@@ -31,10 +31,10 @@ function TodayTomatoContent(props) {
               {(project.titles || []).map((title) => (
                 <TodayTitle title={title}>
                   {(title.todos || []).map((todo) => (
-                    // <TodayTodo todo={todo} />
                     <Todo
                       todo={todo}
-                      enableAction={true}
+                      enableAction={false}
+                      defaultOpen={true}
                       style={{ marginBottom: '1rem' }}
                     >
                       {todo.tomatoes.map((tomato) => (

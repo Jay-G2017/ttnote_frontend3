@@ -14,6 +14,7 @@ import { Tooltip } from 'antd';
 import { ProjectsContext } from '../../context/ProjectsContext';
 import styles from './styles.less';
 import classNames from 'classnames';
+import { TodoContext } from '@context/index';
 
 dayjs.extend(relativeTime);
 dayjs.locale('zh-cn');
@@ -77,10 +78,11 @@ const DescCell = styled.div`
 `;
 
 function Tomato(props) {
-  const { tomato, todoDone, deleteTomato } = props;
+  const { tomato, deleteTomato } = props;
   const [tomatoDeleteTooltipVisible, setTomatoDeleteTooltipVisible] = useState(
     false
   );
+  const todoDone = useContext(TodoContext);
   const fromNow = dayjs(tomato.createdAt).fromNow();
 
   const { syncProject } = useContext(ProjectsContext);

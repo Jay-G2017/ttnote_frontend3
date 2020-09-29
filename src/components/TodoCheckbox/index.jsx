@@ -4,7 +4,7 @@ import styles from './styles.less';
 import { IoIosRadioButtonOff, IoIosCheckmarkCircle } from 'react-icons/io';
 
 function TodoCheckbox(props) {
-  const { defaultValue, todoId } = props;
+  const { defaultValue, todoId, onChange } = props;
 
   const [checked, setChecked] = useState(defaultValue);
 
@@ -22,8 +22,10 @@ function TodoCheckbox(props) {
       e.stopPropagation();
       setChecked(!checked);
       updateTodo(todoId, !checked);
+
+      if (onChange) onChange(!checked);
     },
-    [checked, todoId, updateTodo]
+    [checked, onChange, todoId, updateTodo]
   );
 
   return (
