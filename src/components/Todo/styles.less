@@ -28,7 +28,6 @@
 
 .todoRowOpen {
   border-radius: @border-radius @border-radius 0 0;
-  box-shadow: @box-shadow;
 }
 
 .marginRight {
@@ -88,14 +87,17 @@
 }
 
 .childrenContent {
-  background-color: @primary-color-Fa10;
+  background-color: @white;
   min-height: 3rem;
   overflow: auto;
   max-height: 12rem;
+  border-radius: 0 0 @border-radius @border-radius;
+  box-shadow: @box-shadow;
 }
 
 .childrenContentOpen {
   border-radius: 0 0 @border-radius @border-radius;
+  box-shadow: @box-shadow;
 }
 
 .noContent {

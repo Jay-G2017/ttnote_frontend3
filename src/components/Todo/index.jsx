@@ -20,18 +20,16 @@ function Todo(props) {
     if (open) {
       return (
         <div
-          className={classNames({
-            [styles.childrenContent]: true,
-            [styles.childrenContentOpen]: open,
-          })}
+          className={styles.childrenContent
+          }
         >
           {props.children ? (
             <TodoContext.Provider value={done}>
               {props.children}
             </TodoContext.Provider>
           ) : (
-            <div className={styles.noContent}>没有蕃茄</div>
-          )}
+              <div className={styles.noContent}>没有蕃茄</div>
+            )}
         </div>
       );
     } else {
