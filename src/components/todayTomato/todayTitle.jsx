@@ -13,6 +13,7 @@ function TodayTitle(props) {
         style={{
           color: window.ttnoteThemeLight.colorSecondary,
           fontWeight: 'bold',
+          marginBottom: '0.5rem'
         }}
       >
         {title.name}
