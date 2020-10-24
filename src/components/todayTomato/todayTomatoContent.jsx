@@ -11,44 +11,48 @@ function TodayTomatoContent(props) {
 
   return (
     <div className={styles.todayTomatoContent}>
-      <Tabs animated={false}>
-        {data.map((project) => (
-          <Tabs.TabPane tab={`${project.name}(${getTomatoCountInProject(project)})`} key={project.id}>
-            <div className={styles.cardContent}>
-              {(project.todos || []).map((todo) => (
-                // <TodayTodo todo={todo} />
-                <Todo
-                  key={todo.id}
-                  todo={todo}
-                  enableAction={false}
-                  style={{ marginBottom: '1rem' }}
-                >
-                  {todo.tomatoes.map((tomato) => (
-                    <Tomato key={tomato.id} tomato={tomato} />
-                  ))}
-                </Todo>
-              ))}
-              {(project.titles || []).map((title) => (
-                <TodayTitle key={title.id} title={title}>
-                  {(title.todos || []).map((todo) => (
-                    <Todo
-                      key={todo.id}
-                      todo={todo}
-                      enableAction={false}
-                      defaultOpen={true}
-                      style={{ marginBottom: '1rem' }}
-                    >
-                      {todo.tomatoes.map((tomato) => (
-                        <Tomato key={tomato.id} tomato={tomato} />
-                      ))}
-                    </Todo>
-                  ))}
-                </TodayTitle>
-              ))}
-            </div>
-          </Tabs.TabPane>
-        ))}
-      </Tabs>
+      {data.length > 0 ?
+        <Tabs animated={false}>
+          {data.map((project) => (
+            <Tabs.TabPane tab={`${project.name}(${getTomatoCountInProject(project)})`} key={project.id}>
+              <div className={styles.cardContent}>
+                {(project.todos || []).map((todo) => (
+                  // <TodayTodo todo={todo} />
+                  <Todo
+                    key={todo.id}
+                    todo={todo}
+                    enableAction={false}
+                    style={{ marginBottom: '1rem' }}
+                  >
+                    {todo.tomatoes.map((tomato) => (
+                      <Tomato key={tomato.id} tomato={tomato} />
+                    ))}
+                  </Todo>
+                ))}
+                {(project.titles || []).map((title) => (
+                  <TodayTitle key={title.id} title={title}>
+                    {(title.todos || []).map((todo) => (
+                      <Todo
+                        key={todo.id}
+                        todo={todo}
+                        enableAction={false}
+                        defaultOpen={true}
+                        style={{ marginBottom: '1rem' }}
+                      >
+                        {todo.tomatoes.map((tomato) => (
+                          <Tomato key={tomato.id} tomato={tomato} />
+                        ))}
+                      </Todo>
+                    ))}
+                  </TodayTitle>
+                ))}
+              </div>
+            </Tabs.TabPane>
+          ))}
+        </Tabs>
+        :
+        <div className='emptyText'>今日无蕃茄</div>
+      }
     </div>
   );
 }

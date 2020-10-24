@@ -9,6 +9,7 @@ import 'antd/lib/select/style/index.css';
 import 'antd/lib/radio/style/index.css';
 import TodayTomatoContent from './todayTomatoContent';
 import { debounce, throttle } from 'lodash';
+import styles from './styles.less';
 
 import {
   IoMdArrowDropleft,
@@ -127,7 +128,10 @@ function TodayTomato() {
     <Content id="todayTomatoContent" onClick={() => setOpen(false)}>
       <StatusBar />
       <FlexBetweenRow style={{ marginBottom: '1rem' }}>
-        <div>{dayjs(date).format('dddd, M月D日, YYYY')}</div>
+        <div className='flexRow'>
+          <span className={styles.date} >{dayjs(date).format('YYYY MM-DD')}</span>
+          <span>{dayjs(date).format('dddd')}</span>
+        </div>
         <FlexRow>
           <ButtonGroup>
             <Button
@@ -161,7 +165,7 @@ function TodayTomato() {
           </ButtonGroup>
           <Button
             variant="light"
-            style={{ marginLeft: '8px' }}
+            style={{ marginLeft: '8px', backgroundColor: '#e2e6ea' }}
             onClick={(e) => {
               setDate(dayjs().format());
             }}
