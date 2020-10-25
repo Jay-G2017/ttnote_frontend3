@@ -9,6 +9,7 @@ import 'antd/lib/select/style/index.css';
 import 'antd/lib/radio/style/index.css';
 import TodayTomatoContent from './todayTomatoContent';
 import { debounce, throttle } from 'lodash';
+import classNames from 'classnames';
 import styles from './styles.less';
 
 import {
@@ -165,12 +166,15 @@ function TodayTomato() {
           </ButtonGroup>
           <Button
             variant="light"
-            style={{ marginLeft: '8px', backgroundColor: '#e2e6ea' }}
+            className={classNames({
+              [styles.showTodayBtn]: true,
+              [styles.showTodayBtnHide]: dayjs().isSame(date, 'day'),
+            })}
             onClick={(e) => {
               setDate(dayjs().format());
             }}
           >
-            <FlexRow style={{ fontSize: '0.9rem' }}>今日</FlexRow>
+            <FlexRow style={{ fontSize: '0.9rem' }}>显示今日</FlexRow>
           </Button>
         </FlexRow>
       </FlexBetweenRow>
