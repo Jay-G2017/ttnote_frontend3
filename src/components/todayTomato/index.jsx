@@ -11,6 +11,7 @@ import TodayTomatoContent from './todayTomatoContent';
 import { debounce, throttle } from 'lodash';
 import classNames from 'classnames';
 import styles from './styles.less';
+import SVG from 'react-inlinesvg'
 
 import {
   IoMdArrowDropleft,
@@ -132,6 +133,10 @@ function TodayTomato() {
         <div className='flexRow'>
           <span className={styles.date} >{dayjs(date).format('YYYY MM-DD')}</span>
           <span>{dayjs(date).format('dddd')}</span>
+        </div>
+        <div className='flexRowCol'>
+          <SVG style={{ height: '12px', marginBottom: '-4px' }} src={require('@/assets/svg/caret-up.svg')} />
+          <SVG style={{ height: '12px' }} src={require('@/assets/svg/caret-down.svg')} />
         </div>
         <FlexRow>
           <ButtonGroup>
