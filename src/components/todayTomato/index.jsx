@@ -130,13 +130,31 @@ function TodayTomato() {
     <Content id="todayTomatoContent" onClick={() => setOpen(false)}>
       <StatusBar />
       <FlexBetweenRow style={{ marginBottom: '1rem' }}>
-        <div className='flexRow'>
-          <span className={styles.date} >{dayjs(date).format('YYYY MM-DD')}</span>
-          <span>{dayjs(date).format('dddd')}</span>
-        </div>
-        <div className='flexRowCol'>
-          <SVG style={{ height: '12px', marginBottom: '-4px' }} src={require('@/assets/svg/caret-up.svg')} />
-          <SVG style={{ height: '12px' }} src={require('@/assets/svg/caret-down.svg')} />
+        <div className="flexRow left">
+          <div className='flexRow'>
+            <span className={styles.date} >{dayjs(date).format('YYYY MM-DD')}</span>
+            <span>{dayjs(date).format('dddd')}</span>
+          </div>
+          <div className='flexRowCol' style={{ marginLeft: '10px' }}>
+            <SVG style={{ height: '12px', marginBottom: '-4px' }} src={require('@/assets/svg/caret-up.svg')} />
+            <SVG style={{ height: '12px' }} src={require('@/assets/svg/caret-down.svg')} />
+          </div>
+          <div className={styles.dateBtnGroup}>
+            <div className={classNames({ [styles.iconBtn]: true, [styles.up]: true, flexRow: true })}>
+              <SVG style={{ height: '12px' }} src={require('@/assets/svg/chevron-up.svg')} />
+            </div>
+            <div className={classNames({ [styles.iconBtn]: true, [styles.down]: true, flexRow: true })}>
+              <SVG style={{ height: '12px' }} src={require('@/assets/svg/chevron-down.svg')} />
+            </div>
+          </div>
+          <div className={styles.dateBtnGroup2}>
+            <div className={classNames({ [styles.iconBtn]: true, [styles.up]: true, flexRow: true })}>
+              <SVG style={{ height: '12px' }} src={require('@/assets/svg/chevron-up.svg')} />
+            </div>
+            <div className={classNames({ [styles.iconBtn]: true, [styles.down]: true, flexRow: true })}>
+              <SVG style={{ height: '12px' }} src={require('@/assets/svg/chevron-down.svg')} />
+            </div>
+          </div>
         </div>
         <FlexRow>
           <ButtonGroup>
