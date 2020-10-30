@@ -11,42 +11,42 @@
 }
 
 .dateBtnGroup {
-  margin-left: 10px;
+  margin-left: 15px;
   position: relative;
-  width: 20px;
-  height: 27px;
-  border: @default-border; 
+  width: 23px;
+  height: 33px;
   border-radius: @border-radius;
-}
-
-.dateBtnGroup2 {
-  margin-left: 10px;
-  position: relative;
-  width: 20px;
-  height: 27px;
-  border-radius: @border-radius;
-  background-color: @white;
+  background-color: hsl(0, 2%, 88%);
 }
 
 .iconBtn {
+  height: 17px;
   position: absolute;
   color: @text-color-desc;
   padding: 0 3px;
-  box-shadow: @box-shadow;
   cursor: pointer;
   user-select: none;
   margin: 0 auto;
+  left: 0;
+  right: 0;
+  background-color: hsl(0, 2%, 88%);
 }
 .iconBtn:hover {
-  background-color: @white;
+  background-color: hsl(0, 2%, 83%);
+  color: @text-color-title;
+}
+.iconBtn:active {
+  background-color: hsl(0, 2%, 78%);
 }
 
 .up {
   top: 0;
+  border-radius: @border-radius @border-radius 0 0 ;
 }
 
 .down {
   bottom: 0;
+  border-radius: 0 0 @border-radius @border-radius  ;
 }
 
 .showTodayBtn {

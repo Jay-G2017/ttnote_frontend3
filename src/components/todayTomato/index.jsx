@@ -135,58 +135,32 @@ function TodayTomato() {
             <span className={styles.date} >{dayjs(date).format('YYYY MM-DD')}</span>
             <span>{dayjs(date).format('dddd')}</span>
           </div>
-          <div className='flexRowCol' style={{ marginLeft: '10px' }}>
-            <SVG style={{ height: '12px', marginBottom: '-4px' }} src={require('@/assets/svg/caret-up.svg')} />
-            <SVG style={{ height: '12px' }} src={require('@/assets/svg/caret-down.svg')} />
-          </div>
           <div className={styles.dateBtnGroup}>
-            <div className={classNames({ [styles.iconBtn]: true, [styles.up]: true, flexRow: true })}>
-              <SVG style={{ height: '12px' }} src={require('@/assets/svg/chevron-up.svg')} />
-            </div>
-            <div className={classNames({ [styles.iconBtn]: true, [styles.down]: true, flexRow: true })}>
-              <SVG style={{ height: '12px' }} src={require('@/assets/svg/chevron-down.svg')} />
-            </div>
-          </div>
-          <div className={styles.dateBtnGroup2}>
-            <div className={classNames({ [styles.iconBtn]: true, [styles.up]: true, flexRow: true })}>
-              <SVG style={{ height: '12px' }} src={require('@/assets/svg/chevron-up.svg')} />
-            </div>
-            <div className={classNames({ [styles.iconBtn]: true, [styles.down]: true, flexRow: true })}>
-              <SVG style={{ height: '12px' }} src={require('@/assets/svg/chevron-down.svg')} />
-            </div>
-          </div>
-        </div>
-        <FlexRow>
-          <ButtonGroup>
-            <Button
-              variant="light"
-              size="lg"
+            <div
+              className={classNames({ [styles.iconBtn]: true, [styles.up]: true, flexRowCenter: true })}
               onClick={() => setDate(dayjs(date).subtract(1, 'd').format())}
             >
-              <FlexRow style={IconStyle}>
-                <IoMdArrowDropleft />
-              </FlexRow>
-            </Button>
-            <Button
-              variant="light"
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpen(true);
-              }}
-            >
-              <FlexRow style={IconStyle}>
-                <IoIosCalendar />
-              </FlexRow>
-            </Button>
-            <Button
-              variant="light"
+              <SVG style={{ height: '12px' }} src={require('@/assets/svg/chevron-up.svg')} />
+            </div>
+            <div
+              className={classNames({ [styles.iconBtn]: true, [styles.down]: true, flexRowCenter: true })}
               onClick={() => setDate(dayjs(date).add(1, 'd').format())}
             >
-              <FlexRow style={IconStyle}>
-                <IoMdArrowDropright />
-              </FlexRow>
-            </Button>
-          </ButtonGroup>
+              <SVG style={{ height: '12px' }} src={require('@/assets/svg/chevron-down.svg')} />
+            </div>
+          </div>
+          <FlexRow
+            style={{ fontSize: '1.2em', marginLeft: '15px' }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpen(true);
+            }}
+          >
+            <IoIosCalendar />
+          </FlexRow>
+
+        </div>
+        <FlexRow>
           <Button
             variant="light"
             className={classNames({
