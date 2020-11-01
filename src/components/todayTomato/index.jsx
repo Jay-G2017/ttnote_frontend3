@@ -1,8 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { Input, Calendar } from 'antd';
-import { Button, ButtonGroup } from 'react-bootstrap';
-import { createEditor } from 'slate';
-import { Slate, Editable, withReact } from 'slate-react';
+import { Calendar } from 'antd';
+import { Button } from 'react-bootstrap';
 import styled from 'styled-components';
 import 'antd/lib/calendar/style/index.css';
 import 'antd/lib/select/style/index.css';
@@ -14,8 +12,6 @@ import styles from './styles.less';
 import SVG from 'react-inlinesvg'
 
 import {
-  IoMdArrowDropleft,
-  IoMdArrowDropright,
   IoIosCalendar,
 } from 'react-icons/io';
 import dayjs from 'dayjs';
@@ -41,21 +37,6 @@ const FlexRow = styled.div`
   display: flex;
   align-items: center;
 `;
-
-const CalContent = styled.div`
-  position: relative;
-`;
-
-const CalDiv = styled.div`
-  position: absolute;
-  right: 0;
-  width: 300px;
-  z-index: 999;
-  background-color: #fff;
-  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-`;
-
-const IconStyle = { fontSize: '1.1rem' };
 
 function TodayTomato() {
   const [open, setOpen] = useState(false);
@@ -149,15 +130,30 @@ function TodayTomato() {
               <SVG style={{ height: '12px' }} src={require('@/assets/svg/chevron-down.svg')} />
             </div>
           </div>
-          <FlexRow
-            style={{ fontSize: '1.2em', marginLeft: '15px' }}
+          <div
+            className={styles.calendar}
             onClick={(e) => {
               e.stopPropagation();
               setOpen(true);
             }}
           >
             <IoIosCalendar />
-          </FlexRow>
+            {open && (
+              <div className={styles.calendarContent} onClick={(e) => e.stopPropagation()}>
+                <Calendar
+                  fullscreen={false}
+                  value={dayjs(date)}
+                  onChange={(date) => {
+                    setDate(date.format());
+                  }}
+                  onSelect={(date) => {
+                    setDate(date.format());
+                    setOpen(false);
+                  }}
+                />
+              </div>
+            )}
+          </div>
 
         </div>
         <FlexRow>
@@ -175,23 +171,6 @@ function TodayTomato() {
           </Button>
         </FlexRow>
       </FlexBetweenRow>
-      <CalContent>
-        {open && (
-          <CalDiv onClick={(e) => e.stopPropagation()}>
-            <Calendar
-              fullscreen={false}
-              value={dayjs(date)}
-              onChange={(date) => {
-                setDate(date.format());
-              }}
-              onSelect={(date) => {
-                setDate(date.format());
-                setOpen(false);
-              }}
-            />
-          </CalDiv>
-        )}
-      </CalContent>
       <RichEditor
         key={dailyNoteId}
         defaultValue={defaultValue}

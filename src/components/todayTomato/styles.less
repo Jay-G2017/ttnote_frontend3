@@ -11,7 +11,7 @@
 }
 
 .dateBtnGroup {
-  margin-left: 15px;
+  margin-left: 1.2rem;
   position: relative;
   width: 23px;
   height: 33px;
@@ -22,7 +22,7 @@
 .iconBtn {
   height: 17px;
   position: absolute;
-  color: @text-color-desc;
+  color: @text-color-title;
   padding: 0 3px;
   cursor: pointer;
   user-select: none;
@@ -47,6 +47,33 @@
 .down {
   bottom: 0;
   border-radius: 0 0 @border-radius @border-radius  ;
+}
+
+.calendar {
+  font-size: 1.1em;
+  margin-left: 1.2rem;
+  color: @text-color-title;
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 50%;
+  background-color: inherit;
+  composes: flexRowCenter from global;
+  position: relative;
+}
+
+.calendar:hover {
+  color: @text-color-title;
+  cursor: pointer;
+  background-color: hsl(0, 2%, 88%);
+}
+
+.calendarContent {
+  position: absolute;
+  top: 2em;
+  width: 300px;
+  z-index: 999;
+  background-color: #fff;
+  box-shadow: @box-shadow-big;
 }
 
 .showTodayBtn {
