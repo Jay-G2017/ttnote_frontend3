@@ -119,13 +119,13 @@ function TodayTomato() {
           <div className={styles.dateBtnGroup}>
             <div
               className={classNames({ [styles.iconBtn]: true, [styles.up]: true, flexRowCenter: true })}
-              onClick={() => setDate(dayjs(date).subtract(1, 'd').format())}
+              onClick={() => setDate(dayjs(date).add(1, 'd').format())}
             >
               <SVG style={{ height: '12px' }} src={require('@/assets/svg/chevron-up.svg')} />
             </div>
             <div
               className={classNames({ [styles.iconBtn]: true, [styles.down]: true, flexRowCenter: true })}
-              onClick={() => setDate(dayjs(date).add(1, 'd').format())}
+              onClick={() => setDate(dayjs(date).subtract(1, 'd').format())}
             >
               <SVG style={{ height: '12px' }} src={require('@/assets/svg/chevron-down.svg')} />
             </div>
