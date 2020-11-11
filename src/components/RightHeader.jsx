@@ -104,7 +104,7 @@ function RightHeader(props) {
   const { todayTomatoSize, createTomato } = useContext(ProjectContext);
   const { syncProject } = useContext(ProjectsContext);
   const [status, setStatus] = useState(null);
-  const [todayModalShow, setTodayModalShow] = useState(true);
+  const [todayModalShow, setTodayModalShow] = useState(false);
 
   // 注册一个listener, 来全局改变状态
   useEffect(() => {
