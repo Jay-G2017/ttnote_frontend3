@@ -10,8 +10,8 @@ function TodoCheckbox(props) {
 
   const updateTodo = useCallback((todoId, value) => {
     api
-      .editTodo(todoId, { done: value })
-      .then((res) => {})
+      .editTodo(todoId, { done: value }, true)
+      .then((res) => { })
       .catch(() => {
         setChecked(!value);
       });
@@ -33,8 +33,8 @@ function TodoCheckbox(props) {
       {checked ? (
         <IoIosCheckmarkCircle className={styles.checkIcon} />
       ) : (
-        <IoIosRadioButtonOff className={styles.circleIcon} />
-      )}
+          <IoIosRadioButtonOff className={styles.circleIcon} />
+        )}
     </div>
   );
 }

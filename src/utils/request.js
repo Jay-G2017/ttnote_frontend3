@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getCookie, noSyncApi } from './helper';
+import { getCookie } from './helper';
 import { message } from 'antd';
 
 import {
@@ -19,9 +19,10 @@ const service = axios.create({
 // request拦截器
 service.interceptors.request.use(
   (config) => {
-    if (!noSyncApi(config.url)) {
+    if (config.showSync) {
       window.dispatchEvent(savingEvent);
     }
+
 
     if (getCookie('token')) {
       config.headers['Authorization'] = getCookie('token');

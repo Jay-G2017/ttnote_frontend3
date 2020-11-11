@@ -19,6 +19,9 @@ function StatusBar(props) {
     };
 
     window.addEventListener('changeStatus', handleStatusChange, false);
+    return (() => {
+      window.removeEventListener('changeStatus', handleStatusChange)
+    })
   }, []);
 
   switch (status) {

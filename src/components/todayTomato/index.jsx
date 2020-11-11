@@ -10,6 +10,7 @@ import { debounce, throttle } from 'lodash';
 import classNames from 'classnames';
 import styles from './styles.less';
 import SVG from 'react-inlinesvg'
+import api from '@/api'
 
 import {
   IoIosCalendar,
@@ -90,15 +91,7 @@ function TodayTomato() {
 
   const postToSaveValue = useCallback(
     (value) => {
-      const url = window.ttnote.baseUrl + `/daily_notes/${dailyNoteId}`;
-      window.ttnote
-        .fetch(url, {
-          method: 'PUT',
-          body: JSON.stringify({ desc: JSON.stringify(value) }),
-        })
-        .then((res) => {
-          console.log(res);
-        });
+      api.saveDailyNote(dailyNoteId, { desc: JSON.stringify(value) }, true)
     },
     [dailyNoteId]
   );

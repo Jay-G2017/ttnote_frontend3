@@ -5,8 +5,17 @@ function editTodo(id, data, showSync) {
     url: `todos/${id}`,
     method: 'patch',
     data,
-    showSync,
+    showSync
   });
 }
 
-export default { editTodo };
+function saveDailyNote(id, data, showSync) {
+  return request({
+    url: `daily_notes/${id}`,
+    method: 'put',
+    data,
+    showSync
+  });
+}
+
+export default { editTodo, saveDailyNote };
