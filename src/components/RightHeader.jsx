@@ -6,7 +6,8 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
-import { Modal } from 'react-bootstrap';
+// import { Modal } from 'react-bootstrap';
+import {Modal} from 'antd'
 import {
   IoIosArrowBack,
   IoIosAlarm,
@@ -189,11 +190,17 @@ function RightHeader(props) {
           <IoIosRibbon />
           <IconName>{`今日(${todayTomatoSize})`}</IconName>
         </TodayCell>
-        <Modal
+        {/* <Modal
           centered={true}
           animation={true}
           show={todayModalShow}
           size={'lg'}
+          onHide={() => setTodayModalShow(false)}
+        >
+          <TodayTomato />
+        </Modal> */}
+        <Modal
+          visible={todayModalShow}
           onHide={() => setTodayModalShow(false)}
         >
           <TodayTomato />

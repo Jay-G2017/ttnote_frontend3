@@ -14,6 +14,7 @@ import {
 
 import styled from 'styled-components';
 import { Popover } from 'antd';
+import LinkModal from './components/linkModal';
 
 // import { Button, Icon, Toolbar } from '../components';
 
@@ -174,7 +175,7 @@ const Element = ({ attributes, children, element }) => {
       return <ol {...attributes}>{children}</ol>;
     case 'link':
       return (
-        <Popover overlayStyle={{zIndex: 1051}} visible content={() => linkContent('www.baodu.com') } title={null}>
+        <Popover overlayStyle={{zIndex: 1051}} content={<LinkContent url={element.url} />} title={element.url}>
         <a {...attributes} target={'_blank'} href={element.url}
           onClick={() => window.open(element.url, '_blank') }
         >
@@ -348,6 +349,7 @@ const wrapLink = (editor, url) => {
 const LinkButton = () => {
   const editor = useSlate()
   return (
+    <>
     <Button
       active={isLinkActive(editor)}
       onMouseDown={event => {
@@ -361,13 +363,18 @@ const LinkButton = () => {
           <MdLink />
         </IconDiv>
     </Button>
+    {/* <LinkModal visible={true} /> */}
+    </>
+
   )
 }
 
-const linkContent = (url) => {
+const LinkContent = (props) => {
+  const {url} = props
   return (
-   <div>
-    <h2>www.bi</h2>
+   <div className="flexRow">
+    <div>复制</div>
+    <div>edit</div>
   </div>
   )
 } 
