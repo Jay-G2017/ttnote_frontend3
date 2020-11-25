@@ -200,8 +200,13 @@ function RightHeader(props) {
           <TodayTomato />
         </Modal> */}
         <Modal
+          bodyStyle={{padding: 0}}
+          closable={false}
+          centered
+          width={'65%'}
           visible={todayModalShow}
-          onHide={() => setTodayModalShow(false)}
+          footer={null}
+          onCancel={() => setTodayModalShow(false)}
         >
           <TodayTomato />
         </Modal>

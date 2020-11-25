@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import isHotkey from 'is-hotkey';
-import isUrl from 'is-url'
+import isUrl from 'is-url';
 import { Editable, withReact, useSlate, Slate } from 'slate-react';
 import { Editor, Transforms, createEditor, Range, Node } from 'slate';
 import { withHistory } from 'slate-history';
@@ -11,17 +11,14 @@ import {
   MdCode,
   MdLink,
 } from 'react-icons/md';
+import styles from './styles.less';
 
 import styled from 'styled-components';
 import { Popover } from 'antd';
 import LinkModal from './components/linkModal';
+import Toolbar from './components/toolbar';
 
 // import { Button, Icon, Toolbar } from '../components';
-
-const Toolbar = styled.div`
-  display: flex;
-  align-items: center;
-`;
 
 const Button = styled.span`
   cursor: pointer;
@@ -66,12 +63,32 @@ const unChanged = (oldVal, newVal) => {
   return serialize(oldVal) === serialize(newVal);
 };
 
+const toggleMark = (editor, format) => {
+  const isActive = isMarkActive(editor, format);
+
+  if (isActive) {
+    Editor.removeMark(editor, format);
+  } else {
+    Editor.addMark(editor, format, true);
+  }
+};
+
+const isMarkActive = (editor, format) => {
+  const marks = Editor.marks(editor);
+  return marks ? marks[format] === true : false;
+};
+
 const RichEditor = (props) => {
   const defaultValue = props.defaultValue || initialValue;
   const [value, setValue] = useState(defaultValue);
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
-  const editor = useMemo(() => withLinks(withHistory(withReact(createEditor()))), []);
+  const editor = useMemo(
+    () => withLinks(withHistory(withReact(createEditor()))),
+    []
+  );
+
+  console.log('editor', editor);
 
   return (
     <Slate
@@ -79,40 +96,29 @@ const RichEditor = (props) => {
       value={value}
       onChange={(val) => {
         console.log('onChange', value, val);
+        setValue(val);
         if (props.onChange) props.onChange(val);
-        if (!props.value) {
-          setValue(val);
-        }
       }}
     >
-      <Toolbar>
-        <MarkButton format="bold" icon="format_bold" />
-        <MarkButton format="italic" icon="format_italic" />
-        <MarkButton format="underline" icon="format_underlined" />
-        <MarkButton format="code" icon="code" />
-        <LinkButton />
-        {/* <BlockButton format="heading-one" icon="looks_one" />
-        <BlockButton format="heading-two" icon="looks_two" />
-        <BlockButton format="block-quote" icon="format_quote" />
-        <BlockButton format="numbered-list" icon="format_list_numbered" />
-        <BlockButton format="bulleted-list" icon="format_list_bulleted" /> */}
-      </Toolbar>
-      <Editable
-        style={{ backgroundColor: '#fff', padding: '0.5rem' }}
-        renderElement={renderElement}
-        renderLeaf={renderLeaf}
-        placeholder={props.placeholder}
-        spellCheck
-        onKeyDown={(event) => {
-          for (const hotkey in HOTKEYS) {
-            if (isHotkey(hotkey, event)) {
-              event.preventDefault();
-              const mark = HOTKEYS[hotkey];
-              toggleMark(editor, mark);
+      <div style={{ backgroundColor: '#fff' }}>
+        <Toolbar />
+        <Editable
+          className={styles.editorBody}
+          renderElement={renderElement}
+          renderLeaf={renderLeaf}
+          placeholder={props.placeholder}
+          spellCheck
+          onKeyDown={(event) => {
+            for (const hotkey in HOTKEYS) {
+              if (isHotkey(hotkey, event)) {
+                event.preventDefault();
+                const mark = HOTKEYS[hotkey];
+                toggleMark(editor, mark);
+              }
             }
-          }
-        }}
-      />
+          }}
+        />
+      </div>
     </Slate>
   );
 };
@@ -136,27 +142,12 @@ const toggleBlock = (editor, format) => {
   }
 };
 
-const toggleMark = (editor, format) => {
-  const isActive = isMarkActive(editor, format);
-
-  if (isActive) {
-    Editor.removeMark(editor, format);
-  } else {
-    Editor.addMark(editor, format, true);
-  }
-};
-
 const isBlockActive = (editor, format) => {
   const [match] = Editor.nodes(editor, {
     match: (n) => n.type === format,
   });
 
   return !!match;
-};
-
-const isMarkActive = (editor, format) => {
-  const marks = Editor.marks(editor);
-  return marks ? marks[format] === true : false;
 };
 
 const Element = ({ attributes, children, element }) => {
@@ -175,14 +166,21 @@ const Element = ({ attributes, children, element }) => {
       return <ol {...attributes}>{children}</ol>;
     case 'link':
       return (
-        <Popover overlayStyle={{zIndex: 1051}} content={<LinkContent url={element.url} />} title={element.url}>
-        <a {...attributes} target={'_blank'} href={element.url}
-          onClick={() => window.open(element.url, '_blank') }
+        <Popover
+          overlayStyle={{ zIndex: 1051 }}
+          content={<LinkContent url={element.url} />}
+          title={element.url}
         >
-          {children}
-        </a>
+          <a
+            {...attributes}
+            target={'_blank'}
+            href={element.url}
+            onClick={() => window.open(element.url, '_blank')}
+          >
+            {children}
+          </a>
         </Popover>
-      )
+      );
     default:
       return <p {...attributes}>{children}</p>;
   }
@@ -249,7 +247,7 @@ const renderIcon = (icon) => {
           <MdCode />
         </IconDiv>
       );
-   case 'link':
+    case 'link':
       return (
         <IconDiv>
           <MdLink />
@@ -282,102 +280,100 @@ const initialValue = [
   },
 ];
 
-const withLinks = editor => {
-  const { insertData, insertText, isInline } = editor
+const withLinks = (editor) => {
+  const { insertData, insertText, isInline } = editor;
 
-  editor.isInline = element => {
-    return element.type === 'link' ? true : isInline(element)
-  }
+  editor.isInline = (element) => {
+    return element.type === 'link' ? true : isInline(element);
+  };
 
-  editor.insertText = text => {
+  editor.insertText = (text) => {
     if (text && isUrl(text)) {
-      wrapLink(editor, text)
+      wrapLink(editor, text);
     } else {
-      insertText(text)
+      insertText(text);
     }
-  }
+  };
 
-  editor.insertData = data => {
-    const text = data.getData('text/plain')
+  editor.insertData = (data) => {
+    const text = data.getData('text/plain');
 
     if (text && isUrl(text)) {
-      wrapLink(editor, text)
+      wrapLink(editor, text);
     } else {
-      insertData(data)
+      insertData(data);
     }
-  }
+  };
 
-  return editor
-}
+  return editor;
+};
 
 const insertLink = (editor, url) => {
   if (editor.selection) {
-    wrapLink(editor, url)
+    wrapLink(editor, url);
   }
-}
+};
 
-const isLinkActive = editor => {
-  const [link] = Editor.nodes(editor, { match: n => n.type === 'link' })
-  return !!link
-}
+const isLinkActive = (editor) => {
+  const [link] = Editor.nodes(editor, { match: (n) => n.type === 'link' });
+  return !!link;
+};
 
-const unwrapLink = editor => {
-  Transforms.unwrapNodes(editor, { match: n => n.type === 'link' })
-}
+const unwrapLink = (editor) => {
+  Transforms.unwrapNodes(editor, { match: (n) => n.type === 'link' });
+};
 
 const wrapLink = (editor, url) => {
   if (isLinkActive(editor)) {
-    unwrapLink(editor)
+    unwrapLink(editor);
   }
 
-  const { selection } = editor
-  const isCollapsed = selection && Range.isCollapsed(selection)
+  const { selection } = editor;
+  const isCollapsed = selection && Range.isCollapsed(selection);
   const link = {
     type: 'link',
     url,
     children: isCollapsed ? [{ text: url }] : [],
-  }
+  };
 
   if (isCollapsed) {
-    Transforms.insertNodes(editor, link)
+    Transforms.insertNodes(editor, link);
   } else {
-    Transforms.wrapNodes(editor, link, { split: true })
-    Transforms.collapse(editor, { edge: 'end' })
+    Transforms.wrapNodes(editor, link, { split: true });
+    Transforms.collapse(editor, { edge: 'end' });
   }
-}
+};
 
 const LinkButton = () => {
-  const editor = useSlate()
+  const editor = useSlate();
   return (
     <>
-    <Button
-      active={isLinkActive(editor)}
-      onMouseDown={event => {
-        event.preventDefault()
-        const url = window.prompt('Enter the URL of the link:')
-        if (!url) return
-        insertLink(editor, url)
-      }}
-    >
-       <IconDiv>
+      <Button
+        active={isLinkActive(editor)}
+        onMouseDown={(event) => {
+          event.preventDefault();
+          const url = window.prompt('Enter the URL of the link:');
+          if (!url) return;
+          insertLink(editor, url);
+        }}
+      >
+        <IconDiv>
           <MdLink />
         </IconDiv>
-    </Button>
-    {/* <LinkModal visible={true} /> */}
+      </Button>
+      {/* <LinkModal visible={true} /> */}
     </>
-
-  )
-}
+  );
+};
 
 const LinkContent = (props) => {
-  const {url} = props
+  const { url } = props;
   return (
-   <div className="flexRow">
-    <div>复制</div>
-    <div>edit</div>
-  </div>
-  )
-} 
-  
+    <div className="flexRow">
+      <div>复制</div>
+      <div>edit</div>
+    </div>
+  );
+};
 
 export default RichEditor;
