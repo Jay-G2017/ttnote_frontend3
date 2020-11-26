@@ -4,32 +4,15 @@ import isUrl from 'is-url';
 import { Editable, withReact, useSlate, Slate } from 'slate-react';
 import { Editor, Transforms, createEditor, Range, Node } from 'slate';
 import { withHistory } from 'slate-history';
-import {
-  MdFormatBold,
-  MdFormatItalic,
-  MdFormatUnderlined,
-  MdCode,
-  MdLink,
-} from 'react-icons/md';
 import styles from './styles.less';
 
 import styled from 'styled-components';
 import { Popover } from 'antd';
 import LinkModal from './components/linkModal';
 import Toolbar from './components/toolbar';
+import EditorSmallButton from './components/editorSmallButton';
 
 // import { Button, Icon, Toolbar } from '../components';
-
-const Button = styled.span`
-  cursor: pointer;
-  padding: 0.5rem;
-  color: ${(props) => (props.active ? 'blue' : '')};
-`;
-
-const IconDiv = styled.div`
-  display: flex;
-  align-items: center;
-`;
 
 const HOTKEYS = {
   'mod+b': 'bold',
@@ -168,8 +151,9 @@ const Element = ({ attributes, children, element }) => {
       return (
         <Popover
           overlayStyle={{ zIndex: 1051 }}
+          visible={true}
           content={<LinkContent url={element.url} />}
-          title={element.url}
+          placement="bottomLeft"
         >
           <a
             {...attributes}
@@ -220,58 +204,6 @@ const Leaf = ({ attributes, children, leaf }) => {
 //     </Button>
 //   );
 // };
-
-const renderIcon = (icon) => {
-  switch (icon) {
-    case 'format_bold':
-      return (
-        <IconDiv>
-          <MdFormatBold />
-        </IconDiv>
-      );
-    case 'format_italic':
-      return (
-        <IconDiv>
-          <MdFormatItalic />
-        </IconDiv>
-      );
-    case 'format_underlined':
-      return (
-        <IconDiv>
-          <MdFormatUnderlined />
-        </IconDiv>
-      );
-    case 'code':
-      return (
-        <IconDiv>
-          <MdCode />
-        </IconDiv>
-      );
-    case 'link':
-      return (
-        <IconDiv>
-          <MdLink />
-        </IconDiv>
-      );
-    default:
-      break;
-  }
-};
-
-const MarkButton = ({ format, icon }) => {
-  const editor = useSlate();
-  return (
-    <Button
-      active={isMarkActive(editor, format)}
-      onMouseDown={(event) => {
-        event.preventDefault();
-        toggleMark(editor, format);
-      }}
-    >
-      {renderIcon(icon)}
-    </Button>
-  );
-};
 
 const initialValue = [
   {
@@ -344,34 +276,14 @@ const wrapLink = (editor, url) => {
   }
 };
 
-const LinkButton = () => {
-  const editor = useSlate();
-  return (
-    <>
-      <Button
-        active={isLinkActive(editor)}
-        onMouseDown={(event) => {
-          event.preventDefault();
-          const url = window.prompt('Enter the URL of the link:');
-          if (!url) return;
-          insertLink(editor, url);
-        }}
-      >
-        <IconDiv>
-          <MdLink />
-        </IconDiv>
-      </Button>
-      {/* <LinkModal visible={true} /> */}
-    </>
-  );
-};
-
 const LinkContent = (props) => {
   const { url } = props;
   return (
     <div className="flexRow">
-      <div>复制</div>
-      <div>edit</div>
+      <div>{url}</div>
+      <EditorSmallButton style={{ marginLeft: '4px' }} type="edit" />
+      <EditorSmallButton style={{ marginLeft: '4px' }} type="copy" />
+      <EditorSmallButton style={{ marginLeft: '4px' }} type="unlink" />
     </div>
   );
 };
