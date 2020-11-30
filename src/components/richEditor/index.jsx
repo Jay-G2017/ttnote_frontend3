@@ -151,9 +151,9 @@ const Element = ({ attributes, children, element }) => {
       return (
         <Popover
           overlayStyle={{ zIndex: 1051 }}
-          visible={true}
+          overlayClassName='richEditor'
           content={<LinkContent url={element.url} />}
-          placement="bottomLeft"
+          placement="bottom"
         >
           <a
             {...attributes}
@@ -281,7 +281,7 @@ const LinkContent = (props) => {
   return (
     <div className="flexRow">
       <div>{url}</div>
-      <EditorSmallButton style={{ marginLeft: '4px' }} type="edit" />
+      <EditorSmallButton style={{ marginLeft: '10px' }} type="edit" />
       <EditorSmallButton style={{ marginLeft: '4px' }} type="copy" />
       <EditorSmallButton style={{ marginLeft: '4px' }} type="unlink" />
     </div>
