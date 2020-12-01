@@ -1,14 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import isHotkey from 'is-hotkey';
-import isUrl from 'is-url';
 import { Editable, withReact, useSlate, Slate } from 'slate-react';
 import { Editor, Transforms, createEditor, Range, Node } from 'slate';
 import { withHistory } from 'slate-history';
+import withLinks from './plugins/withLink';
 import styles from './styles.less';
 
-import styled from 'styled-components';
 import { Popover } from 'antd';
-import LinkModal from './components/linkModal';
 import Toolbar from './components/toolbar';
 import EditorSmallButton from './components/editorSmallButton';
 
@@ -151,7 +149,7 @@ const Element = ({ attributes, children, element }) => {
       return (
         <Popover
           overlayStyle={{ zIndex: 1051 }}
-          overlayClassName='richEditor'
+          overlayClassName="richEditor"
           content={<LinkContent url={element.url} />}
           placement="bottom"
         >
@@ -211,70 +209,6 @@ const initialValue = [
     children: [{ text: '' }],
   },
 ];
-
-const withLinks = (editor) => {
-  const { insertData, insertText, isInline } = editor;
-
-  editor.isInline = (element) => {
-    return element.type === 'link' ? true : isInline(element);
-  };
-
-  editor.insertText = (text) => {
-    if (text && isUrl(text)) {
-      wrapLink(editor, text);
-    } else {
-      insertText(text);
-    }
-  };
-
-  editor.insertData = (data) => {
-    const text = data.getData('text/plain');
-
-    if (text && isUrl(text)) {
-      wrapLink(editor, text);
-    } else {
-      insertData(data);
-    }
-  };
-
-  return editor;
-};
-
-const insertLink = (editor, url) => {
-  if (editor.selection) {
-    wrapLink(editor, url);
-  }
-};
-
-const isLinkActive = (editor) => {
-  const [link] = Editor.nodes(editor, { match: (n) => n.type === 'link' });
-  return !!link;
-};
-
-const unwrapLink = (editor) => {
-  Transforms.unwrapNodes(editor, { match: (n) => n.type === 'link' });
-};
-
-const wrapLink = (editor, url) => {
-  if (isLinkActive(editor)) {
-    unwrapLink(editor);
-  }
-
-  const { selection } = editor;
-  const isCollapsed = selection && Range.isCollapsed(selection);
-  const link = {
-    type: 'link',
-    url,
-    children: isCollapsed ? [{ text: url }] : [],
-  };
-
-  if (isCollapsed) {
-    Transforms.insertNodes(editor, link);
-  } else {
-    Transforms.wrapNodes(editor, link, { split: true });
-    Transforms.collapse(editor, { edge: 'end' });
-  }
-};
 
 const LinkContent = (props) => {
   const { url } = props;

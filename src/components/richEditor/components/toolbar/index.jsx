@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import EditorButton from '../editorButton';
 import styles from './styles.less';
 
 import { useSlate } from 'slate-react';
-import { Editor, Transforms, Range } from 'slate';
+import { Editor } from 'slate';
+import { isLinkActive, wrapLink, unwrapLink } from '../../plugins/withLink';
+import LinkModal from '../linkModal';
 
 const toggleMark = (editor, format) => {
   const isActive = isMarkActive(editor, format);
@@ -22,6 +24,9 @@ const isMarkActive = (editor, format) => {
 
 const Toolbar = (props) => {
   const editor = useSlate();
+
+  const [linkModalVisible, setLinkModalVisible] = useState(false);
+
   return (
     <div className={styles.toolbar}>
       <EditorButton
@@ -61,50 +66,25 @@ const Toolbar = (props) => {
         type={isLinkActive(editor) ? 'unlink' : 'link'}
         onMouseDown={(event) => {
           event.preventDefault();
-          const url = window.prompt('Enter the URL of the link:');
-          if (!url) return;
-          insertLink(editor, url);
+          if (isLinkActive(editor)) {
+            unwrapLink(editor);
+          } else {
+            setLinkModalVisible(true);
+            // const url = window.prompt('Enter the URL of the link:');
+            // if (!url) return;
+            // if (editor.selection) {
+            //   wrapLink(editor, url);
+            // }
+          }
         }}
         active={isLinkActive(editor)}
       />
+      <LinkModal
+        visible={linkModalVisible}
+        onCancel={() => setLinkModalVisible(false)}
+      />
     </div>
   );
-};
-
-const isLinkActive = (editor) => {
-  const [link] = Editor.nodes(editor, { match: (n) => n.type === 'link' });
-  return !!link;
-};
-
-const insertLink = (editor, url) => {
-  if (editor.selection) {
-    wrapLink(editor, url);
-  }
-};
-
-const wrapLink = (editor, url) => {
-  if (isLinkActive(editor)) {
-    unwrapLink(editor);
-  }
-
-  const { selection } = editor;
-  const isCollapsed = selection && Range.isCollapsed(selection);
-  const link = {
-    type: 'link',
-    url,
-    children: isCollapsed ? [{ text: url }] : [],
-  };
-
-  if (isCollapsed) {
-    Transforms.insertNodes(editor, link);
-  } else {
-    Transforms.wrapNodes(editor, link, { split: true });
-    Transforms.collapse(editor, { edge: 'end' });
-  }
-};
-
-const unwrapLink = (editor) => {
-  Transforms.unwrapNodes(editor, { match: (n) => n.type === 'link' });
 };
 
 export default Toolbar;
