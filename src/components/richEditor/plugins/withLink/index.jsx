@@ -10,7 +10,8 @@ export const unwrapLink = (editor) => {
   Transforms.unwrapNodes(editor, { match: (n) => n.type === 'link' });
 };
 
-export const wrapLink = (editor, url) => {
+export const wrapLink = (editor, url, label) => {
+  const text = label ? label : url
   if (isLinkActive(editor)) {
     unwrapLink(editor);
   }
@@ -20,7 +21,7 @@ export const wrapLink = (editor, url) => {
   const link = {
     type: 'link',
     url,
-    children: isCollapsed ? [{ text: url }] : [],
+    children: isCollapsed ? [{ text }] : [],
   };
 
   if (isCollapsed) {

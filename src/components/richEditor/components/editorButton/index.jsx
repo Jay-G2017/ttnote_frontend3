@@ -3,13 +3,14 @@ import styles from './styles.less';
 import classnames from 'classnames';
 
 const EditorButton = (props) => {
-  const { type, active, ...rest } = props;
+  const { type, active, disabled, ...rest } = props;
 
   return (
     <div
       className={classnames({
         [styles.editorButton]: true,
         [styles.editorButtonActive]: active,
+        [styles.editorButtonDisabled]: disabled,
       })}
       {...rest}
     >

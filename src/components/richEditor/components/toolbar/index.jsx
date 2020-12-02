@@ -27,6 +27,19 @@ const Toolbar = (props) => {
 
   const [linkModalVisible, setLinkModalVisible] = useState(false);
 
+  const handleLinkOk = (form) => {
+    if (!form.url) {
+      setLinkModalVisible(false)
+      return
+    }
+
+    if (editor.selection) {
+      wrapLink(editor, form.url, form.label);
+    }
+
+    setLinkModalVisible(false)
+  }
+
   return (
     <div className={styles.toolbar}>
       <EditorButton
@@ -82,6 +95,7 @@ const Toolbar = (props) => {
       <LinkModal
         visible={linkModalVisible}
         onCancel={() => setLinkModalVisible(false)}
+        onOk={handleLinkOk}
       />
     </div>
   );
