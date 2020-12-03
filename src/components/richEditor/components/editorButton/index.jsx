@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styles from './styles.less';
 import classnames from 'classnames';
 
 const EditorButton = (props) => {
-  const { type, active, disabled, ...rest } = props;
+  const { type, active, disabled, onClick, ...rest } = props;
+
+  const handleOnClick = useCallback((e) => {
+    if (disabled) return
+    if (onClick) onClick(e)
+  }, [disabled, onClick])
 
   return (
     <div
@@ -13,6 +18,7 @@ const EditorButton = (props) => {
         [styles.editorButtonDisabled]: disabled,
       })}
       {...rest}
+      onClick={handleOnClick}
     >
       {renderIcon(type)}
     </div>
