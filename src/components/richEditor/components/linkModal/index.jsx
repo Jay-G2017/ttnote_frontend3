@@ -4,18 +4,17 @@ import styles from './styles.less';
 
 const LinkModal = (props) => {
   const { visible, onOk } = props;
-  const [form, setForm] = useState({ label: '', url: '' })
+  const [form, setForm] = useState({ label: '', url: '' });
 
   const handleOnOk = () => {
     if (onOk) {
-      onOk(form)
+      onOk(form);
     }
-
-  }
+  };
 
   const updateField = (field, val) => {
-    setForm({ ...form, [field]: val })
-  }
+    setForm({ ...form, [field]: val });
+  };
 
   return (
     <Modal
@@ -31,18 +30,20 @@ const LinkModal = (props) => {
           <div className={styles.label}>文本</div>
           <Input
             onChange={(e) => updateField('label', e.target.value)}
-            value={form.label} />
+            value={form.label}
+          />
         </div>
         <div className={styles.row}>
           <div className={styles.label}>链接</div>
           <Input
-            onChange={e => updateField('url', e.target.value)}
-            value={form.url} />
+            onChange={(e) => updateField('url', e.target.value)}
+            value={form.url}
+          />
         </div>
         <div>
-          <Button type='primary'
-            onClick={handleOnOk}
-          >确定</Button>
+          <Button type="primary" onClick={handleOnOk}>
+            确定
+          </Button>
         </div>
       </div>
     </Modal>

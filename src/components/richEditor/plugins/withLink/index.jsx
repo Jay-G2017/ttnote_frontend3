@@ -10,13 +10,9 @@ export const unwrapLink = (editor) => {
   Transforms.unwrapNodes(editor, { match: (n) => n.type === 'link' });
 };
 
-export const wrapLink = (editor, url, label) => {
-  const text = label ? label : url
-  if (isLinkActive(editor)) {
-    unwrapLink(editor);
-  }
+export const wrapLink = (editor, selection, url, label) => {
+  const text = label ? label : url;
 
-  const { selection } = editor;
   const isCollapsed = selection && Range.isCollapsed(selection);
   const link = {
     type: 'link',
