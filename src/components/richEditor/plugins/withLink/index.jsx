@@ -1,5 +1,6 @@
 import isUrl from 'is-url';
 import { Editor, Transforms, Range } from 'slate';
+import { ReactEditor } from 'slate-react';
 
 export const isLinkActive = (editor) => {
   const [link] = Editor.nodes(editor, { match: (n) => n.type === 'link' });
@@ -20,6 +21,7 @@ export const wrapLink = (editor, selection, url, label) => {
     children: isCollapsed ? [{ text }] : [],
   };
 
+  ReactEditor.focus(editor);
   if (isCollapsed) {
     Transforms.insertNodes(editor, link);
   } else {

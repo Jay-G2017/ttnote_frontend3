@@ -29,6 +29,7 @@ const LinkModal = (props) => {
         <div className={styles.row}>
           <div className={styles.label}>文本</div>
           <Input
+            autoFocus
             onChange={(e) => updateField('label', e.target.value)}
             value={form.label}
           />
