@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import EditorButton from '../editorButton';
 import styles from './styles.less';
 
@@ -7,6 +7,7 @@ import { Editor, Transforms } from 'slate';
 import { isLinkActive, wrapLink, unwrapLink } from '../../plugins/withLink';
 import LinkModal from '../linkModal';
 import { Button } from 'antd';
+import isUrl from 'is-url'
 
 const toggleMark = (editor, format) => {
   const isActive = isMarkActive(editor, format);
@@ -31,19 +32,18 @@ const Toolbar = (props) => {
 
   const linkBtnDisabled = !editor.selection;
 
-  const handleLinkOk = (form) => {
+  const handleLinkOk = useCallback((form) => {
     if (!form.url) {
       setLinkModalVisible(false);
       return;
     }
-    console.log('selection', linkSelection);
 
     if (linkSelection) {
       wrapLink(editor, linkSelection, form.url, form.label);
     }
 
     setLinkModalVisible(false);
-  };
+  }, [editor, linkSelection]);
 
   return (
     <div className={styles.toolbar}>
