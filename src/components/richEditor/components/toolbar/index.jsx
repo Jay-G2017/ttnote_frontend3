@@ -7,7 +7,7 @@ import { Editor, Transforms } from 'slate';
 import { isLinkActive, wrapLink, unwrapLink } from '../../plugins/withLink';
 import LinkModal from '../linkModal';
 import { Button } from 'antd';
-import isUrl from 'is-url'
+import isUrl from 'is-url';
 
 const toggleMark = (editor, format) => {
   const isActive = isMarkActive(editor, format);
@@ -32,18 +32,21 @@ const Toolbar = (props) => {
 
   const linkBtnDisabled = !editor.selection;
 
-  const handleLinkOk = useCallback((form) => {
-    if (!form.url) {
+  const handleLinkOk = useCallback(
+    (form) => {
+      if (!form.url) {
+        setLinkModalVisible(false);
+        return;
+      }
+
+      if (linkSelection) {
+        wrapLink(editor, linkSelection, form.url, form.label);
+      }
+
       setLinkModalVisible(false);
-      return;
-    }
-
-    if (linkSelection) {
-      wrapLink(editor, linkSelection, form.url, form.label);
-    }
-
-    setLinkModalVisible(false);
-  }, [editor, linkSelection]);
+    },
+    [editor, linkSelection]
+  );
 
   return (
     <div className={styles.toolbar}>
@@ -95,24 +98,12 @@ const Toolbar = (props) => {
         }}
         active={isLinkActive(editor)}
       />
-      <LinkModal
-        visible={linkModalVisible}
-        onCancel={() => setLinkModalVisible(false)}
-        onOk={handleLinkOk}
-      />
-      <Button
-        onClick={() => {
-          console.log('editor', editor);
-          const selection = {
-            anchor: { offset: 0, path: [0, 0] },
-            focus: { offset: 3, path: [0, 0] },
-          };
-          ReactEditor.focus(editor);
-          Transforms.select(editor, selection);
-        }}
-      >
-        insert
-      </Button>
+      {linkModalVisible && (
+        <LinkModal
+          onCancel={() => setLinkModalVisible(false)}
+          onOk={handleLinkOk}
+        />
+      )}
     </div>
   );
 };

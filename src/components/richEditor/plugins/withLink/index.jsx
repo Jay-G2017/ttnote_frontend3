@@ -22,6 +22,7 @@ export const wrapLink = (editor, selection, url, label) => {
   };
 
   ReactEditor.focus(editor);
+  Transforms.select(editor, selection);
   if (isCollapsed) {
     Transforms.insertNodes(editor, link);
   } else {

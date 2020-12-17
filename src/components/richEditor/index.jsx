@@ -69,14 +69,13 @@ const RichEditor = (props) => {
     []
   );
 
-  console.log('editor', editor);
+  // console.log('editor', editor);
 
   return (
     <Slate
       editor={editor}
       value={value}
       onChange={(val) => {
-        console.log('onChange', value, val);
         setValue(val);
         if (props.onChange) props.onChange(val);
       }}
