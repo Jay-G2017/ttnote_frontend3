@@ -3,8 +3,23 @@ import { Modal, Input, Button } from 'antd'
 import styles from './styles.less'
 
 function useLinkModal(onLinkOk) {
+  const [linkState, setLinkState] = useState({ visible: false })
+
+  return [
+    <LinkModal
+      linkState={linkState}
+      setLinkState={setLinkState}
+      onLinkOk={onLinkOk}
+    />,
+    setLinkState,
+  ]
+}
+
+export default useLinkModal
+
+function LinkModal(props) {
+  const { onLinkOk, linkState, setLinkState } = props
   const [form, setForm] = useState({ label: '', url: '' })
-  const [linkModalVisible, setLinkModalVisible] = useState([false])
 
   const updateField = (field, val) => {
     setForm({ ...form, [field]: val })
@@ -12,19 +27,19 @@ function useLinkModal(onLinkOk) {
 
   const handleLinkOk = () => {
     if (form.url) {
-      onLinkOk(linkModalVisible[1], form)
+      onLinkOk(linkState.selection, form)
     }
-    setLinkModalVisible([false])
+    setLinkState((state) => ({ ...state, visible: false }))
   }
 
-  const modal = (
+  return (
     <Modal
       zIndex={1057}
-      visible={linkModalVisible[0]}
+      visible={linkState.visible}
       mask={false}
       footer={null}
       closable={false}
-      onCancel={() => setLinkModalVisible(false)}
+      onCancel={() => setLinkState({ visible: false })}
       destroyOnClose
     >
       <div>
@@ -51,8 +66,4 @@ function useLinkModal(onLinkOk) {
       </div>
     </Modal>
   )
-
-  return [modal, setLinkModalVisible]
 }
-
-export default useLinkModal

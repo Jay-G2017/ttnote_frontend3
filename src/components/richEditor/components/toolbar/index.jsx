@@ -27,7 +27,7 @@ const Toolbar = (props) => {
 
   const linkBtnDisabled = !editor.selection
 
-  const [modal, setLinkModalVisible] = useLinkModal((selection, form) =>
+  const [modal, setLinkState] = useLinkModal((selection, form) =>
     wrapLink(editor, selection, form.url, form.label)
   )
 
@@ -71,7 +71,7 @@ const Toolbar = (props) => {
         type={isLinkActive(editor) ? 'unlink' : 'link'}
         onMouseDown={(event) => {
           event.preventDefault()
-          handleLinkClick(editor, setLinkModalVisible)
+          handleLinkClick(editor, setLinkState)
         }}
         active={isLinkActive(editor)}
       />

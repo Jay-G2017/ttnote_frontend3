@@ -31,13 +31,13 @@ export const wrapLink = (editor, selection, url, label) => {
   }
 }
 
-export const handleLinkClick = (editor, setOpen) => {
+export const handleLinkClick = (editor, setLinkState) => {
   if (!editor.selection) return
 
   if (isLinkActive(editor)) {
     unwrapLink(editor)
   } else {
-    setOpen([true, editor.selection])
+    setLinkState({ visible: true, selection: editor.selection })
   }
 }
 
