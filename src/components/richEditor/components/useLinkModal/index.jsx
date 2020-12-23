@@ -1,16 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Modal, Input, Button } from 'antd'
 import styles from './styles.less'
+import { useSlate } from 'slate-react'
+import { wrapLink } from '../../plugins/withLink'
 
-function useLinkModal(onLinkOk) {
-  const [linkState, setLinkState] = useState({ visible: false })
+function useLinkModal() {
+  const [linkState, setLinkState] = useState({
+    visible: false,
+    selection: null,
+  })
 
   return [
-    <LinkModal
-      linkState={linkState}
-      setLinkState={setLinkState}
-      onLinkOk={onLinkOk}
-    />,
+    <LinkModal linkState={linkState} setLinkState={setLinkState} />,
     setLinkState,
   ]
 }
@@ -18,19 +19,37 @@ function useLinkModal(onLinkOk) {
 export default useLinkModal
 
 function LinkModal(props) {
-  const { onLinkOk, linkState, setLinkState } = props
+  const { linkState, setLinkState } = props
   const [form, setForm] = useState({ label: '', url: '' })
+
+  const editor = useSlate()
 
   const updateField = (field, val) => {
     setForm({ ...form, [field]: val })
   }
 
-  const handleLinkOk = () => {
+  const handleLinkOk = useCallback(() => {
     if (form.url) {
-      onLinkOk(linkState.selection, form)
+      wrapLink(editor, linkState.selection, form.url, form.label)
     }
     setLinkState((state) => ({ ...state, visible: false }))
-  }
+  }, [editor, form.label, form.url, linkState.selection, setLinkState])
+
+  useEffect(() => {
+    const handleEnterPress = (e) => {
+      if (e.code === 'Enter') {
+        e.preventDefault()
+        handleLinkOk()
+      }
+    }
+    if (linkState.visible) {
+      window.addEventListener('keydown', handleEnterPress)
+    }
+
+    return () => {
+      window.removeEventListener('keydown', handleEnterPress)
+    }
+  }, [handleLinkOk, linkState.visible])
 
   return (
     <Modal

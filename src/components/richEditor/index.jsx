@@ -3,13 +3,14 @@ import isHotkey from 'is-hotkey'
 import { Editable, withReact, Slate } from 'slate-react'
 import { Editor, Transforms, createEditor, Node } from 'slate'
 import { withHistory } from 'slate-history'
-import withLinks, { handleLinkClick, wrapLink } from './plugins/withLink'
+import withLinks, { handleLinkClick } from './plugins/withLink'
 import styles from './styles.less'
 
 import { Popover } from 'antd'
 import Toolbar from './components/toolbar'
 import EditorSmallButton from './components/editorSmallButton'
 import useLinkModal from './components/useLinkModal'
+import { Article } from 'react-weui'
 
 // import { Button, Icon, Toolbar } from '../components';
 
@@ -72,9 +73,7 @@ const RichEditor = (props) => {
     []
   )
 
-  const [modal, setLinkModalVisible] = useLinkModal((selection, form) =>
-    wrapLink(editor, selection, form.url, form.label)
-  )
+  const [modal, setLinkState] = useLinkModal()
 
   // console.log('editor', editor);
 
@@ -102,7 +101,7 @@ const RichEditor = (props) => {
                 const mark = HOTKEYS[hotkey]
                 // 链接快捷键
                 if (mark === 'link') {
-                  handleLinkClick(editor, setLinkModalVisible)
+                  handleLinkClick(editor, setLinkState)
                 } else {
                   toggleMark(editor, mark)
                 }
@@ -143,7 +142,8 @@ const isBlockActive = (editor, format) => {
   return !!match
 }
 
-const Element = ({ attributes, children, element }) => {
+const Element = (props) => {
+  const { attributes, children, element } = props
   switch (element.type) {
     case 'block-quote':
       return <blockquote {...attributes}>{children}</blockquote>
@@ -158,11 +158,12 @@ const Element = ({ attributes, children, element }) => {
     case 'numbered-list':
       return <ol {...attributes}>{children}</ol>
     case 'link':
+      console.log('link element', element)
       return (
         <Popover
           overlayStyle={{ zIndex: 1051 }}
           overlayClassName="richEditor"
-          content={<LinkContent url={element.url} />}
+          content={<LinkContent element={element} />}
           placement="bottom"
         >
           <a
@@ -223,13 +224,27 @@ const initialValue = [
 ]
 
 const LinkContent = (props) => {
-  const { url } = props
+  const { element } = props
+  const { selection, children } = element
+  const [modal, setLinkState] = useLinkModal()
+
   return (
     <div className="flexRow">
-      <div>{url}</div>
-      <EditorSmallButton style={{ marginLeft: '10px' }} type="edit" />
+      <div>{element.url}</div>
+      <EditorSmallButton
+        onClick={() => {
+          setLinkState({
+            visible: true,
+            selection,
+            defaultLabel: children[0].text,
+          })
+        }}
+        style={{ marginLeft: '10px' }}
+        type="edit"
+      />
       <EditorSmallButton style={{ marginLeft: '4px' }} type="copy" />
       <EditorSmallButton style={{ marginLeft: '4px' }} type="unlink" />
+      {modal}
     </div>
   )
 }
