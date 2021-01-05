@@ -1,16 +1,18 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import isHotkey from 'is-hotkey'
-import { Editable, withReact, Slate } from 'slate-react'
+import { Editable, withReact, Slate, ReactEditor, useSlate } from 'slate-react'
 import { Editor, Transforms, createEditor, Node } from 'slate'
 import { withHistory } from 'slate-history'
 import withLinks, { handleLinkClick } from './plugins/withLink'
 import styles from './styles.less'
 
-import { Popover } from 'antd'
+import { message, Popover } from 'antd'
 import Toolbar from './components/toolbar'
 import EditorSmallButton from './components/editorSmallButton'
 import useLinkModal from './components/useLinkModal'
-import { Article } from 'react-weui'
+import JSONTree from 'react-json-tree'
+import { normalizeUrl } from '../../utils/url'
+import Clipboard from 'clipboard'
 
 // import { Button, Icon, Toolbar } from '../components';
 
@@ -83,10 +85,12 @@ const RichEditor = (props) => {
       value={value}
       onChange={(val) => {
         setValue(val)
+        console.log('selection', editor.selection)
         if (props.onChange) props.onChange(val)
       }}
     >
       <div style={{ backgroundColor: '#fff' }}>
+        <JSONTree data={value} shouldExpandNode={() => true} hideRoot={true} />
         <Toolbar />
         <Editable
           className={styles.editorBody}
@@ -143,6 +147,8 @@ const isBlockActive = (editor, format) => {
 }
 
 const Element = (props) => {
+  const [popoverShow, setPopoverShow] = useState(false)
+  const popShowRef = useRef()
   const { attributes, children, element } = props
   switch (element.type) {
     case 'block-quote':
@@ -158,19 +164,49 @@ const Element = (props) => {
     case 'numbered-list':
       return <ol {...attributes}>{children}</ol>
     case 'link':
-      console.log('link element', element)
+      // url前面如果没有http或https, 则默认前面加上https://
+      const href = normalizeUrl(element.url)
+
+      const showPop = () => {
+        setPopoverShow(true)
+        popShowRef.current = true
+      }
+
+      const delayHidePop = ({ delayTime = 300 }) => {
+        popShowRef.current = false
+
+        if (delayTime <= 0) {
+          setPopoverShow(false)
+          return
+        }
+
+        setTimeout(() => {
+          if (!popShowRef.current) {
+            setPopoverShow(true)
+          }
+        }, delayTime)
+      }
+
       return (
         <Popover
           overlayStyle={{ zIndex: 1051 }}
           overlayClassName="richEditor"
-          content={<LinkContent element={element} />}
+          content={
+            <LinkContent
+              element={element}
+              delayHidePop={delayHidePop}
+              showPop={showPop}
+            />
+          }
           placement="bottom"
+          visible={popoverShow}
         >
           <a
             {...attributes}
-            target={'_blank'}
-            href={element.url}
-            onClick={() => window.open(element.url, '_blank')}
+            href={href}
+            onClick={() => window.open(href, '_blank')}
+            onMouseEnter={showPop}
+            onMouseLeave={delayHidePop}
           >
             {children}
           </a>
@@ -224,26 +260,80 @@ const initialValue = [
 ]
 
 const LinkContent = (props) => {
-  const { element } = props
-  const { selection, children } = element
+  const editor = useSlate()
+  const { element, showPop, delayHidePop } = props
+  const { children } = element
   const [modal, setLinkState] = useLinkModal()
 
+  const label = children[0].text
+  const path = ReactEditor.findPath(editor, element)
+  const anchor = { path: path.concat(0), offset: 0 }
+  const focus = { path: path.concat(0), offset: label.length }
+
+  const selection = { anchor, focus }
+
+  useEffect(() => {
+    const btnCopy = new Clipboard('btnCopy')
+    btnCopy.on('success', function (e) {
+      message.success('复制成功', 0.6)
+      delayHidePop({ delayTime: 0 })
+    })
+
+    // 复制失败后执行的回调函数
+    btnCopy.on('error', function (e) {})
+
+    return () => {
+      btnCopy.destroy()
+    }
+  })
+
   return (
-    <div className="flexRow">
-      <div>{element.url}</div>
+    <div className="flexRow" onMouseEnter={showPop} onMouseLeave={delayHidePop}>
+      <div>
+        <a
+          href={normalizeUrl(element.url)}
+          target={'_blank'}
+          onClick={() => window.open(normalizeUrl(element.url), '_blank')}
+        >
+          {normalizeUrl(element.url)}
+        </a>
+      </div>
       <EditorSmallButton
         onClick={() => {
+          console.log('selection', selection)
           setLinkState({
             visible: true,
             selection,
-            defaultLabel: children[0].text,
+            defaultLabel: label,
+            defaultUrl: element.url,
+            type: 'edit',
           })
+          delayHidePop({ delayTime: 0 })
         }}
         style={{ marginLeft: '10px' }}
         type="edit"
       />
-      <EditorSmallButton style={{ marginLeft: '4px' }} type="copy" />
-      <EditorSmallButton style={{ marginLeft: '4px' }} type="unlink" />
+      <EditorSmallButton
+        className="btnCopy"
+        dataClipboardText={element.url}
+        style={{ marginLeft: '4px' }}
+        type="copy"
+        onClick={() => {}}
+      />
+      <EditorSmallButton
+        style={{ marginLeft: '4px' }}
+        type="unlink"
+        onClick={(e) => {
+          e.preventDefault()
+          delayHidePop({ delayTime: 0 })
+          setTimeout(() => {
+            Transforms.unwrapNodes(editor, {
+              at: selection,
+              match: (n) => n.type === 'link',
+            })
+          }, 0)
+        }}
+      />
       {modal}
     </div>
   )

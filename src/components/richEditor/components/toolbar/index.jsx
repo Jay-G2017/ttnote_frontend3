@@ -3,9 +3,10 @@ import EditorButton from '../editorButton'
 import styles from './styles.less'
 
 import { useSlate } from 'slate-react'
-import { Editor } from 'slate'
-import { isLinkActive, wrapLink, handleLinkClick } from '../../plugins/withLink'
+import { Editor, Transforms } from 'slate'
+import { isLinkActive, handleLinkClick } from '../../plugins/withLink'
 import useLinkModal from '../useLinkModal'
+import { Button } from 'antd'
 
 const toggleMark = (editor, format) => {
   const isActive = isMarkActive(editor, format)
@@ -27,9 +28,7 @@ const Toolbar = (props) => {
 
   const linkBtnDisabled = !editor.selection
 
-  const [modal, setLinkState] = useLinkModal((selection, form) =>
-    wrapLink(editor, selection, form.url, form.label)
-  )
+  const [modal, setLinkState] = useLinkModal()
 
   return (
     <div className={styles.toolbar}>
@@ -76,6 +75,22 @@ const Toolbar = (props) => {
         active={isLinkActive(editor)}
       />
       {modal}
+      <Button
+        onClick={() => {
+          Transforms.insertText(editor, 'hello')
+        }}
+      >
+        insert hello
+      </Button>
+      <Button
+        onClick={() => {
+          Transforms.insertFragment(editor, [
+            { children: [{ text: 'dog ', bold: true }, { text: 'bear' }] },
+          ])
+        }}
+      >
+        insert bold dog
+      </Button>
     </div>
   )
 }

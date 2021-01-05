@@ -8,6 +8,8 @@ function useLinkModal() {
   const [linkState, setLinkState] = useState({
     visible: false,
     selection: null,
+    defaultLabel: '',
+    defaultUrl: '',
   })
 
   return [
@@ -20,7 +22,12 @@ export default useLinkModal
 
 function LinkModal(props) {
   const { linkState, setLinkState } = props
+  const { defaultLabel, defaultUrl, type } = linkState
   const [form, setForm] = useState({ label: '', url: '' })
+
+  useEffect(() => {
+    setForm({ label: defaultLabel, url: defaultUrl })
+  }, [defaultLabel, defaultUrl])
 
   const editor = useSlate()
 
@@ -30,10 +37,14 @@ function LinkModal(props) {
 
   const handleLinkOk = useCallback(() => {
     if (form.url) {
-      wrapLink(editor, linkState.selection, form.url, form.label)
+      wrapLink(editor, linkState.selection, {
+        url: form.url,
+        label: form.label,
+        type,
+      })
     }
     setLinkState((state) => ({ ...state, visible: false }))
-  }, [editor, form.label, form.url, linkState.selection, setLinkState])
+  }, [editor, form.label, form.url, linkState.selection, setLinkState, type])
 
   useEffect(() => {
     const handleEnterPress = (e) => {
@@ -58,7 +69,7 @@ function LinkModal(props) {
       mask={false}
       footer={null}
       closable={false}
-      onCancel={() => setLinkState({ visible: false })}
+      onCancel={() => setLinkState((state) => ({ ...state, visible: false }))}
       destroyOnClose
     >
       <div>

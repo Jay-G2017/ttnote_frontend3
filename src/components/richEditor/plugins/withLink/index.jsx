@@ -8,11 +8,25 @@ export const isLinkActive = (editor) => {
 }
 
 export const unwrapLink = (editor) => {
-  Transforms.unwrapNodes(editor, { match: (n) => n.type === 'link' })
+  Transforms.unwrapNodes(editor, {
+    match: (n) => n.type === 'link',
+  })
 }
 
-export const wrapLink = (editor, selection, url, label) => {
+export const wrapLink = (editor, selection, { url, label, type }) => {
+  ReactEditor.focus(editor)
+  Transforms.select(editor, selection)
   const text = label ? label : url
+
+  if (type === 'edit') {
+    Transforms.setNodes(
+      editor,
+      { url },
+      { match: (node) => node.type === 'link' }
+    )
+    Transforms.insertText(editor, text)
+    return
+  }
 
   const isCollapsed = selection && Range.isCollapsed(selection)
   const link = {
@@ -21,12 +35,11 @@ export const wrapLink = (editor, selection, url, label) => {
     children: isCollapsed ? [{ text }] : [],
   }
 
-  ReactEditor.focus(editor)
-  Transforms.select(editor, selection)
   if (isCollapsed) {
     Transforms.insertNodes(editor, link)
   } else {
     Transforms.wrapNodes(editor, link, { split: true })
+    Transforms.insertText(editor, text)
     Transforms.collapse(editor, { edge: 'end' })
   }
 }
@@ -42,28 +55,10 @@ export const handleLinkClick = (editor, setLinkState) => {
 }
 
 const withLinks = (editor) => {
-  const { insertData, insertText, isInline } = editor
+  const { isInline } = editor
 
   editor.isInline = (element) => {
     return element.type === 'link' ? true : isInline(element)
-  }
-
-  editor.insertText = (text) => {
-    if (text && isUrl(text)) {
-      wrapLink(editor, text)
-    } else {
-      insertText(text)
-    }
-  }
-
-  editor.insertData = (data) => {
-    const text = data.getData('text/plain')
-
-    if (text && isUrl(text)) {
-      wrapLink(editor, text)
-    } else {
-      insertData(data)
-    }
   }
 
   return editor
