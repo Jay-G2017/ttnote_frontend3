@@ -5,14 +5,16 @@ import { Editor, Transforms, createEditor, Node } from 'slate'
 import { withHistory } from 'slate-history'
 import withLinks, { handleLinkClick } from './plugins/withLink'
 import styles from './styles.less'
+import classnames from 'classnames'
 
 import { message, Popover } from 'antd'
 import Toolbar from './components/toolbar'
 import EditorSmallButton from './components/editorSmallButton'
 import useLinkModal from './components/useLinkModal'
-import JSONTree from 'react-json-tree'
 import { normalizeUrl } from '../../utils/url'
 import Clipboard from 'clipboard'
+import { isHeading } from './utils'
+import { useSize } from 'ahooks'
 
 // import { Button, Icon, Toolbar } from '../components';
 
@@ -22,9 +24,12 @@ const HOTKEYS = {
   'mod+u': 'underline',
   'mod+`': 'code',
   'mod+l': 'link',
+  'mod+alt+p': 'p',
+  'mod+alt+1': 'h1',
+  'mod+alt+2': 'h2',
+  'mod+alt+3': 'h3',
+  'mod+alt+4': 'h4',
 }
-
-const LIST_TYPES = ['numbered-list', 'bulleted-list']
 
 const serialize = (value) => {
   return (
@@ -36,17 +41,8 @@ const serialize = (value) => {
   )
 }
 
-const deserialize = (string) => {
-  // Return a value array of children derived by splitting the string.
-  return string.split('\n').map((line) => {
-    return {
-      children: [{ text: line }],
-    }
-  })
-}
-
-const unChanged = (oldVal, newVal) => {
-  return serialize(oldVal) === serialize(newVal)
+const textChanged = (oldVal, newVal) => {
+  return serialize(oldVal) !== serialize(newVal)
 }
 
 const toggleMark = (editor, format) => {
@@ -69,15 +65,33 @@ const RichEditor = (props) => {
   const [value, setValue] = useState(defaultValue)
 
   const renderElement = useCallback((props) => <Element {...props} />, [])
-  const renderLeaf = useCallback((props) => <Leaf {...props} />, [])
   const editor = useMemo(
     () => withLinks(withHistory(withReact(createEditor()))),
     []
   )
 
-  const [modal, setLinkState] = useLinkModal()
+  // 监听富文本框的宽度
+  const editorRef = useRef()
+  const size = useSize(editorRef)
 
   // console.log('editor', editor);
+
+  const [dSelection, setDSelection] = useState(null)
+  const decorate = useCallback(
+    ([node, path]) => {
+      const ranges = []
+      if (dSelection && dSelection.anchor.path.toString() === path.toString()) {
+        ranges.push({
+          ...dSelection,
+          dSelected: true,
+        })
+      }
+      return ranges.slice(0, 1)
+    },
+    [dSelection]
+  )
+
+  const [modal, setLinkState] = useLinkModal(setDSelection)
 
   return (
     <Slate
@@ -85,17 +99,20 @@ const RichEditor = (props) => {
       value={value}
       onChange={(val) => {
         setValue(val)
-        console.log('selection', editor.selection)
-        if (props.onChange) props.onChange(val)
+        if (props.onChange && textChanged(value, val)) props.onChange(val)
       }}
     >
-      <div style={{ backgroundColor: '#fff' }}>
-        <JSONTree data={value} shouldExpandNode={() => true} hideRoot={true} />
-        <Toolbar />
+      <div ref={editorRef} style={{ backgroundColor: '#fff' }}>
+        <Toolbar setDSelection={setDSelection} />
         <Editable
-          className={styles.editorBody}
+          className={classnames({
+            [styles.editorBody]: true,
+            [styles.pcStyle]: size.width > 668,
+            [styles.mobileStyle]: size.width < 668,
+          })}
+          decorate={decorate}
           renderElement={renderElement}
-          renderLeaf={renderLeaf}
+          renderLeaf={(props) => <Leaf {...props} />}
           placeholder={props.placeholder}
           spellCheck
           onKeyDown={(event) => {
@@ -106,6 +123,8 @@ const RichEditor = (props) => {
                 // 链接快捷键
                 if (mark === 'link') {
                   handleLinkClick(editor, setLinkState)
+                } else if (isHeading(mark)) {
+                  Transforms.setNodes(editor, { type: mark })
                 } else {
                   toggleMark(editor, mark)
                 }
@@ -119,33 +138,6 @@ const RichEditor = (props) => {
   )
 }
 
-const toggleBlock = (editor, format) => {
-  const isActive = isBlockActive(editor, format)
-  const isList = LIST_TYPES.includes(format)
-
-  Transforms.unwrapNodes(editor, {
-    match: (n) => LIST_TYPES.includes(n.type),
-    split: true,
-  })
-
-  Transforms.setNodes(editor, {
-    type: isActive ? 'paragraph' : isList ? 'list-item' : format,
-  })
-
-  if (!isActive && isList) {
-    const block = { type: format, children: [] }
-    Transforms.wrapNodes(editor, block)
-  }
-}
-
-const isBlockActive = (editor, format) => {
-  const [match] = Editor.nodes(editor, {
-    match: (n) => n.type === format,
-  })
-
-  return !!match
-}
-
 const Element = (props) => {
   const [popoverShow, setPopoverShow] = useState(false)
   const popShowRef = useRef()
@@ -155,10 +147,18 @@ const Element = (props) => {
       return <blockquote {...attributes}>{children}</blockquote>
     case 'bulleted-list':
       return <ul {...attributes}>{children}</ul>
-    case 'heading-one':
+    case 'h1':
       return <h1 {...attributes}>{children}</h1>
-    case 'heading-two':
+    case 'h2':
       return <h2 {...attributes}>{children}</h2>
+    case 'h3':
+      return <h3 {...attributes}>{children}</h3>
+    case 'h4':
+      return <h4 {...attributes}>{children}</h4>
+    case 'h5':
+      return <h5 {...attributes}>{children}</h5>
+    case 'h6':
+      return <h6 {...attributes}>{children}</h6>
     case 'list-item':
       return <li {...attributes}>{children}</li>
     case 'numbered-list':
@@ -182,7 +182,7 @@ const Element = (props) => {
 
         setTimeout(() => {
           if (!popShowRef.current) {
-            setPopoverShow(true)
+            setPopoverShow(false)
           }
         }, delayTime)
       }
@@ -204,7 +204,10 @@ const Element = (props) => {
           <a
             {...attributes}
             href={href}
-            onClick={() => window.open(href, '_blank')}
+            onMouseDown={(e) => {
+              e.preventDefault()
+              window.open(href, '_blank')
+            }}
             onMouseEnter={showPop}
             onMouseLeave={delayHidePop}
           >
@@ -234,7 +237,14 @@ const Leaf = ({ attributes, children, leaf }) => {
     children = <u>{children}</u>
   }
 
-  return <span {...attributes}>{children}</span>
+  return (
+    <span
+      className={classnames({ [styles.dSelected]: leaf.dSelected })}
+      {...attributes}
+    >
+      {children}
+    </span>
+  )
 }
 
 // const BlockButton = ({ format, icon }) => {
@@ -262,7 +272,8 @@ const initialValue = [
 const LinkContent = (props) => {
   const editor = useSlate()
   const { element, showPop, delayHidePop } = props
-  const { children } = element
+  const { children, url } = element
+  const href = normalizeUrl(url)
   const [modal, setLinkState] = useLinkModal()
 
   const label = children[0].text
@@ -273,17 +284,19 @@ const LinkContent = (props) => {
   const selection = { anchor, focus }
 
   useEffect(() => {
-    const btnCopy = new Clipboard('btnCopy')
-    btnCopy.on('success', function (e) {
+    const linkCopy = new Clipboard('#linkCopy')
+    linkCopy.on('success', function (e) {
       message.success('复制成功', 0.6)
       delayHidePop({ delayTime: 0 })
     })
 
     // 复制失败后执行的回调函数
-    btnCopy.on('error', function (e) {})
+    linkCopy.on('error', function (e) {
+      message.error('复制失败', 0.6)
+    })
 
     return () => {
-      btnCopy.destroy()
+      linkCopy.destroy()
     }
   })
 
@@ -291,21 +304,23 @@ const LinkContent = (props) => {
     <div className="flexRow" onMouseEnter={showPop} onMouseLeave={delayHidePop}>
       <div>
         <a
-          href={normalizeUrl(element.url)}
+          href={href}
           target={'_blank'}
-          onClick={() => window.open(normalizeUrl(element.url), '_blank')}
+          onMouseDown={(e) => {
+            e.preventDefault()
+            window.open(href, '_blank')
+          }}
         >
-          {normalizeUrl(element.url)}
+          {href}
         </a>
       </div>
       <EditorSmallButton
         onClick={() => {
-          console.log('selection', selection)
           setLinkState({
             visible: true,
             selection,
             defaultLabel: label,
-            defaultUrl: element.url,
+            defaultUrl: url,
             type: 'edit',
           })
           delayHidePop({ delayTime: 0 })
@@ -314,11 +329,10 @@ const LinkContent = (props) => {
         type="edit"
       />
       <EditorSmallButton
-        className="btnCopy"
-        dataClipboardText={element.url}
+        id="linkCopy"
+        dataClipboardText={href}
         style={{ marginLeft: '4px' }}
         type="copy"
-        onClick={() => {}}
       />
       <EditorSmallButton
         style={{ marginLeft: '4px' }}

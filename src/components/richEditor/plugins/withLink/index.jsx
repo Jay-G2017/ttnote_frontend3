@@ -1,4 +1,3 @@
-import isUrl from 'is-url'
 import { Editor, Transforms, Range } from 'slate'
 import { ReactEditor } from 'slate-react'
 
@@ -50,7 +49,11 @@ export const handleLinkClick = (editor, setLinkState) => {
   if (isLinkActive(editor)) {
     unwrapLink(editor)
   } else {
-    setLinkState({ visible: true, selection: editor.selection })
+    setLinkState({
+      visible: true,
+      selection: editor.selection,
+      defaultLabel: Editor.string(editor, editor.selection),
+    })
   }
 }
 

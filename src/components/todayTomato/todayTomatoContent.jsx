@@ -1,20 +1,24 @@
-import React from 'react';
-import TodayTitle from './todayTitle';
-import { Tabs } from 'antd';
-import styles from './styles.less';
-import Todo from '../Todo/index';
-import Tomato from '../Tomato/index';
-import { getTomatoCountInProject } from '@/utils';
+import React from 'react'
+import TodayTitle from './todayTitle'
+import { Tabs } from 'antd'
+import styles from './styles.less'
+import Todo from '../Todo/index'
+import Tomato from '../Tomato/index'
+
+import { getTomatoCountInProject } from '@/utils'
 
 function TodayTomatoContent(props) {
-  const { data } = props;
+  const { data } = props
 
   return (
     <div className={styles.todayTomatoContent}>
-      {data.length > 0 ?
+      {data.length > 0 ? (
         <Tabs animated={false}>
           {data.map((project) => (
-            <Tabs.TabPane tab={`${project.name}(${getTomatoCountInProject(project)})`} key={project.id}>
+            <Tabs.TabPane
+              tab={`${project.name}(${getTomatoCountInProject(project)})`}
+              key={project.id}
+            >
               <div className={styles.cardContent}>
                 {(project.todos || []).map((todo) => (
                   // <TodayTodo todo={todo} />
@@ -50,11 +54,11 @@ function TodayTomatoContent(props) {
             </Tabs.TabPane>
           ))}
         </Tabs>
-        :
-        <div className='emptyText'>今日无蕃茄</div>
-      }
+      ) : (
+        <div className="emptyText">今日无蕃茄</div>
+      )}
     </div>
-  );
+  )
 }
 
-export default TodayTomatoContent;
+export default TodayTomatoContent
