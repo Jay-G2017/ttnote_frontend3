@@ -5,16 +5,17 @@ import React, {
   useRef,
   useEffect,
   useContext,
-} from 'react';
-import { PaddingRow, TTextArea } from '../common/style';
-import Todo from './Todo';
-import Title from './Title';
-import styled from 'styled-components';
-import { IoIosAddCircle } from 'react-icons/io';
-import { ProjectContext } from '../context/projectContext';
-import { ProjectsContext } from '../context/ProjectsContext';
-import TextareaDebounced from './TextareaDebounced';
-import { getFinishedTodoCount } from '../hooks/useProject';
+} from 'react'
+import { PaddingRow, TTextArea } from '../common/style'
+import Todo from './Todo'
+import Title from './Title'
+import styled from 'styled-components'
+import { IoIosAddCircle } from 'react-icons/io'
+import { ProjectContext } from '../context/projectContext'
+import { ProjectsContext } from '../context/ProjectsContext'
+import TextareaDebounced from './TextareaDebounced'
+import { getFinishedTodoCount } from '../hooks/useProject'
+import RichEditor from './richEditor'
 
 const RightContent = styled.div`
   //margin-top: 3.3rem;
@@ -31,43 +32,43 @@ const RightContent = styled.div`
   //}
   height: calc(100% - 3rem);
   overflow: auto;
-`;
+`
 
 const ProjectNameRow = styled(PaddingRow)`
   margin-top: 0.3rem;
   font-size: 1.2rem;
   font-weight: 700;
-`;
+`
 
 const ProjectNameCell = styled.div`
   padding: 0 0.3rem;
   margin-left: -0.3rem;
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
-`;
+`
 
-const ProjectDescGroup = styled.div``;
+const ProjectDescGroup = styled.div``
 
 const InfoCell = styled(PaddingRow)`
   font-size: 0.6rem;
   color: ${window.ttnoteThemeLight.textColorTips};
   margin-bottom: 0.3rem;
-`;
+`
 
 const DescRow = styled(PaddingRow)`
   margin-bottom: 1.5rem;
-`;
+`
 
 const DescCell = styled.div`
   background-color: ${(props) => (props.disabled ? 'initial' : '#fff')};
   padding: 0.3rem;
   border-radius: ${window.ttnoteThemeLight.borderRadiusPrimary};
-`;
+`
 
-const TodoGroupRow = styled.div``;
+const TodoGroupRow = styled.div``
 
 const TitleGroupRow = styled.div`
   margin-top: 1.5rem;
-`;
+`
 
 const RightFooter = styled.div`
   display: flex;
@@ -88,7 +89,7 @@ const RightFooter = styled.div`
     padding: 1rem 6vw;
   }
   border-top: 0.5px solid ${window.ttnoteThemeLight.lineColorLight};
-`;
+`
 
 const NewTodoCell = styled.div`
   display: flex;
@@ -98,7 +99,7 @@ const NewTodoCell = styled.div`
       ? window.ttnoteThemeLight.btnDefaultDisabledFontColor
       : window.ttnoteThemeLight.colorSecondary};
   cursor: ${(props) => (props.disabled ? 'default' : 'pointer')};
-`;
+`
 
 const NewTitleCell = styled.div`
   display: flex;
@@ -108,31 +109,31 @@ const NewTitleCell = styled.div`
       ? window.ttnoteThemeLight.btnDefaultDisabledFontColor
       : window.ttnoteThemeLight.colorPrimary};
   cursor: ${(props) => (props.disabled ? 'default' : 'pointer')};
-`;
+`
 
 const IconStyled = styled.div`
   font-size: 1.6rem;
   display: flex;
-`;
+`
 
 const IconName = styled.div`
   font-size: 1rem;
   font-weight: 600;
   margin-left: 0.4rem;
   line-height: 1.2;
-`;
+`
 
 const NoTodoDiv = styled.p`
   margin-top: 6rem;
   text-align: center;
   font-weight: 500;
   color: ${window.ttnoteThemeLight.textColorTips};
-`;
+`
 
-const TodoBoard = styled.div``;
+const TodoBoard = styled.div``
 
 const RightBody = (props) => {
-  const { isTaggedProject, showMore, setShowMore } = props;
+  const { isTaggedProject, showMore, setShowMore } = props
 
   const {
     project,
@@ -143,51 +144,66 @@ const RightBody = (props) => {
     handleNewTodo,
     handleNewTitle,
     updateProject,
-  } = useContext(ProjectContext);
-  const { handleProjectChangeFromRight } = useContext(ProjectsContext);
-  const { todoIds, todos, titleIds, titles } = project;
+  } = useContext(ProjectContext)
 
-  const [projectName, setProjectName] = useState(project.name);
+  // 文本到json的迁移
+  let descJSON = ''
+  try {
+    if (!+project.desc) {
+      // 排除掉纯数字
+      descJSON = JSON.parse(project.desc.toString())
+    } else {
+      descJSON = [{ children: [{ text: project.desc }] }]
+    }
+  } catch (e) {
+    // 如果不是json数据, 进行转化
+    descJSON = [{ children: [{ text: project.desc }] }]
+  }
 
-  const projectDescInput = useRef(null);
-  const projectTodoInputRef = useRef(null);
-  const stopOnBlurFlag = useRef(false);
+  const { handleProjectChangeFromRight } = useContext(ProjectsContext)
+  const { todoIds, todos, titleIds, titles } = project
+
+  const [projectName, setProjectName] = useState(project.name)
+
+  const projectDescInput = useRef(null)
+  const projectTodoInputRef = useRef(null)
+  const stopOnBlurFlag = useRef(false)
 
   // 新建的project第一次自动focus
   useEffect(() => {
     if (window.focusProjectName) {
-      projectTodoInputRef.current.focus();
-      projectTodoInputRef.current.selectionStart = projectName.length;
-      projectTodoInputRef.current.selectionEnd = projectName.length;
+      projectTodoInputRef.current.focus()
+      projectTodoInputRef.current.selectionStart = projectName.length
+      projectTodoInputRef.current.selectionEnd = projectName.length
     }
-  });
+  })
 
   const handleProjectNameOnEnterPress = useCallback(
     (e) => {
-      const value = e.currentTarget.value;
+      const value = e.currentTarget.value
       if (value) {
         if (value !== project.name) {
-          updateProject({ name: value });
+          updateProject({ name: value })
         }
       } else {
         // name不能为空
-        handleProjectChangeFromRight(project.id, { name: project.name });
-        setProjectName(project.name);
+        handleProjectChangeFromRight(project.id, { name: project.name })
+        setProjectName(project.name)
       }
-      stopOnBlurFlag.current = false;
+      stopOnBlurFlag.current = false
     },
     [handleProjectChangeFromRight, project.id, project.name, updateProject]
-  );
+  )
 
   const handleProjectNameOnBlur = useCallback(
     (e) => {
-      window.focusProjectName = false; // 取消自动激活
+      window.focusProjectName = false // 取消自动激活
       if (!stopOnBlurFlag.current) {
-        handleProjectNameOnEnterPress(e);
+        handleProjectNameOnEnterPress(e)
       }
     },
     [handleProjectNameOnEnterPress]
-  );
+  )
 
   return useMemo(() => {
     return (
@@ -198,11 +214,11 @@ const RightBody = (props) => {
               onMouseEnter={(e) => {
                 if (!isTaggedProject)
                   e.currentTarget.style.backgroundColor =
-                    window.ttnoteThemeLight.bgColorPrimaryDarker;
+                    window.ttnoteThemeLight.bgColorPrimaryDarker
               }}
               onMouseLeave={(e) => {
                 if (!isTaggedProject)
-                  e.currentTarget.style.backgroundColor = 'inherit';
+                  e.currentTarget.style.backgroundColor = 'inherit'
               }}
             >
               <TTextArea
@@ -211,23 +227,22 @@ const RightBody = (props) => {
                 disabled={isTaggedProject}
                 placeholder={'输入项目标题'}
                 onChange={(e) => {
-                  const value = e.currentTarget.value;
-                  setProjectName(value);
-                  handleProjectChangeFromRight(project.id, { name: value });
+                  const value = e.currentTarget.value
+                  setProjectName(value)
+                  handleProjectChangeFromRight(project.id, { name: value })
                 }}
                 onBlur={handleProjectNameOnBlur}
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
-                    e.preventDefault();
-                    stopOnBlurFlag.current = true;
-                    e.currentTarget.blur();
-                    e.currentTarget.parentNode.style.backgroundColor =
-                      'inherit';
-                    handleProjectNameOnEnterPress(e);
-                    projectDescInput.current.focus();
+                    e.preventDefault()
+                    stopOnBlurFlag.current = true
+                    e.currentTarget.blur()
+                    e.currentTarget.parentNode.style.backgroundColor = 'inherit'
+                    handleProjectNameOnEnterPress(e)
+                    projectDescInput.current.focus()
                     projectDescInput.current.selectionStart =
-                      project.desc.length;
-                    projectDescInput.current.selectionEnd = project.desc.length;
+                      project.desc.length
+                    projectDescInput.current.selectionEnd = project.desc.length
                   }
                 }}
               />
@@ -258,6 +273,7 @@ const RightBody = (props) => {
                     onKeyUp={(value) => updateProject({ desc: value })}
                   />
                 </DescCell>
+                <RichEditor defaultValue={descJSON} />
               </DescRow>
             )}
           </ProjectDescGroup>
@@ -285,7 +301,7 @@ const RightBody = (props) => {
             <TitleGroupRow>
               <InfoCell>已分组任务</InfoCell>
               {titleIds.map((titleId) => {
-                const title = titles[titleId];
+                const title = titles[titleId]
                 return (
                   <Title
                     key={titleId}
@@ -313,7 +329,7 @@ const RightBody = (props) => {
                       ))}
                     </TodoBoard>
                   </Title>
-                );
+                )
               })}
             </TitleGroupRow>
           )}
@@ -321,7 +337,7 @@ const RightBody = (props) => {
         <RightFooter className={'backdrop-blur-right-footer'}>
           <NewTodoCell
             onClick={() => {
-              if (!isTaggedProject) handleNewTodo();
+              if (!isTaggedProject) handleNewTodo()
             }}
             disabled={isTaggedProject}
           >
@@ -333,7 +349,7 @@ const RightBody = (props) => {
           <NewTitleCell
             disabled={isTaggedProject}
             onClick={() => {
-              if (!isTaggedProject) handleNewTitle();
+              if (!isTaggedProject) handleNewTitle()
             }}
           >
             <IconStyled>
@@ -343,8 +359,9 @@ const RightBody = (props) => {
           </NewTitleCell>
         </RightFooter>
       </>
-    );
+    )
   }, [
+    descJSON,
     handleNewTitle,
     handleNewTodo,
     handleProjectChangeFromRight,
@@ -365,7 +382,7 @@ const RightBody = (props) => {
     todoMethods,
     todos,
     updateProject,
-  ]);
-};
+  ])
+}
 
-export default RightBody;
+export default RightBody
