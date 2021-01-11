@@ -31,7 +31,7 @@ const HOTKEYS = {
   'mod+alt+4': 'h4',
 }
 
-const serialize = (value) => {
+export const serialize = (value) => {
   return (
     value
       // Return the string content of each paragraph in the value's children.

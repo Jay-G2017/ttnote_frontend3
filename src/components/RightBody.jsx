@@ -15,7 +15,7 @@ import { ProjectContext } from '../context/projectContext'
 import { ProjectsContext } from '../context/ProjectsContext'
 import TextareaDebounced from './TextareaDebounced'
 import { getFinishedTodoCount } from '../hooks/useProject'
-import RichEditor from './richEditor'
+import RichEditor, { serialize } from './richEditor'
 
 const RightContent = styled.div`
   //margin-top: 3.3rem;
@@ -261,19 +261,15 @@ const RightBody = (props) => {
               </DescRow>
             ) : (
               <DescRow>
-                <DescCell>
-                  <TextareaDebounced
-                    placeholder={'输入项目描述'}
-                    defaultValue={project.desc || ''}
-                    style={{ minHeight: '3rem' }}
-                    ref={projectDescInput}
-                    onChange={(value) =>
-                      handleProjectChangeFromRight(project.id, { desc: value })
-                    }
-                    onKeyUp={(value) => updateProject({ desc: value })}
-                  />
-                </DescCell>
-                <RichEditor defaultValue={descJSON} />
+                <RichEditor
+                  defaultValue={descJSON}
+                  onChange={(value) => {
+                    handleProjectChangeFromRight(project.id, {
+                      desc: serialize(value),
+                    })
+                    updateProject({ desc: JSON.stringify(value) })
+                  }}
+                />
               </DescRow>
             )}
           </ProjectDescGroup>

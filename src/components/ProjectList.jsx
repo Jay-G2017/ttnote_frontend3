@@ -1,13 +1,14 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { IoIosMore } from 'react-icons/io';
-import Dotdotdot from 'react-dotdotdot';
-import styled from 'styled-components';
-import Overlay from 'react-bootstrap/Overlay';
-import OverlayComp from './OverlayComp';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-dayjs.extend(relativeTime);
-dayjs.locale('zh-cn');
+import React, { useRef, useEffect, useState } from 'react'
+import { IoIosMore } from 'react-icons/io'
+import Dotdotdot from 'react-dotdotdot'
+import styled from 'styled-components'
+import Overlay from 'react-bootstrap/Overlay'
+import OverlayComp from './OverlayComp'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import { serialize } from './richEditor'
+dayjs.extend(relativeTime)
+dayjs.locale('zh-cn')
 
 const ListRow = styled.div`
   //border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
@@ -16,14 +17,14 @@ const ListRow = styled.div`
   //align-items: center;
   padding: 0 0 0 1.2rem;
   &:hover {
-   cursor: pointer;
-   color: #fff;
+    cursor: pointer;
+    color: #fff;
   }
   &:hover .project-desc-row {
-   color: ${window.ttnoteThemeLight.textColorLight};
+    color: ${window.ttnoteThemeLight.textColorLight};
   }
   &:hover .project-info-row {
-   color: ${window.ttnoteThemeLight.textColorLight};
+    color: ${window.ttnoteThemeLight.textColorLight};
   }
   color: ${(props) =>
     props.active ? '#fff' : window.ttnoteThemeLight.textColorLight};
@@ -38,7 +39,7 @@ const ListRow = styled.div`
     background-color: ${(props) =>
       props.active ? window.ttnoteThemeLight.bgColorGreyActive2 : ''};
   }
-`;
+`
 
 const OverlayContainer = styled.div`
   background-color: ${window.ttnoteThemeLight.bgColorDark};
@@ -49,7 +50,7 @@ const OverlayContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-around;
-`;
+`
 
 const OverlayItem = styled.div`
   padding: 0.2rem 0.7rem;
@@ -57,16 +58,16 @@ const OverlayItem = styled.div`
   :hover {
     color: #fff;
   }
-`;
+`
 
 const Inner = styled.div`
   padding: 0.6rem 1rem 0.1rem 0;
   border-bottom: 0.5px solid ${window.ttnoteThemeLight.lineColorDark};
-`;
+`
 
 const ProjectNameRow = styled.div`
   font-weight: 500;
-`;
+`
 
 const ProjectDescRow = styled.div`
   padding: 0.5rem 0;
@@ -75,7 +76,8 @@ const ProjectDescRow = styled.div`
       ? window.ttnoteThemeLight.textColorLight
       : window.ttnoteThemeLight.textColorDarkDesc};
   font-size: 0.9rem;
-`;
+  /* max-width: 390px; */
+`
 
 const ProjectInfoRow = styled.div`
   display: flex;
@@ -86,17 +88,17 @@ const ProjectInfoRow = styled.div`
       ? window.ttnoteThemeLight.textColorLight
       : window.ttnoteThemeLight.textColorDarkDesc};
   font-size: 0.9rem;
-`;
+`
 
 const TimeCell = styled.div`
   width: 5rem;
-`;
+`
 
 const TomatoCountCell = styled.div`
   width: 3rem;
   display: flex;
   align-items: center;
-`;
+`
 
 const MoreCell = styled.div`
   font-size: 1.2rem;
@@ -104,7 +106,7 @@ const MoreCell = styled.div`
   align-items: center;
   cursor: pointer;
   //color: ${window.ttnoteThemeLight.colorSecondary};
-`;
+`
 
 function ProjectList(props) {
   const {
@@ -115,16 +117,31 @@ function ProjectList(props) {
     showOverlayId,
     setShowOverlayId,
     handleProjectDelete,
-  } = props;
-  const moreButtonRef = useRef(null);
-  const truncate = useRef(null);
-  const fromNow = moreActionShown ? dayjs(project.updatedAt).fromNow() : '今天';
+  } = props
+  const moreButtonRef = useRef(null)
+  const truncate = useRef(null)
+  const fromNow = moreActionShown ? dayjs(project.updatedAt).fromNow() : '今天'
 
-  const [line, setLine] = useState(1);
+  const [line, setLine] = useState(1)
+
+  // 文本到json的迁移
+  let descJSON = [{ children: [{ text: '' }] }]
+  const desc = project.desc || ''
+  try {
+    if (!+desc) {
+      // 排除掉纯数字
+      descJSON = JSON.parse(desc)
+    } else {
+      descJSON = [{ children: [{ text: desc }] }]
+    }
+  } catch (e) {
+    // 如果不是json数据, 进行转化
+    descJSON = [{ children: [{ text: desc }] }]
+  }
 
   useEffect(() => {
-    if (project.desc) setLine(2);
-  }, [project.desc]);
+    if (project.desc) setLine(2)
+  }, [project.desc])
 
   return (
     <ListRow
@@ -132,14 +149,14 @@ function ProjectList(props) {
       active={active}
       key={project.id}
       onClick={() => {
-        if (active && !isMobileView) return;
-        const params = window.ttnote.searchObject();
-        params.projectId = project.id;
+        if (active && !isMobileView) return
+        const params = window.ttnote.searchObject()
+        params.projectId = project.id
         if (isMobileView) {
-          params.mobileShowingArea = 'right';
-          delete params.enterFrom;
+          params.mobileShowingArea = 'right'
+          delete params.enterFrom
         }
-        window.ttnote.goto('/note' + window.ttnote.objectToUrl(params));
+        window.ttnote.goto('/note' + window.ttnote.objectToUrl(params))
       }}
     >
       <Inner className={'middleListInner'}>
@@ -149,7 +166,9 @@ function ProjectList(props) {
           active={active}
           className={'project-desc-row'}
         >
-          <Dotdotdot clamp={line}>{project.desc || ''}</Dotdotdot>
+          <Dotdotdot clamp={line}>
+            <span>{serialize(descJSON)}</span>
+          </Dotdotdot>
         </ProjectDescRow>
         <ProjectInfoRow active={active} className={'project-info-row'}>
           <TimeCell>{fromNow}</TimeCell>
@@ -172,11 +191,11 @@ function ProjectList(props) {
             <MoreCell
               ref={moreButtonRef}
               onClick={(e) => {
-                e.stopPropagation();
+                e.stopPropagation()
                 if (showOverlayId === project.id) {
-                  setShowOverlayId(null);
+                  setShowOverlayId(null)
                 } else {
-                  setShowOverlayId(project.id);
+                  setShowOverlayId(project.id)
                 }
               }}
             >
@@ -197,7 +216,7 @@ function ProjectList(props) {
                               '这会删除当前项目下的所有信息。\n确定要删除吗？'
                             )
                           ) {
-                            handleProjectDelete(project.id);
+                            handleProjectDelete(project.id)
                           }
                         }}
                         style={{ paddingRight: '0.7rem' }}
@@ -213,7 +232,7 @@ function ProjectList(props) {
         </ProjectInfoRow>
       </Inner>
     </ListRow>
-  );
+  )
 }
 
-export default ProjectList;
+export default ProjectList
