@@ -9,7 +9,7 @@ import LoadingComp from './LoadingComp'
 const RightContainer = styled.div`
   /* flex: auto; */
   /* width: 58.33% */
-  width: ${(props) => (props.visible ? '100%' : '58.33%')};
+  width: ${(props) => (props.isMobileView ? '100%' : '58.33%')};
   //border-left: 1px solid #fff;
   //border-left: 0.5px solid ${window.ttnoteThemeLight.lineColorSilver};
   background-color: ${window.ttnoteThemeLight.bgColorPrimary};
@@ -46,6 +46,7 @@ function Right(props) {
     <ProjectContext.Provider value={projectContextValue}>
       <RightContainer
         visible={visible}
+        isMobileView={isMobileView}
         onClick={() => {
           if (showMore.id) setShowMore({ id: null, type: null })
         }}

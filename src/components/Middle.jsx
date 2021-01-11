@@ -6,7 +6,7 @@ import ProjectList from './ProjectList'
 const MiddleContainer = styled.div`
   /* flex: 0 0 25%; */
   /* width: 25%; */
-  width: ${(props) => (props.visible ? '100%' : '25%')};
+  width: ${(props) => (props.isMobileView ? '100%' : '25%')};
   border-left: 0.5px solid ${window.ttnoteThemeLight.lineColorDark};
   //align-items: center;
   //justify-content: center;
@@ -129,6 +129,7 @@ function Middle(props) {
     () => (
       <MiddleContainer
         visible={visible}
+        isMobileView={isMobileView}
         onClick={() => {
           if (showOverlayId) setShowOverlayId(null)
         }}

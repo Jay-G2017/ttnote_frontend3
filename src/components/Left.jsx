@@ -11,7 +11,7 @@ import { CATEGORY_TYPE_INBOX, CATEGORY_TYPE_TAGGED } from '../common/constants'
 const LeftContainer = styled.div`
   /* flex: 0 0 16.67%; */
   /* width: 16.67%; */
-  width: ${(props) => (props.visible ? '100%' : '16.67%')};
+  width: ${(props) => (props.isMobileView ? '100%' : '16.67%')};
   color: ${window.ttnoteThemeLight.textColorLight};
   background-color: ${window.ttnoteThemeLight.bgColorDark};
   //align-items: center;
@@ -130,6 +130,7 @@ function Left(props) {
     () => (
       <LeftContainer
         visible={visible}
+        isMobileView={isMobileView}
         onClick={() => {
           if (showOverlayId) {
             setShowOverlayId(null)
